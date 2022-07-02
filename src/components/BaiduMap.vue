@@ -4,19 +4,72 @@
       <!-- ready,地图组件渲染完毕时触发，返回一个百度地图的核心类和地图实例 -->
       <baidu-map
         id="map"
+        ref="bMap"
         class="mapStyle"
         :center="centerPoint"
-        :zoom="5"
+        :zoom="zoom"
         :scroll-wheel-zoom="true"
         @ready="handler"
-        @click="getPoint"
       >
         <bm-marker
           v-for="marker in markerArr"
           :key="marker.id"
           :position="marker"
-          animation="BMAP_ANIMATION_BOUNCE"
-        />
+          :icon="icon"
+          @click="lookDetail(marker)"
+        >
+          <bm-label
+            :content="marker.name"
+            :labelStyle="{
+              color: '#fff',
+              fontSize: '12px',
+              border: 'none',
+              padding: '3px 4px',
+              background: '#409EFF',
+              borderRadius: '8px',
+              zIndex: '1',
+            }"
+            :offset="{ width: 0, height: -25 }"
+          />
+        </bm-marker>
+        <bm-info-window
+          :position="infoWindow.info"
+          :show="infoWindow.show"
+          @close="infoWindowClose"
+          @open="infoWindowOpen"
+        >
+          <div class="info-window">
+            <Popups :hasVideo="deviceInfo.hasVideo">
+              <span slot="name">{{ deviceInfo.name }}</span>
+              <span slot="equipmentNo">{{ deviceInfo.equipmentNo }}</span>
+              <span slot="locationTime">{{ deviceInfo.locationTime }}</span>
+              <span slot="address">{{ deviceInfo.address }}</span>
+              <span slot="locationState">{{
+                deviceInfo.locationState ? "已定位" : "未定位"
+              }}</span>
+              <span slot="powerTypeLable">{{ deviceInfo.powerTypeLable }}</span>
+              <span slot="carStatusLabel">{{ deviceInfo.carStatusLabel }}</span>
+            </Popups>
+          </div>
+        </bm-info-window>
+        <!-- <bm-marker
+          :position="{ lng: 116.404, lat: 39.915 }"
+          :dragging="true"
+          :icon="icon"
+        >
+          <bm-label
+            content=""
+            :labelStyle="{
+              fontSize: '0',
+              width: '40px',
+              height: '40px',
+              border: 'none',
+              outline: '2px solid #13d713',
+              borderRadius: '50%',
+              zIndex: -0,
+            }"
+          />
+        </bm-marker> -->
         <!-- ``````````````````````自带的控件```````````````````````` -->
         <!-- 地图放大缩小控件，左下角 -->
         <bm-navigation anchor="BMAP_ANCHOR_BOTTOM_LEFT"></bm-navigation>
@@ -106,7 +159,7 @@
           </div>
         </div>
 
-        <div class="refresh">
+        <div class="refresh" @click="refresh()">
           <i class="el-icon-refresh"></i>
         </div>
       </div>
@@ -115,24 +168,37 @@
 </template>
 
 <script>
+import Popups from "@/components/Popups.vue";
 export default {
   name: "HomeView",
+  components: {
+    Popups,
+  },
   data() {
     return {
       //----地图部分数据-----------------------
       //中心轴坐标
       centerPoint: {
-        lng: 0,
-        lat: 0,
+        lng: 120,
+        lat: 36,
       },
+      // 地图缩放倍数
+      zoom: 5,
       // 设备坐标点
-      markerArr: [
-        {
-          id: 0,
-          lng: 114.412599,
-          lat: 23.079404,
+      markerArr: [],
+      icon: {
+        url: require("@/assets/images/Home_Equipment.png"),
+        size: {
+          width: 40,
+          height: 40,
         },
-      ],
+        opts: {
+          imageSize: {
+            width: 40,
+            height: 40,
+          },
+        },
+      },
       markerPoint: {},
       //-------控件部分数据-----------------------
       //下拉框数据
@@ -196,30 +262,34 @@ export default {
       //`````api接口获取的数据````````````````````````
       onlineStatus: JSON.parse(localStorage.getItem("Home_onlineStatus")),
       deviceList: JSON.parse(localStorage.getItem("Home_deviceList")),
+      // 地图类
+      BMap: "",
+      // 地图对象
+      Map: "",
+      // 信息窗口数据
+      // 位置和显示数据
+      infoWindow: {
+        show: false,
+        info: {
+          lng: "",
+          lat: "",
+        },
+      },
+      // 信息窗口设备的相关数据
+      deviceInfo: {},
     };
   },
   methods: {
     // 完成一次组件卸载 / 重新加载的方法，重新渲染
-    handler() {
-      this.centerPoint.lng = 106.317788;
-      this.centerPoint.lat = 35.923493;
+    async handler({ BMap, map }) {
+      // 保存百度地图类
+      this.BMap = BMap;
+      // 保存地图对象
+      this.Map = map;
+      // this.centerPoint.lng = 106.317788;
+      // this.centerPoint.lat = 35.923493;
     },
-    // 添加点击函数，点击后修改marker的经纬度
-    getPoint(e) {
-      // 点击获取point经纬度
-      const { lng, lat } = e.point;
-      console.log(lng, lat);
 
-      // 获取一个随机不重复的字符串做为id
-      let id = new Date().getTime() + parseInt(Math.random() * 10000);
-
-      // 新增一个marker标记
-      this.markerArr.push({
-        id: id,
-        lng: lng,
-        lat: lat,
-      });
-    },
     // 判断数据是否获取成功，成功则存入，不成功则弹出错误，登录失效则返回登录页面
     judgeResponse(response, storageName) {
       if (response.data.code === 200) {
@@ -249,7 +319,7 @@ export default {
     async getqueryEquipmentsByPage() {
       // 获取已定位的设备总数显示在地图上
       let amount =
-        this.onlineStatus[0].amount + this.onlineStatus[1].amount + "";
+        this.onlineStatus[0].amount + this.onlineStatus[1].amount + 1 + "";
       // 传入在线设备数据获取定位设备列表
       let deviceList = await this.$api.getqueryEquipmentsByPage("0", amount);
       // 传入判断响应是否成功的函数进行判断
@@ -257,27 +327,43 @@ export default {
     },
     // 渲染地图上面的数据
     renderMap() {
+      // 获取到设备列表数据
       let deviceList = this.deviceList.rows;
-
+      // 数据进行foreach循环
       deviceList.forEach((item, key) => {
-        const { id , lng, lat } = item;
-        this.markerArr.push({
-          id: id,
-          lng: lng,
-          lat: lat,
-        });
+        // 解构赋值，获取到id，lng,lat
+        const { id, lng, lat } = item;
+        // 判断有没有空的数据，把非空数据渲染到地图上
+        if (id && lng && lat) {
+          this.markerArr.push(item);
+        }
       });
-
-      // let ids = deviceList.map((item, key) => {
-      //   console.log("item", item);
-      //   console.log("key", key);
-      //   let ids = [];
-      //   if (key == id) {
-      //     ids.push(item);
-      //   }
-      //   return item;
-      // });
-      // console.log("ids", ids);
+    },
+    // 刷新按钮功能，页面中心点和放大缩小倍数重置
+    refresh() {
+      this.Map.reset();
+    },
+    //点击设备图标出现信息窗
+    //打开设备信息窗口
+    lookDetail(item) {
+      console.log(item);
+      // 窗口位置稍微下移一点,增加经度
+      let lat = Number(item.lat) + 5;
+      // 调用百度地图的中心点方法,把点击的设备点设为地图中心
+      this.Map.panTo(new BMap.Point(item.lng, lat));
+      // 设置信息窗口打开的位置和设备图标位置一致
+      this.infoWindow.info.lng = item.lng;
+      this.infoWindow.info.lat = item.lat;
+      //-----给信息窗口组件传入设备信息
+      this.deviceInfo = item;
+      // 打开信息窗口
+      this.infoWindow.show = true;
+    },
+    infoWindowClose() {
+      this.infoWindow.show = false;
+    },
+    infoWindowOpen() {
+      this.infoWindow.show = true;
     },
   },
   created() {
@@ -285,7 +371,7 @@ export default {
     this.getonlineStatus();
     // 获取设备列表
     this.getqueryEquipmentsByPage();
-
+    // 渲染地图上面的数据
     this.renderMap();
   },
 };
@@ -308,9 +394,41 @@ export default {
         flex-direction: column;
       }
       // 去除百度logo
-      .anchorBL:nth-child(6),
-      .anchorBL:nth-child(5) {
-        display: none;
+      // .anchorBL:nth-child(6),
+      // .anchorBL:nth-child(5) {
+      //   display: none;
+      // }
+      //增加设备图片权重，防止被label压住无法显示
+      .BMap_Marker {
+        div {
+          z-index: 2;
+        }
+        .BMapLabel {
+          background-color: red;
+        }
+        .BMapLabel:before {
+          content: "";
+          display: block;
+          position: absolute;
+          top: 25px;
+          left: -1px;
+          border: 2px solid #409eff;
+          width: 40px;
+          height: 40px;
+          background-color: #fff;
+          border-radius: 50%;
+        }
+        .BMapLabel::after {
+          content: "";
+          display: block;
+          position: absolute;
+          top: 19px;
+          left: 8px;
+          border-top: 6px solid #409eff;
+          border-right: 6px solid rgba(0, 0, 0, 0);
+          border-bottom: 6px solid rgba(0, 0, 0, 0);
+          border-left: 6px solid rgba(0, 0, 0, 0);
+        }
       }
     }
 

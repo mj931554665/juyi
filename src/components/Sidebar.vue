@@ -2,11 +2,18 @@
   <div id="Sidebar">
     <!-- loge预留区域 -->
     <!-- <div><router-link style="height: 30px;width: 100%;display: inline-block;" to="/"></router-link></div> -->
-    
-    <el-menu default-active="1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"
-      background-color="#EFEFEF" text-color="rgba(0,0,0,.6)" active-text-color="rgba(0,0,0,1)" :router="true"
-      :collapse="isCollapse">
 
+    <el-menu
+      default-active="1"
+      class="el-menu-vertical-demo"
+      @open="handleOpen"
+      @close="handleClose"
+      background-color="#409EFF"
+      text-color="rgba(255,255,255,1)"
+      active-text-color="rgba(255,255,255,.6)"
+      :router="true"
+      :collapse="isCollapse"
+    >
       <el-menu-item index="1" route="/">
         <i class="el-icon-s-home"></i>
         <span slot="title">首页</span>
@@ -19,7 +26,9 @@
         </template>
         <el-menu-item-group>
           <el-menu-item index="2-1" route="/deviceList">设备列表</el-menu-item>
-          <el-menu-item index="2-2" route="/electricFence">电子围栏</el-menu-item>
+          <el-menu-item index="2-2" route="/electricFence"
+            >电子围栏</el-menu-item
+          >
         </el-menu-item-group>
       </el-submenu>
 
@@ -29,7 +38,9 @@
           <span>数据报表</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item index="3-1" route="/equipmentCondition">设备工况</el-menu-item>
+          <el-menu-item index="3-1" route="/equipmentCondition"
+            >设备工况</el-menu-item
+          >
           <el-menu-item index="3-2" route="/deviceAlarm">设备报警</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
@@ -61,17 +72,16 @@
     </el-menu>
 
     <div class="sidebarControl" @click="sideChange">
-      <i :class="isCollapse?'el-icon-s-unfold':'el-icon-s-fold' "></i>
+      <i :class="isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"></i>
     </div>
-
   </div>
 </template>
 <script>
 export default {
   data() {
     return {
-      isCollapse: true
-    }
+      isCollapse: true,
+    };
   },
   methods: {
     handleOpen(key, keyPath) {
@@ -80,45 +90,47 @@ export default {
     handleClose(key, keyPath) {
       console.log(key, keyPath);
     },
-    sideChange(){
-      this.isCollapse=!this.isCollapse
+    sideChange() {
+      this.isCollapse = !this.isCollapse;
       console.log(this.isCollapse);
-      sessionStorage.setItem('isCollapse',this.isCollapse)
+      sessionStorage.setItem("isCollapse", this.isCollapse);
       console.log(this.isCollapse);
       console.log(111);
       // sessionStorage.setItems('isCollapse',this.isCollapse)
+    },
+  },
+  created() {
+    if (sessionStorage.getItem("isCollapse") == "true") {
+      this.isCollapse = true;
+    } else if (sessionStorage.getItem("isCollapse") == "false") {
+      this.isCollapse = false;
     }
   },
-  created(){
-    if(sessionStorage.getItem('isCollapse') == 'true'){
-      this.isCollapse=true
-    }else if(sessionStorage.getItem('isCollapse') == 'false'){
-      this.isCollapse=false
-    }
-  }
-}
+};
 </script>
 <style lang="less">
 #Sidebar {
   // position: fixed;
   z-index: 99;
   height: 100%;
-  background-color: #efefef;
+  background-color: #409eff;
 
   .el-menu-vertical-demo:not(.el-menu--collapse) {
     width: 200px;
     min-height: 400px;
   }
-  .sidebarControl{
+  .sidebarControl {
     position: absolute;
     left: 20px;
     bottom: 20px;
     font-size: 28px;
   }
-  .el-menu{
+  .el-menu {
     border: none;
   }
-
+  .el-menu-item i,.el-submenu i{
+    color: #fff;
+  }
 }
 /* 因为导航一般来说只存在一个，所以没用id限制 */
 .el-menu-item-group__title {

@@ -5,7 +5,7 @@ import store from './store'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import './assets/css/restcss.css'
-import api from './api/request'
+import api from './bapi/request'
 Vue.prototype.$api = api
 Vue.use(ElementUI);
 import BaiduMap from 'vue-baidu-map';// 导入地图

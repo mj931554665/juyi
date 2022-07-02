@@ -49,7 +49,7 @@ export default {
 <style>
 #poster {
   opacity: .8;
-  background: url("@/assets/images/bg.png") no-repeat;
+  background: url("@/assets/images/Login_bg.png") no-repeat;
   background-position: center;
   height: 100%;
   width: 100%;
