@@ -348,7 +348,7 @@ export default {
     lookDetail(item) {
       console.log(item);
       // 窗口位置稍微下移一点,增加经度
-      let lat = Number(item.lat) + 5;
+      let lat = Number(item.lat) ;
       // 调用百度地图的中心点方法,把点击的设备点设为地图中心
       this.Map.panTo(new BMap.Point(item.lng, lat));
       // 设置信息窗口打开的位置和设备图标位置一致
