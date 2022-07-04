@@ -9,29 +9,36 @@
         :center="centerPoint"
         :zoom="zoom"
         :scroll-wheel-zoom="true"
+        min-zoom="5"
         @ready="handler"
       >
-        <bm-marker
-          v-for="marker in markerArr"
-          :key="marker.id"
-          :position="marker"
-          :icon="icon"
-          @click="lookDetail(marker)"
-        >
-          <bm-label
-            :content="marker.name"
-            :labelStyle="{
-              color: '#fff',
-              fontSize: '12px',
-              border: 'none',
-              padding: '3px 4px',
-              background: '#409EFF',
-              borderRadius: '8px',
-              zIndex: '1',
-            }"
-            :offset="{ width: 0, height: -25 }"
-          />
-        </bm-marker>
+        <!-- 聚合点组件（需引入） -->
+        <bml-marker-clusterer :averageCenter="false">
+          <bm-marker
+            v-for="marker in markerArr"
+            :key="marker.id"
+            :position="marker"
+            :icon="icon"
+            :top="marker.id == markerTop ? true : false"
+            @click="lookDetail(marker)"
+          >
+            <bm-label
+              :content="marker.name"
+              :labelStyle="{
+                color: '#fff',
+                fontSize: '12px',
+                border: 'none',
+                minWidth: '20px',
+                textAlign: 'center',
+                padding: '3px 4px',
+                background: '#409EFF',
+                borderRadius: '8px',
+                zIndex: '1',
+              }"
+              :offset="{ width: 0, height: -25 }"
+            />
+          </bm-marker>
+        </bml-marker-clusterer>
         <bm-info-window
           :position="infoWindow.info"
           :show="infoWindow.show"
@@ -44,11 +51,15 @@
               <span slot="equipmentNo">{{ deviceInfo.equipmentNo }}</span>
               <span slot="locationTime">{{ deviceInfo.locationTime }}</span>
               <span slot="address">{{ deviceInfo.address }}</span>
-              <span slot="locationState">{{
+              <!-- <span slot="locationState">{{
                 deviceInfo.locationState ? "已定位" : "未定位"
-              }}</span>
+              }}</span> -->
               <span slot="powerTypeLable">{{ deviceInfo.powerTypeLable }}</span>
               <span slot="carStatusLabel">{{ deviceInfo.carStatusLabel }}</span>
+              <!-- 设置盒子类型，取消换行 -->
+              <span slot="modelLabel" style="display: flex">{{
+                deviceInfo.modelLabel
+              }}</span>
             </Popups>
           </div>
         </bm-info-window>
@@ -80,16 +91,20 @@
         ></bm-map-type>
       </baidu-map>
       <div class="controls">
+        <!-- filterable属性即可启用搜索功能
+        clearable属性，则可将选择器清空 -->
         <el-select
           v-model="devicValue"
-          filterable
           placeholder="请输入设备名称或者设备编号"
+          filterable
+          clearable
+          @change="selectChange()"
         >
           <el-option
-            v-for="item in deviceNameAndNumber"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            v-for="item in markerArr"
+            :key="item.id"
+            :label="item.name + ` | ` + item.equipmentNo"
+            :value="item.id"
           >
           </el-option>
         </el-select>
@@ -105,7 +120,10 @@
               <div id="baiduMapFilter">
                 <div>
                   <h4>在线状态</h4>
-                  <el-checkbox-group v-model="C_onlineStatus">
+                  <el-checkbox-group
+                    v-model="C_onlineStatus"
+                    @change="onlineStatusChange"
+                  >
                     <el-checkbox-button
                       v-for="status in C_onlineStatusArr"
                       :label="status"
@@ -114,7 +132,7 @@
                     >
                   </el-checkbox-group>
                 </div>
-                <div>
+                <div v-show="false">
                   <h4>风险状态</h4>
                   <el-checkbox-group v-model="riskStatus">
                     <el-checkbox-button
@@ -129,8 +147,9 @@
                   <h4>自定义显示吨位</h4>
                   <el-select
                     v-model="modelLabelValue"
-                    filterable
+                    multiple
                     placeholder="请选择"
+                    @change="modelLabeChange()"
                   >
                     <el-option
                       v-for="item in modelLabels"
@@ -140,7 +159,7 @@
                     >
                     </el-option>
                   </el-select>
-                  <el-button>清空</el-button>
+                  <!-- <el-button>清空</el-button> -->
                 </div>
                 <div>
                   <h4>定位显示名称</h4>
@@ -168,11 +187,15 @@
 </template>
 
 <script>
+// 引入设备信息弹窗组件
 import Popups from "@/components/Popups.vue";
+// 引入聚合点组件（vue-baidu-map自带）
+import { BmlMarkerClusterer } from "vue-baidu-map";
 export default {
   name: "HomeView",
   components: {
     Popups,
+    BmlMarkerClusterer,
   },
   data() {
     return {
@@ -202,60 +225,179 @@ export default {
       markerPoint: {},
       //-------控件部分数据-----------------------
       //下拉框数据
-      deviceNameAndNumber: [
-        {
-          value: "选项1",
-          label: "黄金糕",
-        },
-        {
-          value: "选项2",
-          label: "双皮奶",
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎",
-        },
-        {
-          value: "选项4",
-          label: "龙须面",
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭",
-        },
-      ],
+      deviceNameAndNumber: [],
       devicValue: "",
       //··筛选数据``````````````````
       //在线状态
-      C_onlineStatus: ["在线状态", "离线状态"],
-      C_onlineStatusArr: ["在线状态", "离线状态"],
+      C_onlineStatus: ["在线", "离线"],
+      C_onlineStatusArr: ["在线", "离线"],
       //风险状态
       riskStatus: [],
       riskStatusArr: ["低风险", "中风险", "高风险"],
       //自定义显示吨位
       modelLabels: [
         {
-          value: "选项1",
-          label: "黄金糕",
+          value: "20T",
+          label: "20T",
         },
         {
-          value: "选项2",
-          label: "双皮奶",
+          value: "25T",
+          label: "25T",
         },
         {
-          value: "选项3",
-          label: "蚵仔煎",
+          value: "35T",
+          label: "35T",
         },
         {
-          value: "选项4",
-          label: "龙须面",
+          value: "SCC型320T",
+          label: "SCC型320T",
         },
         {
-          value: "选项5",
-          label: "北京烤鸭",
+          value: "SAC220T",
+          label: "SAC220T",
+        },
+        {
+          value: "SCC型650T",
+          label: "SCC型650T",
+        },
+        {
+          value: "SCC型500T",
+          label: "SCC型500T",
+        },
+        {
+          value: "40T",
+          label: "40T",
+        },
+        {
+          value: "50T",
+          label: "50T",
+        },
+        {
+          value: "55T",
+          label: "55T",
+        },
+        {
+          value: "60T",
+          label: "60T",
+        },
+        {
+          value: "70T",
+          label: "70T",
+        },
+        {
+          value: "75T",
+          label: "75T",
+        },
+        {
+          value: "80T",
+          label: "80T",
+        },
+        {
+          value: "85T",
+          label: "85T",
+        },
+        {
+          value: "90T",
+          label: "90T",
+        },
+        {
+          value: "100T",
+          label: "100T",
+        },
+        {
+          value: "110T",
+          label: "110T",
+        },
+        {
+          value: "130T",
+          label: "130T",
+        },
+        {
+          value: "135T",
+          label: "135T",
+        },
+        {
+          value: "150T",
+          label: "150T",
+        },
+        {
+          value: "160T",
+          label: "160T",
+        },
+        {
+          value: "200T",
+          label: "200T",
+        },
+        {
+          value: "220T",
+          label: "220T",
+        },
+        {
+          value: "250T",
+          label: "250T",
+        },
+        {
+          value: "260T",
+          label: "260T",
+        },
+        {
+          value: "280T",
+          label: "280T",
+        },
+        {
+          value: "300T",
+          label: "300T",
+        },
+        {
+          value: "320T",
+          label: "320T",
+        },
+        {
+          value: "350T",
+          label: "350T",
+        },
+        {
+          value: "400T",
+          label: "400T",
+        },
+        {
+          value: "450T",
+          label: "450T",
+        },
+        {
+          value: "500T",
+          label: "500T",
+        },
+        {
+          value: "600T",
+          label: "600T",
+        },
+        {
+          value: "630T",
+          label: "630T",
+        },
+        {
+          value: "650T",
+          label: "650T",
+        },
+        {
+          value: "700T",
+          label: "700T",
+        },
+        {
+          value: "800T",
+          label: "800T",
+        },
+        {
+          value: "1010T",
+          label: "1010T",
+        },
+        {
+          value: "1020T",
+          label: "1020T",
         },
       ],
-      modelLabelValue: "",
+      modelLabelValue: [],
       //定位显示名称
       targetDisplayName: "图标+设备名称",
 
@@ -277,6 +419,8 @@ export default {
       },
       // 信息窗口设备的相关数据
       deviceInfo: {},
+      // 设备标签的置顶效果
+      markerTop:'',
     };
   },
   methods: {
@@ -331,13 +475,44 @@ export default {
       let deviceList = this.deviceList.rows;
       // 数据进行foreach循环
       deviceList.forEach((item, key) => {
+        // 定义一个容器来装筛选后的数据
+        let device = item;
         // 解构赋值，获取到id，lng,lat
-        const { id, lng, lat } = item;
-        // 判断有没有空的数据，把非空数据渲染到地图上
+        const { id, lng, lat } = device;
+        // 判断有没有空的位置数据，把非空数据渲染到地图上
         if (id && lng && lat) {
-          this.markerArr.push(item);
+          // 筛选判断
+          // 设备在线状态判断渲染
+          this.C_onlineStatus.forEach((onlineStatus) => {
+            // 和筛选的值进行比对，满足条件的才渲染出来
+            if (item.onlineStatusLabel == onlineStatus) {
+              // 吨位筛选
+              if (this.modelLabelValue.length == 0) {
+                this.markerArr.push(item);
+              } else {
+                this.modelLabelValue.forEach((modelLabel) => {
+                  // 和吨位下拉选项比较，筛选渲染
+                  if (item.modelLabel == modelLabel) {
+                    this.markerArr.push(item);
+                  }
+                });
+              }
+            }
+          });
         }
       });
+    },
+    // 筛选数据功能——在线状态,在线状态
+    onlineStatusChange() {
+      // 二次渲染判断，如果清空原本的地图标记
+      this.markerArr = [];
+      this.renderMap();
+    },
+    // 筛选数据功能——在线状态,显示吨位
+    modelLabeChange() {
+      // 二次渲染判断，如果清空原本的地图标记
+      this.markerArr = [];
+      this.renderMap();
     },
     // 刷新按钮功能，页面中心点和放大缩小倍数重置
     refresh() {
@@ -347,13 +522,16 @@ export default {
     //打开设备信息窗口
     lookDetail(item) {
       console.log(item);
+      // 设置点击标签置顶的id判断值
+      this.markerTop = item.id;
       // 窗口位置稍微下移一点,增加经度
-      let lat = Number(item.lat) ;
+      let lng = Number(item.lng);
+      let lat = Number(item.lat);
       // 调用百度地图的中心点方法,把点击的设备点设为地图中心
-      this.Map.panTo(new BMap.Point(item.lng, lat));
+      this.Map.panTo(new BMap.Point(lng, lat));
       // 设置信息窗口打开的位置和设备图标位置一致
-      this.infoWindow.info.lng = item.lng;
-      this.infoWindow.info.lat = item.lat;
+      this.infoWindow.info.lng = lng;
+      this.infoWindow.info.lat = lat;
       //-----给信息窗口组件传入设备信息
       this.deviceInfo = item;
       // 打开信息窗口
@@ -365,12 +543,37 @@ export default {
     infoWindowOpen() {
       this.infoWindow.show = true;
     },
+    selectChange(val) {
+      // let [id, lng, lat] = this.devicValue.split("|"); // es6 数组解构赋值
+      // 判断当前选中值和渲染数据值，以获取当前选中item
+      let item = this.markerArr.find((item) => item.id == this.devicValue);
+      // 转换数字类型的经纬度，防止api调用出错
+      let lng = Number(item.lng);
+      let lat = Number(item.lat);
+      // 调用百度地图的中心点方法,把点击的设备点设为地图中心
+      this.Map.panTo(new BMap.Point(lng, lat));
+      // 设置信息窗口打开的位置和设备图标位置一致
+      this.infoWindow.info.lng = lng;
+      this.infoWindow.info.lat = lat;
+      //-----给信息窗口组件传入设备信息
+      this.deviceInfo = item;
+      // 打开信息窗口
+      this.infoWindow.show = true;
+    },
+    filterList() {
+      // 获取设备列表数据
+      let deviceList = this.deviceList.rows;
+      // 暂时留数据，后续如需更改可以使用，下拉式搜索数据
+      this.deviceNameAndNumber = this.deviceList.rows;
+    },
   },
   created() {
     // 获取设备上线，风险，故障，定位数据
     this.getonlineStatus();
     // 获取设备列表
     this.getqueryEquipmentsByPage();
+    // 根据设备列表添加筛选选项
+    this.filterList();
     // 渲染地图上面的数据
     this.renderMap();
   },

@@ -5,7 +5,7 @@
       <!-- &nbsp;<i class="el-icon-location-outline"></i>&nbsp;<i class="el-icon-video-camera"></i> -->
     </p>
     <div class="rectangle">
-      <div class="panel">
+      <div class="panel" v-if="hasVideo">
         <span>视频监控</span>
         <p>实时</p>
         <div class="panel-footer"></div>
@@ -32,21 +32,25 @@
         <i class="el-icon-c-scale-to-original"></i>&nbsp;<slot name="equipmentNo"></slot>
       </p>
       <p class="locationTime">
-        <i class="el-icon-time"></i>&nbsp;<slot name="locationTime"></slot>
+        <i class="el-icon-time"></i>&nbsp;<slot name="locationTime">2022-02-22 22:22:22</slot>
       </p>
       <p class="address">
         <i class="el-icon-location-information"></i>&nbsp;<slot name="address"></slot>
       </p>
     </div>
     <div class="someInfo">
-      <div>
+      <!-- <div>
         定位状态：<span><slot name="locationState"></slot></span>
-      </div>
+      </div> -->
       <div>
         动力类型：<span><slot name="powerTypeLable"></slot></span>
       </div>
       <div>
         设备状态：<span><slot name="carStatusLabel"></slot></span>
+      </div>
+      <!-- 设置盒子类型和宽度，取消换行 -->
+      <div style="display: flex;width: 100%;">
+        设备型号：<span><slot name="modelLabel"></slot></span>
       </div>
     </div>
   </div>
@@ -55,9 +59,6 @@
 <script>
 export default {
   props:["hasVideo"],
-  created() {
-    console.log(this.hasVideo);
-  },
 }
 </script>
 
