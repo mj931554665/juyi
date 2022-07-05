@@ -9,7 +9,7 @@
         :center="centerPoint"
         :zoom="zoom"
         :scroll-wheel-zoom="true"
-        min-zoom="5"
+        :min-zoom="5"
         @ready="handler"
       >
         <!-- 聚合点组件（需引入） -->
@@ -23,7 +23,7 @@
             @click="lookDetail(marker)"
           >
             <bm-label
-              :content="marker.name"
+              :content="markerLabel(marker)"
               :labelStyle="{
                 color: '#fff',
                 fontSize: '12px',
@@ -35,7 +35,7 @@
                 borderRadius: '8px',
                 zIndex: '1',
               }"
-              :offset="{ width: 0, height: -25 }"
+              :offset="{ width: 6, height: -25 }"
             />
           </bm-marker>
         </bml-marker-clusterer>
@@ -148,6 +148,8 @@
                   <el-select
                     v-model="modelLabelValue"
                     multiple
+                    collapse-tags
+                    filterable
                     placeholder="请选择"
                     @change="modelLabeChange()"
                   >
@@ -159,13 +161,13 @@
                     >
                     </el-option>
                   </el-select>
-                  <!-- <el-button>清空</el-button> -->
+                  <el-button @click="emptyModelLabe()">清空</el-button>
                 </div>
                 <div>
                   <h4>定位显示名称</h4>
                   <el-radio-group v-model="targetDisplayName">
                     <el-radio-button label="图标+设备名称"></el-radio-button>
-                    <el-radio-button label="仅图标"></el-radio-button>
+                    <!-- <el-radio-button label="仅图标"></el-radio-button> -->
                     <el-radio-button label="图标+设备编号"></el-radio-button>
                     <el-radio-button label="图标+车牌号"></el-radio-button>
                   </el-radio-group>
@@ -420,7 +422,20 @@ export default {
       // 信息窗口设备的相关数据
       deviceInfo: {},
       // 设备标签的置顶效果
-      markerTop:'',
+      markerTop: "",
+      // 设备标签样式，等数据
+      markerLabelStyle5: {},
+      markerLabelStyle: {
+        color: "#fff",
+        fontSize: "12px",
+        border: "none",
+        minWidth: "20px",
+        textAlign: "center",
+        padding: "3px 4px",
+        background: "#409EFF",
+        borderRadius: "8px",
+        zIndex: "1",
+      },
     };
   },
   methods: {
@@ -433,7 +448,6 @@ export default {
       // this.centerPoint.lng = 106.317788;
       // this.centerPoint.lat = 35.923493;
     },
-
     // 判断数据是否获取成功，成功则存入，不成功则弹出错误，登录失效则返回登录页面
     judgeResponse(response, storageName) {
       if (response.data.code === 200) {
@@ -543,6 +557,7 @@ export default {
     infoWindowOpen() {
       this.infoWindow.show = true;
     },
+    // 搜索设备下拉框功能实现
     selectChange(val) {
       // let [id, lng, lat] = this.devicValue.split("|"); // es6 数组解构赋值
       // 判断当前选中值和渲染数据值，以获取当前选中item
@@ -560,11 +575,42 @@ export default {
       // 打开信息窗口
       this.infoWindow.show = true;
     },
+    // 筛选的函数，没有用
     filterList() {
       // 获取设备列表数据
       let deviceList = this.deviceList.rows;
       // 暂时留数据，后续如需更改可以使用，下拉式搜索数据
       this.deviceNameAndNumber = this.deviceList.rows;
+    },
+    // 清空自定义吨位数据
+    emptyModelLabe() {
+      // 清空原本数据
+      this.modelLabelValue = [];
+      this.markerArr = [];
+      // 渲染地图上面的数据
+      this.renderMap();
+    },
+    // 设备标签显示选择
+    markerLabel(item) {
+      switch (this.targetDisplayName) {
+        case "图标+设备名称":
+          this.markerLabelStyle = this.markerLabelStyle2;
+          return item.name;
+        case "仅图标":
+          for (var key in this.markerLabelStyle) {
+            this.markerLabelStyle[key] = "";
+          }
+          return "&nbsp;";
+        case "图标+设备编号":
+          this.markerLabelStyle = this.markerLabelStyle2;
+          return item.equipmentNo;
+        case "图标+车牌号":
+          this.markerLabelStyle = this.markerLabelStyle2;
+          return item.plateNo ? item.plateNo : "暂无车牌号";
+        default:
+          break;
+      }
+      return "1";
     },
   },
   created() {
@@ -607,14 +653,22 @@ export default {
           z-index: 2;
         }
         .BMapLabel {
-          background-color: red;
+          // color: #fff;
+          // font-size: 12px;
+          // min-width: 20px;
+          // text-align:center;
+          // border: none !important;
+          // padding: 3px 4px !important;
+          // background: #409EFF !important;
+          // border-radius: 8px;
+          // z-index: 0;
         }
         .BMapLabel:before {
           content: "";
           display: block;
           position: absolute;
           top: 25px;
-          left: -1px;
+          left: -6px;
           border: 2px solid #409eff;
           width: 40px;
           height: 40px;
@@ -626,7 +680,7 @@ export default {
           display: block;
           position: absolute;
           top: 19px;
-          left: 8px;
+          left: 9px;
           border-top: 6px solid #409eff;
           border-right: 6px solid rgba(0, 0, 0, 0);
           border-bottom: 6px solid rgba(0, 0, 0, 0);
