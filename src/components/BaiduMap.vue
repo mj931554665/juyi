@@ -63,24 +63,6 @@
             </Popups>
           </div>
         </bm-info-window>
-        <!-- <bm-marker
-          :position="{ lng: 116.404, lat: 39.915 }"
-          :dragging="true"
-          :icon="icon"
-        >
-          <bm-label
-            content=""
-            :labelStyle="{
-              fontSize: '0',
-              width: '40px',
-              height: '40px',
-              border: 'none',
-              outline: '2px solid #13d713',
-              borderRadius: '50%',
-              zIndex: -0,
-            }"
-          />
-        </bm-marker> -->
         <!-- ``````````````````````自带的控件```````````````````````` -->
         <!-- 地图放大缩小控件，左下角 -->
         <bm-navigation anchor="BMAP_ANCHOR_BOTTOM_LEFT"></bm-navigation>
@@ -191,6 +173,8 @@
 <script>
 // 引入设备信息弹窗组件
 import Popups from "@/components/Popups.vue";
+// 引入右侧悬浮卡片组件
+// import Scrollbar from "@/components/Scrollbar.vue";
 // 引入聚合点组件（vue-baidu-map自带）
 import { BmlMarkerClusterer } from "vue-baidu-map";
 export default {

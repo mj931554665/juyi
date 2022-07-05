@@ -5,7 +5,7 @@
       <!-- &nbsp;<i class="el-icon-location-outline"></i>&nbsp;<i class="el-icon-video-camera"></i> -->
     </p>
     <div class="rectangle">
-      <div class="panel" v-if="hasVideo">
+      <div class="panel" v-if="hasVideo" >
         <span>视频监控</span>
         <p>实时</p>
         <div class="panel-footer"></div>
@@ -65,21 +65,9 @@ export default {
 <style lang="less" scoped>
 .popups {
   width: 360px;
-  // height: 250px;
-  // position: fixed;
   z-index: 999;
-  // top: 0;
-  // right: 0;
-  // left: 0;
-  // bottom: 0;
   margin: auto;
-  // padding: 10px 5px;
-  /* text-align:center; */
-  /* line-height: 250px; */
   background: #fff;
-  // border: 1px solid #EFEFEF;
-  // border-radius: 5px;
-  // box-shadow: 3px 3px 8px #888;
   cursor: context-menu;
 
   .name {
@@ -186,19 +174,11 @@ export default {
   }
 
   .someInfo {
-    // text-align: center;
-    // line-height: 40px;
-    // cursor: pointer;
-    // font-weight: bold;
-    // color: #3e4548;
     display: flex;
     flex-wrap: wrap;
     div{
       width: 45%;
       padding: 5px 0 5px 10px;
-    }
-    &:hover {
-      // color: #000000;
     }
   }
 }
