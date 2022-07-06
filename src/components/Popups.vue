@@ -5,6 +5,11 @@
       <!-- &nbsp;<i class="el-icon-location-outline"></i>&nbsp;<i class="el-icon-video-camera"></i> -->
     </p>
     <div class="rectangle">
+      <div class="panel">
+        <span>设备详情</span>
+        <p>查看</p>
+        <div class="panel-footer"></div>
+      </div>
       <div class="panel" v-if="hasVideo" >
         <span>视频监控</span>
         <p>实时</p>
@@ -18,11 +23,6 @@
       <div class="panel">
         <span>历史轨迹</span>
         <p>信息</p>
-        <div class="panel-footer"></div>
-      </div>
-      <div class="panel">
-        <span>设备详情</span>
-        <p>查看</p>
         <div class="panel-footer"></div>
       </div>
     </div>

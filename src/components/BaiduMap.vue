@@ -167,6 +167,7 @@
         </div>
       </div>
     </el-card>
+    <TableInfo :onlineStatus="onlineStatus" :deviceList="deviceList"></TableInfo>
   </div>
 </template>
 
@@ -174,14 +175,15 @@
 // 引入设备信息弹窗组件
 import Popups from "@/components/Popups.vue";
 // 引入右侧悬浮卡片组件
-// import Scrollbar from "@/components/Scrollbar.vue";
+import TableInfo from "@/components/TableInfo.vue";
 // 引入聚合点组件（vue-baidu-map自带）
 import { BmlMarkerClusterer } from "vue-baidu-map";
 export default {
   name: "HomeView",
   components: {
-    Popups,
     BmlMarkerClusterer,
+    Popups,
+    TableInfo,
   },
   data() {
     return {
@@ -451,6 +453,16 @@ export default {
         });
       }
     },
+    // 获取设备定位数
+    async getEquipmentAmountByLocated(){
+      let locationStateNum = await this.$api.getEquipmentAmountByLocated()
+      this.judgeResponse(locationStateNum,"Home_locationStateNum")
+    },
+    // 获取设备总数
+    async getTotalDevicesNum() {
+      let locationStateNum = await this.$api.getEquipmentAmountByType()
+      this.judgeResponse(locationStateNum,"Home_locationStateNum")
+    },
     // 获取设备上线，风险，定位数据 函数
     async getonlineStatus() {
       let onlineStatus = await this.$api.getonlineStatus();
@@ -602,6 +614,10 @@ export default {
     this.getonlineStatus();
     // 获取设备列表
     this.getqueryEquipmentsByPage();
+    // 获取设备总数
+    this.getTotalDevicesNum()
+    // 获取定位设备数
+    this.getEquipmentAmountByLocated()
     // 根据设备列表添加筛选选项
     this.filterList();
     // 渲染地图上面的数据

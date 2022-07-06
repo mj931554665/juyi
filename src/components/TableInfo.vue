@@ -23,14 +23,14 @@
             <!-- 网页全屏按钮 -->
             <FuncBtn :isScreen="true"></FuncBtn>
             <!-- 退出登录，或者用户操作按钮 -->
-            <div @click="LoginOut()">
+            <div @click="LoginOut">
               <FuncBtn>
                 <div slot="content" style="display: flex">
                   <i class="el-icon-s-custom"></i>
                   <div style="margin-left: 5px" class="username">
-                    {{ userName ? userName : "userName" }}
+                    {{ userInfo.user.userName }}
                   </div>
-                  <i style="margin-left: 10px" class="el-icon-arrow-down"></i>
+                  <!-- <i style="margin-left: 10px" class="el-icon-arrow-down"></i> -->
                 </div>
               </FuncBtn>
             </div>
@@ -41,16 +41,45 @@
       <div class="content" v-show="showContent">
         <FloatCard>
           <span slot="header">设备在线统计</span>
-          <div slot="content">
+          <div slot="content" class="onlineStatus">
             <div>
               <i class="el-icon-success" style="color: #00d893"></i>
-              <span>在线设备：<span>28</span></span>
+              <span
+                >在线设备：<span>{{ onlineStatus[1].amount }}</span></span
+              >
+            </div>
+            <br />
+            <div class="warning">
+              <div>
+                <i class="el-icon-warning" style="color: #ff4620"></i>
+                <span
+                  >{{ onlineStatus[2].typeLabel }}:
+                  <span>{{ onlineStatus[2].amount }}</span></span
+                >
+              </div>
+              <div>
+                <i class="el-icon-warning" style="color: #ff9a00"></i>
+                <span
+                  >{{ onlineStatus[3].typeLabel }}:
+                  <span>{{ onlineStatus[3].amount }}</span></span
+                >
+              </div>
+              <div>
+                <i class="el-icon-warning" style="color: #fbc800"></i>
+                <span
+                  >{{ onlineStatus[4].typeLabel }}:
+                  <span>{{ onlineStatus[4].amount }}</span></span
+                >
+              </div>
             </div>
             <br />
             <div>
               <i class="el-icon-remove" style="color: gray"></i>
-              <span>离线设备：<span>94</span></span>
+              <span
+                >离线设备：<span>{{ onlineStatus[0].amount }}</span></span
+              >
             </div>
+            <br />
           </div>
         </FloatCard>
         <FloatCard>
@@ -59,22 +88,22 @@
             <div class="showData">
               <i style="color: #7f70f6" class="el-icon-s-unfold"></i>
               <p>设备总数</p>
-              <h4>140</h4>
+              <h4>{{ totalDevicesNum[0].amount }}</h4>
             </div>
             <div class="showData">
               <i style="color: #3ad4ff" class="el-icon-s-platform"></i>
               <p>监控设备</p>
-              <h4>11</h4>
+              <h4>{{ hasVideoNum }}</h4>
             </div>
             <div class="showData">
-              <i style="color: #fd6d4c" class="el-icon-message-solid"></i>
-              <p>今日预警</p>
-              <h4>0</h4>
+              <i style="color: #fd6d4c" class="el-icon-location"></i>
+              <p>定位设备</p>
+              <h4>{{ locationStateNum[0].amount }}</h4>
             </div>
             <div class="showData">
               <i style="color: #fecc51" class="el-icon-s-claim"></i>
               <p>今日开工</p>
-              <h4>122</h4>
+              <h4>{{carStatusNum}}</h4>
             </div>
           </div>
         </FloatCard>
@@ -83,7 +112,7 @@
           <div slot="content" class="totalData">
             <div class="row">
               <div class="icon">
-                <i class="el-icon-time" style="color: #89E5FF;"></i>
+                <i class="el-icon-time" style="color: #89e5ff"></i>
                 <P>累计工时</P>
               </div>
               <div class="datarow">
@@ -98,7 +127,7 @@
             </div>
             <div class="row">
               <div class="icon">
-                <i class="el-icon-news" style="color: #FCA491;"></i>
+                <i class="el-icon-news" style="color: #fca491"></i>
                 <P>累计里程</P>
               </div>
               <div class="datarow">
@@ -113,7 +142,7 @@
             </div>
             <div class="row">
               <div class="icon">
-                <i class="el-icon-stopwatch" style="color: #8FF9D0;"></i>
+                <i class="el-icon-stopwatch" style="color: #8ff9d0"></i>
                 <P>累计油耗</P>
               </div>
               <div class="datarow">
@@ -128,10 +157,6 @@
             </div>
           </div>
         </FloatCard>
-        <FloatCard></FloatCard>
-        <FloatCard></FloatCard>
-        <FloatCard></FloatCard>
-        <FloatCard></FloatCard>
       </div>
     </div>
   </div>
@@ -145,11 +170,21 @@ export default {
     FloatCard,
     FuncBtn,
   },
-  props: ["userName"],
   data() {
     return {
       showContent: true,
+      totalDevicesNum: JSON.parse(localStorage.getItem("Home_totalDevicesNum")),
+      userInfo: JSON.parse(sessionStorage.getItem("Login_userInfo")),
+      locationStateNum: JSON.parse(
+        localStorage.getItem("Home_locationStateNum")
+      ),
+      hasVideoNum: 0,
+      carStatusNum: 0,
     };
+  },
+  props: {
+    onlineStatus: Array,
+    deviceList: Object,
   },
   methods: {
     LoginOut() {
@@ -172,9 +207,26 @@ export default {
           });
         });
     },
+    // 初始化第二张卡片的数据
+    initData() {
+      let deviceList = this.deviceList.rows;
+      let hasVideoNum = 0,
+        carStatusNum = 0;
+      deviceList.forEach((item, key) => {
+        if (item.hasVideo) {
+          hasVideoNum++;
+        }
+        if (item.carStatus == 8) {
+          carStatusNum++;
+        }
+      });
+      this.hasVideoNum = hasVideoNum;
+      this.carStatusNum = carStatusNum;
+      console.log(carStatusNum);
+    },
   },
-  props: {
-    userName: String,
+  created() {
+    this.initData();
   },
 };
 </script>
@@ -211,6 +263,16 @@ export default {
   }
   .content {
     max-height: calc(100vh - 100px);
+    .onlineStatus {
+      .warning {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        div {
+          margin-bottom: 5px;
+        }
+      }
+    }
     .dataMonitoring {
       display: flex;
       text-align: center;
@@ -247,11 +309,12 @@ export default {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          i{
+          i {
             font-size: 22px;
           }
-          P{
-            font-size: 12PX;
+          P {
+            font-size: 12px;
+            margin: 5px 0;
           }
         }
         .datarow {

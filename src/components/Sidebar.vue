@@ -93,16 +93,16 @@ export default {
     sideChange() {
       this.isCollapse = !this.isCollapse;
       console.log(this.isCollapse);
-      sessionStorage.setItem("isCollapse", this.isCollapse);
+      localStorage.setItem("isCollapse", this.isCollapse);
       console.log(this.isCollapse);
       console.log(111);
-      // sessionStorage.setItems('isCollapse',this.isCollapse)
+      // localStorage.setItems('isCollapse',this.isCollapse)
     },
   },
   created() {
-    if (sessionStorage.getItem("isCollapse") == "true") {
+    if (localStorage.getItem("isCollapse") == "true") {
       this.isCollapse = true;
-    } else if (sessionStorage.getItem("isCollapse") == "false") {
+    } else if (localStorage.getItem("isCollapse") == "false") {
       this.isCollapse = false;
     }
   },

@@ -1,14 +1,24 @@
 import axios from "./axios";
 
 export default {
+  // 登录接口
   getLogin(username, password) {
     let formData = new FormData();
     formData.append('username', username);
     formData.append('password', password)
     return axios.post('/login', formData)
   },
+  // 2.12——获取设备在线状态接口
   getonlineStatus() {
     return axios.get('/equipment/getOnlineEquipmentAmountByRiskLevel')
+  },
+  // 2.14——设备总数
+  getEquipmentAmountByType(){
+    return axios.get('/equipment/getEquipmentAmountByType')
+  },
+  // 2.15——定位设备数量
+  getEquipmentAmountByLocated(){
+    return axios.get('/equipment/getEquipmentAmountByLocated')
   },
   getqueryEquipmentsByPage(pageNum, pageSize) {
     let formData = new FormData();
@@ -33,7 +43,7 @@ export default {
   getVideoChannelState() {
     return axios.get('cranecloud/converge/getVideoChannelState', {
       params:{
-        terminalId:sessionStorage.getItem('terminalId')
+        terminalId:localStorage.getItem('terminalId')
       }
     })
   },
