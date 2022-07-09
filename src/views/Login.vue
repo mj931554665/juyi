@@ -35,7 +35,7 @@ export default {
     async login() {
       let userInfo = await this.$api.getLogin(this.loginForm.username, this.loginForm.password)
       if (userInfo.data.code === 200) {
-        sessionStorage.setItem('Login_userInfo',JSON.stringify(userInfo.data.data))
+        localStorage.setItem('Login_userInfo',JSON.stringify(userInfo.data.data))
         // JSON.parse(localStorage.getItem('userInfo'))
         this.$router.replace({ path: '/' })
       } else {

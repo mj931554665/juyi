@@ -1,0 +1,37 @@
+{
+  "id": "3489027",
+  "name": "juyi",
+  "font_family": "iconfont",
+  "css_prefix_text": "al-icon",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "29522558",
+      "name": "7A一分屏",
+      "font_class": "a-7Ayifenping",
+      "unicode": "e672",
+      "unicode_decimal": 58994
+    },
+    {
+      "icon_id": "29522563",
+      "name": "7D四分屏",
+      "font_class": "a-7Dsifenping",
+      "unicode": "e673",
+      "unicode_decimal": 58995
+    },
+    {
+      "icon_id": "29522567",
+      "name": "7I一加五分屏",
+      "font_class": "a-7Iyijiawufenping",
+      "unicode": "e674",
+      "unicode_decimal": 58996
+    },
+    {
+      "icon_id": "29522653",
+      "name": "7J一加七分屏",
+      "font_class": "a-7Jyijiaqifenping",
+      "unicode": "e67d",
+      "unicode_decimal": 59005
+    }
+  ]
+}

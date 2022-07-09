@@ -1,8 +1,11 @@
 <template>
-  <div class="DigitalScreen" style="min-width: 1024px">
+  <div class="DigitalScreen" style="min-width: 1024px; min-height: 100vh">
     <header>
       <h1>钜亿安全监控云平台</h1>
-      <div class="showTime">当前时间：2022年2月2日-22时22分22秒</div>
+      <div class="showTime" style="display: flex">
+        <span class="time">当前时间：2022年2月2日-22时22分22秒</span>
+        <FuncBtn :isScreen="true" style="border:none;color:#fff;background:none;height: auto;margin-left: 10px;font-size: 24px;"></FuncBtn>
+      </div>
     </header>
     <!-- 页面主体部分 -->
     <div class="mainbox">
@@ -83,8 +86,11 @@
 
 <script>
 import * as echarts from "echarts";
-import data from "../utils/somedata.json";
+import FuncBtn from "@/components/FuncBtn.vue";
 export default {
+  components: {
+    FuncBtn,
+  },
   data() {
     return {
       // 五个图表的数据
@@ -180,6 +186,28 @@ export default {
     };
   },
   methods: {
+    fullScreen() {
+      // 全屏方法
+      let el = document.documentElement;
+      let rfs =
+        el.requestFullScreen ||
+        el.webkitRequestFullScreen ||
+        el.mozRequestFullScreen ||
+        el.msRequestFullScreen;
+
+      //typeof rfs != "undefined" && rfs
+      if (rfs) {
+        rfs.call(el);
+      } else if (typeof window.ActiveXObject !== "undefined") {
+        //for IE，这里其实就是模拟了按下键盘的F11，使浏览器全屏
+        let wscript = new ActiveXObject("WScript.Shell");
+        if (wscript != null) {
+          wscript.SendKeys("{F11}");
+        }
+      }
+      // 修改屏幕状态数据
+      this.ScreenStatus = true;
+    },
     // 外边框柱形图
     barOutLineH() {
       let chart = echarts.init(document.querySelector(".bar2 .chart"));
@@ -765,7 +793,7 @@ export default {
       let option = {
         tooltip: {
           // 鼠标是否可以进入悬浮框
-          enterable: true,
+          enterable: false,
           // 触发方式 mousemove, click, none, mousemove|click
           triggerOn: `none`,
           // item 图形触发， axis 坐标轴触发， none 不触发
@@ -798,7 +826,7 @@ export default {
           zoom: 1.4,
           roam: true,
           itemStyle: {
-            show: false,
+            show: true,
             // 地图省份的背景颜色
             areaColor: "rgba(20, 41, 87,0.6)",
             // 地图各省份边框颜色
@@ -807,14 +835,15 @@ export default {
             borderWidth: 1,
             emphasis: {
               areaColor: "#2B91B7",
+              // color: "#fff",
             },
           },
-          /* emphasis: {
+          emphasis: {
             areaColor: "#2B91B7",
             label: {
               color: "#fff",
             },
-          }, */
+          },
           label: {
             color: "#fff",
           },
@@ -826,7 +855,8 @@ export default {
             coordinateSystem: "geo",
             data: convertData(data),
             symbolSize: "40",
-            symbol: "pin",
+            symbol:
+              "image://" + require("@/assets/images/digitalScreen/device.png"),
             label: {
               position: "insideLeft", // 设置标签向内
               formatter: "{b}", // 设置标签格式
@@ -834,17 +864,20 @@ export default {
               color: "#fff",
               emphasis: {
                 show: true,
+                color: "#fff",
               },
             },
             itemStyle: {
-              color: "rgb(24,226,244)",
-              borderColor: "rgba(0, 255, 255, 1)",
-              borderWidth: 1,
+              // 地图图标透明度
+              opacity: 1,
+              emphasis: {
+                show: true,
+              },
             },
           },
         ],
       };
-      const appData = require("@/utils/中华人民共和国.json"); //本地json路径
+      const appData = require("@/utils/china.json"); //本地json路径
       echarts.registerMap("chibishi", appData); //注册
       option.geo.map = "chibishi";
       myChart.setOption(option);
@@ -910,7 +943,7 @@ export default {
         var h = dt.getHours(); //获取时
         var m = dt.getMinutes(); //获取分
         var s = dt.getSeconds(); //获取秒
-        document.querySelector(".showTime").innerHTML =
+        document.querySelector(".time").innerHTML =
           "当前时间：" +
           y +
           "年" +
@@ -945,6 +978,8 @@ export default {
     this.initMapData();
     // 初始化地图
     this.initMap();
+    // 全屏方法
+    this.fullScreen();
   },
 };
 </script>

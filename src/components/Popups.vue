@@ -5,22 +5,22 @@
       <!-- &nbsp;<i class="el-icon-location-outline"></i>&nbsp;<i class="el-icon-video-camera"></i> -->
     </p>
     <div class="rectangle">
-      <div class="panel">
+      <div class="panel" @click="routerChange('deviceDetails')">
         <span>设备详情</span>
         <p>查看</p>
         <div class="panel-footer"></div>
       </div>
-      <div class="panel" v-if="hasVideo" >
+      <div class="panel" v-if="hasVideo" @click="routerChange('realTimeMonitoring')">
         <span>视频监控</span>
         <p>实时</p>
         <div class="panel-footer"></div>
       </div>
-      <div class="panel">
+      <div class="panel" @click="routerChange('deviceAlarm')">
         <span>风险事件</span>
         <p>查询</p>
         <div class="panel-footer"></div>
       </div>
-      <div class="panel">
+      <div class="panel" @click="routerChange('historicalTrack')">
         <span>历史轨迹</span>
         <p>信息</p>
         <div class="panel-footer"></div>
@@ -29,13 +29,19 @@
 
     <div class="information">
       <p class="equipmentNo">
-        <i class="el-icon-c-scale-to-original"></i>&nbsp;<slot name="equipmentNo"></slot>
+        <i class="el-icon-c-scale-to-original"></i>&nbsp;<slot
+          name="equipmentNo"
+        ></slot>
       </p>
       <p class="locationTime">
-        <i class="el-icon-time"></i>&nbsp;<slot name="locationTime">2022-02-22 22:22:22</slot>
+        <i class="el-icon-time"></i>&nbsp;<slot name="locationTime"
+          >2022-02-22 22:22:22</slot
+        >
       </p>
       <p class="address">
-        <i class="el-icon-location-information"></i>&nbsp;<slot name="address"></slot>
+        <i class="el-icon-location-information"></i>&nbsp;<slot
+          name="address"
+        ></slot>
       </p>
     </div>
     <div class="someInfo">
@@ -49,7 +55,7 @@
         设备状态：<span><slot name="carStatusLabel"></slot></span>
       </div>
       <!-- 设置盒子类型和宽度，取消换行 -->
-      <div style="display: flex;width: 100%;">
+      <div style="display: flex; width: 100%">
         设备型号：<span><slot name="modelLabel"></slot></span>
       </div>
     </div>
@@ -58,8 +64,18 @@
 
 <script>
 export default {
-  props:["hasVideo"],
-}
+  props: ["hasVideo","id"],
+  methods: {
+    routerChange(path){
+      this.$router.push({
+        name:path,
+        params: {
+          id: this.id,
+        },
+      });
+    },
+  },
+};
 </script>
 
 <style lang="less" scoped>
@@ -88,7 +104,7 @@ export default {
       height: 66px;
       border: 2px solid #abb4b7;
       border-radius: 3px;
-      background-color: #FFF;
+      background-color: #fff;
       margin: 6px;
       display: flex;
       flex-direction: column;
@@ -97,7 +113,7 @@ export default {
       cursor: pointer;
 
       &::before {
-        content: '';
+        content: "";
         position: absolute;
         top: -6px;
         left: -6px;
@@ -108,7 +124,7 @@ export default {
       }
 
       &::after {
-        content: '';
+        content: "";
         position: absolute;
         top: -6px;
         right: -6px;
@@ -125,7 +141,7 @@ export default {
         width: 100%;
 
         &::before {
-          content: '';
+          content: "";
           position: absolute;
           bottom: -6px;
           left: -6px;
@@ -136,7 +152,7 @@ export default {
         }
 
         &::after {
-          content: '';
+          content: "";
           position: absolute;
           bottom: -6px;
           right: -6px;
@@ -176,7 +192,7 @@ export default {
   .someInfo {
     display: flex;
     flex-wrap: wrap;
-    div{
+    div {
       width: 45%;
       padding: 5px 0 5px 10px;
     }

@@ -1,6 +1,25 @@
 import axios from "./axios";
 
 export default {
+  // 判断数据是否获取成功，成功则存入，不成功则弹出错误，登录失效则返回登录页面
+  judgeResponse(response, storageName) {
+    if (response.data.code === 200) {
+      localStorage.setItem(storageName, JSON.stringify(response.data.data));
+    } else if (response.data.code === 401) {
+      this.$notify.error({
+        title: response.data.code + " 错误",
+        message: response.data.message,
+      });
+      this.$router.replace({ path: "/login" });
+    } else {
+      this.$notify({
+        title: response.data.code + " 警告",
+        message: response.data.message,
+        type: "warning",
+        duration: 0,
+      });
+    }
+  },
   // 登录接口
   getLogin(username, password) {
     let formData = new FormData();

@@ -1,5 +1,5 @@
 <template>
-  <div class="btn" @click="fullScreen()">
+  <div class="btn" @click="fullScreen()" :class="isShadow ? 'shadow' : ''" :style="`background-color: $(bcolor);`">
     <slot name="content">
       <i class="el-icon-full-screen"></i>
     </slot>
@@ -8,7 +8,7 @@
 
 <script>
 export default {
-  props: ["isScreen"],
+  props: ["isScreen","isShadow"],
   data() {
     return {
       ScreenStatus: false,
@@ -67,7 +67,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .btn {
   height: 36px;
   padding: 0px 10px;
@@ -80,5 +80,8 @@ export default {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+}
+.shadow{
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.27), 0 0 40px rgba(0, 0, 0, 0.06);
 }
 </style>

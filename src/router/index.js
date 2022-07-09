@@ -19,71 +19,129 @@ import RealTimeMonitoring from '@/views/RealTimeMonitoring.vue'
 import HistoricalTrack from '@/views/HistoricalTrack.vue'
 // 风险报警
 import RiskAlert from '@/views/RiskAlert.vue'
-
+// 数字大屏页
+import JuYiDigitalScreen from "@/views/JuYiDigitalScreen.vue";
 
 Vue.use(VueRouter)
-
+// 解决报错
+const originalPush = VueRouter.prototype.push
+const originalReplace = VueRouter.prototype.replace
+// push
+VueRouter.prototype.push = function push (location, onResolve, onReject) {
+  if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject)
+  return originalPush.call(this, location).catch(err => err)
+}
+// replace
+VueRouter.prototype.replace = function push (location, onResolve, onReject) {
+  if (onResolve || onReject) return originalReplace.call(this, location, onResolve, onReject)
+  return originalReplace.call(this, location).catch(err => err)
+}
 const routes = [
-  // 首页
+  // 数字大屏页
   {
-    path: '/',
-    name: 'home',
-    component: HomeView
-  },
-  // 设备列表
-  {
-    path: '/deviceList',
-    name: 'deviceList',
-    component: DeviceList
-  },
-  // 电子围栏
-  {
-    path: '/electricFence',
-    name: 'electricFence',
-    component: ElectricFence
-  },
-  // 设备工况
-  {
-    path: '/equipmentCondition',
-    name: 'equipmentCondition',
-    component: EquipmentCondition
-  },
-  // 设备报警
-  {
-    path: '/deviceAlarm',
-    name: 'deviceAlarm',
-    component: DeviceAlarm
-  },
-  // 设备详情
-  {
-    path: '/deviceDetails',
-    name: 'deviceDetails',
-    component: DeviceDetails
-  },
-  // 实时监控 
-  {
-    path: '/realTimeMonitoring',
-    name: 'realTimeMonitoring',
-    component: RealTimeMonitoring
-  },
-  // 历史轨迹
-  {
-    path: '/historicalTrack',
-    name: 'historicalTrack',
-    component: HistoricalTrack
-  },
-  // 风险报警
-  {
-    path: '/riskAlert',
-    name: 'riskAlert',
-    component: RiskAlert
+    path: '/screen',
+    name: 'screen',
+    component: JuYiDigitalScreen
   },
   // 登录页
   {
     path: '/login',
     name: 'login',
     component: () => import('../views/Login.vue')
+  },
+  {
+    path: '/',
+    name: 'index',
+    meta:{
+      title:"首页"
+    },
+    children: [
+      // 首页
+      {
+        path: '/home',
+        name: 'home',
+        component: HomeView,
+        meta:{
+          title:"首页"
+        }
+      },
+      // 设备列表
+      {
+        path: '/deviceList',
+        name: 'deviceList',
+        component: DeviceList,
+        meta:{
+          title:"设备列表"
+        }
+      },
+      // 电子围栏
+      {
+        path: '/electricFence',
+        name: 'electricFence',
+        component: ElectricFence,
+        meta:{
+          title:"电子围栏"
+        }
+      },
+      // 设备工况
+      {
+        path: '/equipmentCondition',
+        name: 'equipmentCondition',
+        component: EquipmentCondition,
+        meta:{
+          title:"设备工况"
+        }
+      },
+      // 设备报警
+      {
+        path: '/deviceAlarm',
+        name: 'deviceAlarm',
+        component: DeviceAlarm,
+        meta:{
+          title:"设备报警"
+        }
+      },
+      // 设备详情
+      {
+        path: '/deviceDetails',
+        name: 'deviceDetails',
+        component: DeviceDetails,
+        meta:{
+          title:"设备详情"
+        }
+      },
+      // 实时监控 
+      {
+        path: '/realTimeMonitoring',
+        name: 'realTimeMonitoring',
+        component: RealTimeMonitoring,
+        meta:{
+          title:"实时监控"
+        }
+      },
+      // 历史轨迹
+      {
+        path: '/historicalTrack',
+        name: 'historicalTrack',
+        component: HistoricalTrack,
+        meta:{
+          title:"历史轨迹"
+        }
+      },
+      // 风险报警
+      {
+        path: '/riskAlert',
+        name: 'riskAlert',
+        component: RiskAlert,
+        meta:{
+          title:"风险报警"
+        }
+      },
+    ],
+    redirect: '/home',
+    component: () => import('../views/index.vue')
   }
+
 ]
 
 const router = new VueRouter({

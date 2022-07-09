@@ -8,7 +8,7 @@
           <div class="bg">
             <!-- 收起卡片按钮 -->
             <div @click="showContent = !showContent">
-              <FuncBtn>
+              <FuncBtn :isShadow="true">
                 <i
                   :style="
                     showContent
@@ -21,14 +21,18 @@
               </FuncBtn>
             </div>
             <!-- 网页全屏按钮 -->
-            <FuncBtn :isScreen="true"></FuncBtn>
+            <FuncBtn :isScreen="true" :isShadow="true"></FuncBtn>
+            <!-- 跳转数字大屏 -->
+            <FuncBtn :isShadow="true">
+              <span slot="content" @click="screenRule">数字大屏</span>
+            </FuncBtn>
             <!-- 退出登录，或者用户操作按钮 -->
             <div @click="LoginOut">
-              <FuncBtn>
+              <FuncBtn :isShadow="true">
                 <div slot="content" style="display: flex">
                   <i class="el-icon-s-custom"></i>
                   <div style="margin-left: 5px" class="username">
-                    {{ userInfo.user.userName }}
+                    {{ userInfo.user.userName ? userInfo.user.userName : "noUserName" }}
                   </div>
                   <!-- <i style="margin-left: 10px" class="el-icon-arrow-down"></i> -->
                 </div>
@@ -116,44 +120,47 @@
                 <P>累计工时</P>
               </div>
               <div class="datarow">
-                <div class="data">1</div>
-                <div class="data">2</div>
-                <div class="data">3</div>
-                <div class="data">4</div>
-                <div class="data">5</div>
+                <div class="data">0</div>
                 <div class="data">6</div>
-                <div class="data">7</div>
+                <div class="data">5</div>
+                <div class="data">8</div>
+                <div class="data">8</div>
+                <div class="data">5</div>
+                <div class="data">1</div>
               </div>
+              <!-- <span>h</span> -->
             </div>
             <div class="row">
               <div class="icon">
                 <i class="el-icon-news" style="color: #fca491"></i>
-                <P>累计里程</P>
+                <P>起重总量</P>
               </div>
               <div class="datarow">
-                <div class="data">1</div>
-                <div class="data">2</div>
+                <div class="data">0</div>
+                <div class="data">0</div>
                 <div class="data">3</div>
-                <div class="data">4</div>
+                <div class="data">0</div>
                 <div class="data">5</div>
                 <div class="data">6</div>
-                <div class="data">7</div>
+                <div class="data">5</div>
               </div>
+                <!-- <span>T</span> -->
             </div>
             <div class="row">
               <div class="icon">
                 <i class="el-icon-stopwatch" style="color: #8ff9d0"></i>
-                <P>累计油耗</P>
+                <P>起重力矩</P>
               </div>
               <div class="datarow">
+                <div class="data">0</div>
                 <div class="data">1</div>
+                <div class="data">9</div>
+                <div class="data">2</div>
                 <div class="data">2</div>
                 <div class="data">3</div>
-                <div class="data">4</div>
-                <div class="data">5</div>
-                <div class="data">6</div>
-                <div class="data">7</div>
+                <div class="data">3</div>
               </div>
+              <!-- <span style="font-size: 12px;">T*<br />M</span> -->
             </div>
           </div>
         </FloatCard>
@@ -174,7 +181,7 @@ export default {
     return {
       showContent: true,
       totalDevicesNum: JSON.parse(localStorage.getItem("Home_totalDevicesNum")),
-      userInfo: JSON.parse(sessionStorage.getItem("Login_userInfo")),
+      userInfo: JSON.parse(localStorage.getItem("Login_userInfo")),
       locationStateNum: JSON.parse(
         localStorage.getItem("Home_locationStateNum")
       ),
@@ -187,6 +194,13 @@ export default {
     deviceList: Object,
   },
   methods: {
+    screenRule(){
+      let routeLink = this.$router.resolve({
+        path:'/screen',
+
+      });
+      window.open(routeLink.href,'_blank')
+    },
     LoginOut() {
       this.$confirm("是否退出登录?", "提示", {
         confirmButtonText: "确定",
@@ -222,7 +236,7 @@ export default {
       });
       this.hasVideoNum = hasVideoNum;
       this.carStatusNum = carStatusNum;
-      console.log(carStatusNum);
+      // console.log(carStatusNum);
     },
   },
   created() {
@@ -238,7 +252,7 @@ export default {
   top: 0;
   right: 10px;
   .show_action {
-    padding: 0 10px;
+    // padding: 0 10px;
     min-height: 56px;
     // overflow: hidden;
     position: relative;
@@ -263,6 +277,7 @@ export default {
   }
   .content {
     max-height: calc(100vh - 100px);
+    width: 300px;
     .onlineStatus {
       .warning {
         display: flex;

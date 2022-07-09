@@ -46,7 +46,7 @@
           @open="infoWindowOpen"
         >
           <div class="info-window">
-            <Popups :hasVideo="deviceInfo.hasVideo">
+            <Popups :hasVideo="deviceInfo.hasVideo" :id="deviceInfo.id">
               <span slot="name">{{ deviceInfo.name }}</span>
               <span slot="equipmentNo">{{ deviceInfo.equipmentNo }}</span>
               <span slot="locationTime">{{ deviceInfo.locationTime }}</span>
@@ -77,7 +77,7 @@
         clearable属性，则可将选择器清空 -->
         <el-select
           v-model="devicValue"
-          placeholder="请输入设备名称或者设备编号"
+          placeholder="请输入设备名称或编号"
           filterable
           clearable
           @change="selectChange()"
@@ -461,7 +461,7 @@ export default {
     // 获取设备总数
     async getTotalDevicesNum() {
       let locationStateNum = await this.$api.getEquipmentAmountByType()
-      this.judgeResponse(locationStateNum,"Home_locationStateNum")
+      this.judgeResponse(locationStateNum,"Home_totalDevicesNum")
     },
     // 获取设备上线，风险，定位数据 函数
     async getonlineStatus() {
@@ -643,25 +643,16 @@ export default {
         flex-direction: column;
       }
       // 去除百度logo
-      // .anchorBL:nth-child(6),
-      // .anchorBL:nth-child(5) {
-      //   display: none;
-      // }
+      .anchorBL>a>img {
+        display: none;
+      }
+      .BMap_cpyCtrl.BMap_noprint.anchorBL{
+        display: none;
+      }
       //增加设备图片权重，防止被label压住无法显示
       .BMap_Marker {
         div {
           z-index: 2;
-        }
-        .BMapLabel {
-          // color: #fff;
-          // font-size: 12px;
-          // min-width: 20px;
-          // text-align:center;
-          // border: none !important;
-          // padding: 3px 4px !important;
-          // background: #409EFF !important;
-          // border-radius: 8px;
-          // z-index: 0;
         }
         .BMapLabel:before {
           content: "";

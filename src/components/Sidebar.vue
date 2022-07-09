@@ -9,8 +9,8 @@
       @open="handleOpen"
       @close="handleClose"
       background-color="#409EFF"
-      text-color="rgba(255,255,255,1)"
-      active-text-color="rgba(255,255,255,.6)"
+      text-color="rgba(255,255,255,.7)"
+      active-text-color="rgba(255,255,255,1)"
       :router="true"
       :collapse="isCollapse"
     >
@@ -65,14 +65,14 @@
         <span slot="title">风险报警</span>
       </el-menu-item>
 
-      <el-menu-item index="8" route="/login">
+      <!-- <el-menu-item index="8" route="/login">
         <i class="el-icon-tickets"></i>
         <span slot="title">登录页</span>
-      </el-menu-item>
+      </el-menu-item> -->
     </el-menu>
 
     <div class="sidebarControl" @click="sideChange">
-      <i :class="isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"></i>
+      <i style="color:#fff" :class="isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"></i>
     </div>
   </div>
 </template>
@@ -129,7 +129,7 @@ export default {
     border: none;
   }
   .el-menu-item i,.el-submenu i{
-    color: #fff;
+    color: rgba(255, 255, 255,.9);
   }
 }
 /* 因为导航一般来说只存在一个，所以没用id限制 */
