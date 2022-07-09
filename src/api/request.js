@@ -39,12 +39,14 @@ export default {
   getEquipmentAmountByLocated(){
     return axios.get('/equipment/getEquipmentAmountByLocated')
   },
+  // 2.3-设备列表
   getqueryEquipmentsByPage(pageNum, pageSize) {
     let formData = new FormData();
     formData.append('pageNum', pageNum);
     formData.append('pageSize', pageSize);
     return axios.post('/equipment/queryEquipmentsByPage', pageNum && pageSize ? formData : '')
   },
+  // 2.16-设备详细信息（获取id
   getselectBaseInfoByPage(equipmentNo, name, plateNo, types) {
     return axios.post('/equipment/selectBaseInfoByPage', {
       'equipmentNo': equipmentNo,
@@ -52,6 +54,10 @@ export default {
       'plateNo': plateNo,
       'types': types
     })
+  },
+  // 2.18-设备工况信息
+  getDetailWithWorkConditionData(id){
+    return axios.get('/equipment/detailWithWorkConditionData/5394c5f3e6c945d0b320e225d5020869')
   },
   getVehicleCode(vehicleCodes) {
     // 如果返回信息为空数组则代码该设备天眼不在线
