@@ -197,7 +197,6 @@ export default {
     screenRule(){
       let routeLink = this.$router.resolve({
         path:'/screen',
-
       });
       window.open(routeLink.href,'_blank')
     },

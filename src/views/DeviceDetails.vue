@@ -1,11 +1,15 @@
 <template>
   <div class="DeviceDetails">
-    <!-- <NavigationBar :breadCrumbList="breadCrumbList"></NavigationBar> -->
+    <NavbarComponent :breadCrumbList="breadCrumbList"></NavbarComponent>
 
     <div class="mainBox">
       <div class="column">
-        <FloatCard>
+        <FloatCard :more="true">
           <span slot="header">实时视频</span>
+          <span slot="more" class="moreContent" @click="routerChange('realTimeMonitoring')">
+            更多
+            <i class="el-icon-arrow-right"></i>
+          </span>
           <div slot="content" class="module1">
             <div class="item-detail">
               <div class="detail-line">
@@ -111,8 +115,11 @@
           <span slot="header">设备数据</span>
           <div slot="content" class="module2">
             <el-tabs v-model="module2" @tab-click="handleClick">
-              <el-tab-pane label="荷载曲线" name="first">
-                <p>荷载曲线</p>
+              <el-tab-pane label="近七日工作时长和油耗详情" name="first">
+                <p>
+                  总计：{{ deviceDetails.baseInfo.weekOilCost }}&nbsp;L /
+                  {{ deviceDetails.baseInfo.weekWorkTime }}&nbsp;h
+                </p>
                 <div class="content">
                   <div class="chart loadCurve"></div>
                 </div>
@@ -121,28 +128,46 @@
                 <p>累计数据</p>
                 <div class="dataArea">
                   <div class="panel">
-                    <h6>45<span>&nbsp;cm</span></h6>
-                    <p>主钩类型</p>
+                    <h6>
+                      {{ deviceDetails.workConditionData.totalOilCost
+                      }}<span>&nbsp;L</span>
+                    </h6>
+                    <p>发动机总油耗</p>
                   </div>
                   <div class="panel">
-                    <h6>45<span>&nbsp;cm</span></h6>
-                    <p>主钩类型</p>
+                    <h6>
+                      {{ deviceDetails.workConditionData.totalEnginWorkTime
+                      }}<span>&nbsp;h</span>
+                    </h6>
+                    <p>累计工作时长</p>
                   </div>
                   <div class="panel">
-                    <h6>45<span>&nbsp;cm</span></h6>
-                    <p>主钩类型</p>
+                    <h6>
+                      {{ deviceDetails.workConditionData.onTime
+                      }}<span>&nbsp;h</span>
+                    </h6>
+                    <p>累计开机时长</p>
                   </div>
                   <div class="panel">
-                    <h6>45<span>&nbsp;cm</span></h6>
-                    <p>主钩类型</p>
+                    <h6>
+                      {{ deviceDetails.workConditionData.workQuantity
+                      }}<span>&nbsp;次</span>
+                    </h6>
+                    <p>累计吊载次数</p>
                   </div>
                   <div class="panel">
-                    <h6>45<span>&nbsp;cm</span></h6>
-                    <p>主钩类型</p>
+                    <h6>
+                      {{ deviceDetails.weekAnalysisData.overLoadWorkQuantity
+                      }}<span>&nbsp;次</span>
+                    </h6>
+                    <p>累计超载次数</p>
                   </div>
                   <div class="panel">
-                    <h6>45<span>&nbsp;cm</span></h6>
-                    <p>主钩类型</p>
+                    <h6>
+                      {{ deviceDetails.workConditionData.storageBatteryVoltage?deviceDetails.workConditionData.storageBatteryVoltage:'--'
+                      }}<span>&nbsp;V</span>
+                    </h6>
+                    <p>蓄电池电压</p>
                   </div>
                 </div>
               </el-tab-pane>
@@ -156,37 +181,80 @@
           <div slot="content" class="module3">
             <div class="devicePic">
               <div class="ldd">
-                <!-- <div class="mainHookMagnification">3</div>
-                <div class="mainHookWeight">0.1</div>
-                <div class="mainHookRealWeight">0</div>
-                <div class="mainHookRadius">18 m</div>
-                <div class="engineRevolutions">899</div>
-                <div class="workTime">1260 h</div>
-                <div class="loadRate">25%</div>
-                <div class="windSpeed">1.5m/s</div>
+                <div class="mainHookRatios" title="主钩倍率">
+                  {{ deviceDetails.workConditionData.mainHookRatios }}
+                </div>
+                <div class="mainHookRatedWeight" title="主钩额重">
+                  {{ deviceDetails.workConditionData.mainHookRatedWeight }}
+                </div>
+                <div class="mainHookActualWeight" title="主钩实重">
+                  {{ deviceDetails.workConditionData.mainHookActualWeight }}
+                </div>
+                <div class="mainHookRadius" title="主钩半径">
+                  {{ deviceDetails.workConditionData.mainHookRadius
+                  }}<span>&nbsp;m</span>
+                </div>
+                <div class="enginSpeed" title="发动机转数">
+                  {{ deviceDetails.workConditionData.enginSpeed }}
+                </div>
+                <div class="totalEnginWorkTim" title="工作时长">
+                  {{ deviceDetails.workConditionData.totalEnginWorkTime
+                  }}<span>&nbsp;h</span>
+                </div>
+                <div class="torquePercent" title="力矩百分比">
+                  {{ deviceDetails.workConditionData.torquePercent
+                  }}<span>%</span>
+                </div>
+                <div class="windSpeed" title="风速">
+                  {{ deviceDetails.workConditionData.windSpeed
+                  }}<span>&nbsp;m/s</span>
+                </div>
                 <div class="unknownData1">-- m</div>
                 <div class="unknownData2">50.3 m</div>
-                <div class="mainHookAngle">75.4 °</div>
-                <div class="auxiliaryHookMagnification">1</div>
-                <div class="auxiliaryHookWeight">15</div>
-                <div class="auxiliaryHookRealWeight">0</div>
-                <div class="auxiliaryHookRadius">0 m</div> -->
-                <div class="oilPercentage"></div>
+                <div class="mainHookAngle" title="主钩角度">
+                  {{ deviceDetails.workConditionData.mainHookAngle
+                  }}<span>&nbsp;°</span>
+                </div>
+                <div class="slaveHookRatios" title="副钩倍率">
+                  {{ deviceDetails.workConditionData.slaveHookRatios }}
+                </div>
+                <div class="slaveHookRatedWeight" title="副钩额重">
+                  {{ deviceDetails.workConditionData.slaveHookRatedWeight }}
+                </div>
+                <div class="slaveHookActualWeight" title="副钩实重">
+                  {{ deviceDetails.workConditionData.slaveHookActualWeight }}
+                </div>
+                <div class="slaveHookRadius" title="副钩半径">
+                  {{ deviceDetails.workConditionData.slaveHookRadius
+                  }}<span>&nbsp;m</span>
+                </div>
+                <div class="slaveHookAngle" title="副钩半径">
+                  {{ deviceDetails.workConditionData.slaveHookAngle }}
+                  <span>°</span>
+                </div>
+                <div class="fuelMeter" title="燃油油量">
+                  <div class="oilPercentage"></div>
+                  <span>油量</span>
+                </div>
               </div>
             </div>
             <div class="device_location">
               <p>
                 <i class="el-icon-location-outline"></i>
-                广东省东莞市黄江镇公常路14号金稳驾校黄牛埔训练场
+                {{ deviceDetails.baseInfo.address }}
               </p>
-              <p>
-                <i class="el-icon-time"></i>
-                定位时间：2022-06-28 14:24:17
-              </p>
-              <p>
-                <i class="el-icon-time"></i>
-                工况时间：2022-06-28 14:24:17
-              </p>
+              <div class="date">
+                <p>
+                  <i class="el-icon-time"></i>
+                  定位时间：{{ deviceDetails.baseInfo.locationTime }}
+                </p>
+                <p>
+                  <i class="el-icon-time"></i>
+                  工况时间：{{
+                    deviceDetails.workConditionData.workingConditionTime
+                  }}
+                </p>
+              </div>
             </div>
           </div>
         </FloatCard>
@@ -199,30 +267,133 @@
               style="padding-left: 20px"
             >
               <el-tab-pane label="开关量" name="first">
-                <p class="title">
-                  <span>更新时间：2022-06-28 06:31:59</span>
-                </p>
                 <div class="switch">
-                  <div><span>强制状态</span></div>
-                  <div><span>超载解除状态</span></div>
-                  <div><span>上电信号</span></div>
-                  <div><span>钥匙ON</span></div>
-                  <div><span>钥匙START</span></div>
+                  <p class="title">
+                    <span
+                      >更新时间：{{
+                        deviceDetails.weekAnalysisData.dataUpdateTime
+                      }}</span
+                    >
+                  </p>
+                  <div class="switchContent">
+                    <div>
+                      <span>强制状态</span>
+                      <span
+                        :class="
+                          deviceDetails.workConditionData.forceState == 0
+                            ? 'switchStatus'
+                            : ''
+                        "
+                      ></span>
+                    </div>
+                    <div>
+                      <span>超载解除状态</span>
+                      <span
+                        :class="
+                          deviceDetails.workConditionData.overLoadState == 0
+                            ? 'switchStatus'
+                            : ''
+                        "
+                      ></span>
+                    </div>
+                    <div>
+                      <span>上电信号</span>
+                      <span
+                        :class="
+                          deviceDetails.workConditionData.upState == 0
+                            ? 'switchStatus'
+                            : ''
+                        "
+                      ></span>
+                    </div>
+                    <div>
+                      <span>钥匙ON</span
+                      >{{ deviceDetails.workConditionData.onState }}
+                    </div>
+                    <div>
+                      <span>钥匙START</span
+                      >{{ deviceDetails.workConditionData.startState }}
+                    </div>
+                  </div>
                 </div>
               </el-tab-pane>
               <el-tab-pane label="警报" name="second">
                 <!-- <p class="title">警报</p> -->
                 <div class="alarms">
-                  <div><span>高度限位</span></div>
-                  <div><span>超载报警</span></div>
-                  <div><span>主卷三圈保护</span></div>
-                  <div><span>副卷三圈保护</span></div>
-                  <div><span>机油压力报警</span></div>
-                  <div><span>高度限位</span></div>
-                  <div><span>超载报警</span></div>
-                  <div><span>主卷三圈保护</span></div>
-                  <div><span>副卷三圈保护</span></div>
-                  <div><span>机油压力报警</span></div>
+                  <div>
+                    <span>高度限位</span>
+                    <span
+                      :class="
+                        deviceDetails.workConditionData.heightLimit == '0'
+                          ? 'alarmStatusGreen'
+                          : 'alarmStatusRed'
+                      "
+                    ></span>
+                  </div>
+                  <div>
+                    <span>超载报警</span>
+                    <span
+                      :class="
+                        deviceDetails.workConditionData.overLoadAlarm == '0'
+                          ? 'alarmStatusGreen'
+                          : 'alarmStatusRed'
+                      "
+                    ></span>
+                  </div>
+                  <div>
+                    <span>主卷三圈保护</span>
+                    <span
+                      :class="
+                        deviceDetails.workConditionData.mainProtect == '0'
+                          ? 'alarmStatusGreen'
+                          : 'alarmStatusRed'
+                      "
+                    ></span>
+                  </div>
+                  <div>
+                    <span>副卷三圈保护</span>
+                    <span
+                      :class="
+                        deviceDetails.workConditionData.secondProtect == '0'
+                          ? 'alarmStatusGreen'
+                          : 'alarmStatusRed'
+                      "
+                    ></span>
+                  </div>
+                  <div>
+                    <span>机油压力报警</span>
+                    {{ deviceDetails.workConditionData.enginOilPressureAlarm }}
+                  </div>
+                  <div>
+                    <span>水温高报警</span>
+                    {{
+                      deviceDetails.workConditionData.enginWaterTemperatureAlarm
+                    }}
+                  </div>
+                  <div>
+                    <span>水位报警</span>
+                    {{ deviceDetails.workConditionData.waterLevelAlarm }}
+                  </div>
+                  <div>
+                    <span>电池报警</span>
+                    {{ deviceDetails.workConditionData.chargeAlarm }}
+                  </div>
+                  <div>
+                    <span>低气压报警</span>
+                    {{ deviceDetails.workConditionData.lowPressureAlarm }}
+                  </div>
+                  <div>
+                    <span>机油液位报警</span>
+                    {{ deviceDetails.workConditionData.oilLevelAlarm }}
+                  </div>
+                  <div>
+                    <span>关闭发动机指示灯</span>
+                    {{ deviceDetails.workConditionData.closeEngineLight }}
+                  </div>
+                  <div>
+                    <span>检查发动机指示灯</span>
+                    {{ deviceDetails.workConditionData.checkEnginLight }}
+                  </div>
                 </div>
               </el-tab-pane>
             </el-tabs>
@@ -230,20 +401,46 @@
         </FloatCard>
       </div>
       <div class="column">
-        <FloatCard>
+        <FloatCard :more="true">
           <span slot="header">设备信息</span>
+          <span slot="more" class="moreContent">
+            更多
+            <i class="el-icon-arrow-right"></i>
+          </span>
           <div slot="content" class="module5">
             <div class="detail">
-              <p>设备名称： 229</p>
-              <p>设备编号： 20CC03208229</p>
-              <p>设备型号： 320T</p>
-              <p>责 任 人： --</p>
-              <p>权限类型： 所有权</p>
+              <p class="deviceName">
+                <span>设备名称：&nbsp;{{ deviceDetails.baseInfo.name }}</span>
+                <span class="message">
+                  <span>{{ deviceDetails.baseInfo.powerTypeLable }}</span>
+                  <i
+                    class="el-icon-location"
+                    v-if="deviceDetails.baseInfo.locationState"
+                  ></i>
+                </span>
+              </p>
+              <p>设备类型：&nbsp;{{ deviceDetails.baseInfo.typeLabel }}</p>
+              <p>设备编号：&nbsp;{{ deviceDetails.baseInfo.equipmentNo }}</p>
+              <p>设备型号：&nbsp;{{ deviceDetails.baseInfo.modelLabel }}</p>
+              <p>
+                责&nbsp;任&nbsp;人&nbsp;：&nbsp;{{
+                  deviceDetails.baseInfo.staffName
+                    ? deviceDetails.baseInfo.staffName
+                    : "--"
+                }}
+              </p>
+              <p>
+                权限类型：&nbsp;{{ deviceDetails.baseInfo.permissionTypeLabel }}
+              </p>
             </div>
           </div>
         </FloatCard>
-        <FloatCard>
+        <FloatCard :more="true">
           <span slot="header">风险事件统计</span>
+          <span slot="more" class="moreContent" @click="routerChange('deviceAlarm')">
+            更多
+            <i class="el-icon-arrow-right"></i>
+          </span>
           <div slot="content" class="module6">
             <div class="detail-line">
               <div class="riskEvent r1">
@@ -276,133 +473,235 @@
 </template>
 
 <script>
-// import NavigationBar from "@/components/NavigationBar";
+import NavbarComponent from "@/components/NavbarComponent";
 import FloatCard from "@/components/FloatCard.vue";
+import MyEcharts from "@/components/MyEcharts.vue";
 export default {
   components: {
-    // NavigationBar,
+    NavbarComponent,
     FloatCard,
+    MyEcharts,
+  },
+  data() {
+    return {
+      // 传入的设备id值，如没有就使用默认设备id值
+      id: this.$route.params.id
+        ? this.$route.params.id
+        : "c1e221866ab84ae28aeb89f975a667c4",
+      // 模块二tab页标识数据
+      module2: "first",
+      // 模块四tab页标识数据
+      module4: "first",
+      // 设备工况数据详情
+      deviceDetails: JSON.parse(
+        localStorage.getItem("DeviceDetails_deviceDetails")
+      ),
+      weekData: JSON.parse(localStorage.getItem("DeviceDetails_deviceDetails"))
+        .weekAnalysisData.details,
+    };
   },
   computed: {
+    // 导航面包屑
     breadCrumbList() {
       this.$route.matched.shift();
       return this.$route.matched;
     },
-  },
-  data() {
-    return {
-      id: this.$route.params.id
-        ? this.$route.params.id
-        : "c1e221866ab84ae28aeb89f975a667c4",
-      module2: "first",
-      module4: "first",
-    };
+    // 七日工作时长和油耗图表数据
+    // 近七日日期
+    dataDate() {
+      // 声明图表x轴初始变量
+      let dataX = [];
+      // 对数据进行遍历，提取日期数据并转换格式
+      this.weekData.forEach((item) => {
+        if (item.dataDate.slice(4, 8)[0] == 0) {
+          // 截取拼接字符
+          dataX.push(
+            item.dataDate.slice(5, 6) + "/" + item.dataDate.slice(6, 8)
+          );
+        } else {
+          dataX.push(
+            item.dataDate.slice(4, 6) + "月" + item.dataDate.slice(6, 8)
+          );
+        }
+      });
+      return dataX;
+    },
+    // 近七日耗油量
+    dataOilCost() {
+      let dataY1 = [];
+      // 对数据进行遍历，提取耗油量数据
+      this.weekData.forEach((item) => {
+        dataY1.push(item.oilCost);
+      });
+      return dataY1;
+    },
+    // 近七日工作时间
+    dataWorkTime() {
+      let dataY = [];
+      // 对数据进行遍历，提取工作时间数据
+      this.weekData.forEach((item) => {
+        dataY.push(item.workTime);
+      });
+      return dataY;
+    },
   },
   methods: {
+    // 模块二工作时长图表
     initLoadCurve() {
-      // 定义两组数据
-      let yearData = [
-        {
-          year: "2020", // 年份
-          data: [
-            // 两个数组是因为有两条线
-            [24, 40, 101, 134, 90, 230, 210, 230, 120, 230, 210, 120],
-            [40, 64, 191, 324, 290, 330, 310, 213, 180, 200, 180, 79],
-          ],
-        },
-        {
-          year: "2021", // 年份
-          data: [
-            // 两个数组是因为有两条线
-            [123, 175, 112, 197, 121, 67, 98, 21, 43, 64, 76, 38],
-            [143, 131, 165, 123, 178, 21, 82, 64, 43, 60, 19, 34],
-          ],
-        },
-      ];
       const chart = this.$echarts.init(document.querySelector(".loadCurve"));
-      let option = {
-        color: ["#00f2f1", "#ed3f35"],
+      // 近七日日期
+      let dataX = this.dataDate;
+      // 近七日油耗
+      let dataY1 = this.dataOilCost;
+      let dataY = this.dataWorkTime;
+      var option = {
+        // backgroundColor: "#0D2753",
         tooltip: {
           trigger: "axis",
-        },
-        legend: {
-          textStyle: {
-            color: "#000",
+          axisPointer: {
+            type: "none",
           },
-          right: "10%",
+          formatter: function (params) {
+            return (
+              dataX[params[0].dataIndex] +
+              "<br/>工作时长：" +
+              dataY[params[0].dataIndex] +
+              " h" +
+              "<br> 油耗：" +
+              dataY1[params[0].dataIndex] +
+              " L"
+            );
+          },
         },
         grid: {
-          top: "20%",
-          left: "3%",
-          right: "4%",
-          bottom: "3%",
-          show: true, //显示边框
-          borderColor: "#000", //边框颜色
-          containLabel: true, //包含刻度在里面
+          top: "10%",
+          bottom: "0%",
+          left: "5%",
+          right: "5%",
+          containLabel: true,
+        },
+        legend: {
+          show: true,
+          data: ["油耗", "工作时长"],
+          left: "center",
+          top: "0",
+          textStyle: {
+            padding: [4, 0, 0, 0],
+            color: "33FFFF",
+          },
+          itemWidth: 15,
+          itemHeight: 10,
+          itemGap: 25,
         },
         xAxis: {
           type: "category",
-          data: [
-            "1月",
-            "2月",
-            "3月",
-            "4月",
-            "5月",
-            "6月",
-            "7月",
-            "8月",
-            "9月",
-            "10月",
-            "11月",
-            "12月",
-          ],
-          // 去除刻度线
-          axisTick: false,
-          // 文本颜色
-          axisLabel: {
-            color: "#000",
-          },
-          // 去除轴线
+          data: dataX,
           axisLine: {
-            show: false,
-          },
-          // 去除轴内间距
-          boundaryGap: false,
-        },
-        yAxis: {
-          type: "value",
-          // 去除刻度线
-          axisTick: false,
-          // 文本颜色
-          axisLabel: {
-            color: "#000",
-          },
-          // 分割线颜色
-          splitLine: {
             lineStyle: {
-              color: "#000",
+              color: "rgba(66, 192, 255, .3)",
+            },
+          },
+
+          axisLabel: {
+            rotate: -45,
+            textStyle: {
+              color: "#33FFFF",
             },
           },
         },
-        series: [
+
+        yAxis: [
           {
-            name: "主钩实际载额",
-            data: yearData[0].data[0],
-            type: "line",
-            stack: "Total",
-            // 折线平滑度
-            smooth: 0.5,
+            type: "value",
+            splitLine: {
+              show: false,
+            },
+            axisLabel: {
+              textStyle: {
+                color: "#5FBBEB",
+              },
+            },
+            axisLine: {
+              lineStyle: {
+                fontSize: 12,
+                color: "rgba(66, 192, 255, .3)",
+              },
+            },
           },
           {
-            name: "副钩实际载额",
-            data: yearData[0].data[1],
+            type: "value",
+            name: "",
+            nameTextStyle: {
+              color: "#d2d2d2",
+            },
+            // max: "100",
+            min: "0",
+            scale: true,
+            position: "right",
+            axisLine: {
+              lineStyle: {
+                color: "rgba(66, 192, 255, .3)",
+              },
+            },
+            splitLine: {
+              show: false,
+            },
+            axisLabel: {
+              show: true,
+              formatter: "{value} ", //右侧Y轴文字显示
+              textStyle: {
+                fontSize: 12,
+                color: "#42C0FF",
+              },
+            },
+          },
+        ],
+        series: [
+          {
+            name: "油耗",
+            type: "bar",
+            barWidth: "12px",
+            itemStyle: {
+              normal: {
+                color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  {
+                    offset: 0,
+                    color: "#29acff",
+                  },
+                  {
+                    offset: 1,
+                    color: "#4bdfff",
+                  },
+                ]),
+                barBorderRadius: 6,
+              },
+            },
+            data: dataY1,
+          },
+          {
+            name: "工作时长",
             type: "line",
-            stack: "Total",
-            // 折线平滑度
-            smooth: 0.5,
+            yAxisIndex: 1, //使用的 y 轴的 index，在单个图表实例中存在多个 y轴的时候有用
+            smooth: false, //平滑曲线显示
+
+            symbol: "circle", //标记的图形为实心圆
+            symbolSize: 8, //标记的大小
+            itemStyle: {
+              normal: {
+                color: "#ffa43a",
+                borderColor: "rgba(255, 234, 0, 0.5)", //圆点透明 边框
+                borderWidth: 5,
+              },
+            },
+            lineStyle: {
+              color: "#ffa43a",
+            },
+
+            data: dataY,
           },
         ],
       };
+
       // 3,把配置给实例对象
       chart.setOption(option);
       // 4,图表跟随屏幕自适应
@@ -410,19 +709,20 @@ export default {
         chart.resize();
       });
     },
+    // 模块三油量图表
     initOilPercentage() {
       const chart = this.$echarts.init(
         document.querySelector(".oilPercentage")
       );
       let angle = 0; //角度，用来做简单的动画效果的
-      let value = 78; //图上角度数据
+      let value = this.deviceDetails.workConditionData.remainingOilPercent; //图上角度数据
       let option = {
         // backgroundColor: "#061740",
         title: [
           {
             text: "{a|" + value + "}{c|%}",
             x: "center",
-            y: "center",
+            y: "50%",
             textStyle: {
               rich: {
                 a: {
@@ -476,34 +776,30 @@ export default {
             z: 0,
             zlevel: 0,
             label: {
-              normal: {
-                position: "center",
-              },
+              position: "center",
             },
             data: [
               {
                 value: value,
                 name: "",
                 itemStyle: {
-                  normal: {
-                    //外环发光
-                    borderWidth: 0.5,
-                    shadowBlur: 20,
-                    borderColor: "#4bf3f9",
-                    shadowColor: "#9bfeff",
-                    color: {
-                      // 圆环的颜色
-                      colorStops: [
-                        {
-                          offset: 0,
-                          color: "#4bf3f9", // 0% 处的颜色
-                        },
-                        {
-                          offset: 1,
-                          color: "#4bf3f9", // 100% 处的颜色
-                        },
-                      ],
-                    },
+                  //外环发光
+                  borderWidth: 0.5,
+                  shadowBlur: 20,
+                  borderColor: "#4bf3f9",
+                  shadowColor: "#9bfeff",
+                  color: {
+                    // 圆环的颜色
+                    colorStops: [
+                      {
+                        offset: 0,
+                        color: "#4bf3f9", // 0% 处的颜色
+                      },
+                      {
+                        offset: 1,
+                        color: "#4bf3f9", // 100% 处的颜色
+                      },
+                    ],
                   },
                 },
               },
@@ -511,14 +807,10 @@ export default {
                 value: 100 - value,
                 name: "",
                 label: {
-                  normal: {
-                    show: false,
-                  },
+                  show: false,
                 },
                 itemStyle: {
-                  normal: {
-                    color: "#173164",
-                  },
+                  color: "#173164",
                 },
               },
             ],
@@ -532,6 +824,18 @@ export default {
     async getDeviceDetails() {
       let data = await this.$api.getDetailWithWorkConditionData(this.id);
       this.$api.judgeResponse(data, "DeviceDetails_deviceDetails");
+      this.deviceDetails = JSON.parse(
+        localStorage.getItem("DeviceDetails_deviceDetails")
+      );
+      console.log("设备详情", this.deviceDetails);
+    },
+    routerChange(path){
+      this.$router.push({
+        name:path,
+        params: {
+          id: this.deviceDetails,
+        },
+      });
     },
   },
   created() {
@@ -546,6 +850,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import "@/assets/test/font/iconfont.css";
 .mainBox {
   display: flex;
   min-width: 1024px;
@@ -647,6 +952,7 @@ export default {
       }
     }
     .module2 {
+      height: 280px;
       .chart {
         height: 204px;
         width: 376px;
@@ -668,6 +974,8 @@ export default {
           display: flex;
           flex-direction: column;
           justify-content: center;
+          background: url("@/assets/images/digitalScreen/line\(1\).png")
+            rgba(255, 255, 255, 0.13);
 
           &::before {
             content: "";
@@ -691,7 +999,7 @@ export default {
           }
 
           h6 {
-            font-size: 30px;
+            font-size: 20px;
 
             &::after {
               content: "";
@@ -731,13 +1039,119 @@ export default {
           height: 254px;
           background: url("@/assets/test/ldd3.png") no-repeat;
           background-size: contain;
-          .oilPercentage {
+          font-size: 14px;
+          .fuelMeter {
             position: absolute;
             top: 186px;
             left: 274px;
-            width: 120px;
-            height: 80px;
-            z-index: 99;
+            .oilPercentage {
+              width: 120px;
+              height: 80px;
+              z-index: 99;
+            }
+            span {
+              position: absolute;
+              font-size: 12px;
+              top: 25px;
+              left: 50%;
+              transform: translatex(-50%);
+            }
+          }
+          .mainHookRatios {
+            position: absolute;
+            top: 14px;
+            left: 60px;
+            color: #fff;
+          }
+          .mainHookRatedWeight {
+            position: absolute;
+            top: 78px;
+            left: 27px;
+            color: #818181;
+          }
+          .mainHookActualWeight {
+            position: absolute;
+            top: 78px;
+            left: 71px;
+            color: #818181;
+          }
+          .mainHookRadius {
+            position: absolute;
+            top: 130px;
+            left: 49px;
+            color: #fff;
+          }
+          .enginSpeed {
+            position: absolute;
+            top: 179px;
+            left: 49px;
+            color: #000;
+          }
+          .totalEnginWorkTim {
+            position: absolute;
+            top: 204px;
+            left: 40px;
+            color: #000;
+          }
+          .torquePercent {
+            position: absolute;
+            top: 12px;
+            left: 176px;
+            color: #818181;
+          }
+          .windSpeed {
+            position: absolute;
+            top: 39px;
+            left: 158px;
+            color: #818181;
+          }
+          .unknownData1 {
+            position: absolute;
+            top: 72px;
+            left: 142px;
+            color: #818181;
+          }
+          .unknownData2 {
+            position: absolute;
+            top: 139px;
+            left: 106px;
+            color: #818181;
+          }
+          .mainHookAngle {
+            position: absolute;
+            top: 206px;
+            left: 228px;
+            color: #818181;
+          }
+          .slaveHookRatios {
+            position: absolute;
+            top: 14px;
+            right: 44px;
+            color: #fff;
+          }
+          .slaveHookRatedWeight {
+            position: absolute;
+            top: 78px;
+            right: 71px;
+            color: #818181;
+          }
+          .slaveHookActualWeight {
+            position: absolute;
+            top: 78px;
+            right: 33px;
+            color: #818181;
+          }
+          .slaveHookRadius {
+            position: absolute;
+            top: 129px;
+            right: 25px;
+            color: #fff;
+          }
+          .slaveHookAngle {
+            position: absolute;
+            top: 167px;
+            right: 25px;
+            color: #fff;
           }
         }
       }
@@ -749,10 +1163,15 @@ export default {
         p {
           margin-top: 6px;
         }
+        .date {
+          display: flex;
+          font-size: 14px;
+          justify-content: space-around;
+        }
       }
     }
     .module4 {
-      height: 265px;
+      height: 270px;
       .title {
         display: flex;
         justify-content: space-between;
@@ -766,12 +1185,25 @@ export default {
         border-bottom: 1px dashed gray;
       }
       .switch {
-        display: flex;
-        flex-wrap: wrap;
+        .switchContent {
+          display: flex;
+          flex-wrap: wrap;
 
-        div {
-          width: 170px;
-          margin-top: 20px;
+          div {
+            width: 170px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .switchStatus {
+              margin-right: 30px;
+              background: #d0d0d0;
+              display: inline-block;
+              width: 10px;
+              height: 10px;
+              border-radius: 50%;
+            }
+          }
         }
       }
 
@@ -782,15 +1214,43 @@ export default {
         div {
           width: 170px;
           margin-top: 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          .alarmStatusRed {
+            margin-right: 30px;
+            background: red;
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+          }
+          .alarmStatusGreen {
+            margin-right: 30px;
+            background: #35ff03;
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+          }
         }
       }
     }
     .module5 {
       .detail {
         height: 100%;
-        padding-bottom: 24px;
         p {
-          margin: 30px 10px;
+          margin: 28px 10px;
+        }
+        .deviceName {
+          display: flex;
+          justify-content: space-between;
+          .message {
+            margin-right: 25%;
+            i {
+              color: #1fc3c9;
+            }
+          }
         }
       }
     }

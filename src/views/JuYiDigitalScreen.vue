@@ -4,7 +4,17 @@
       <h1>钜亿安全监控云平台</h1>
       <div class="showTime" style="display: flex">
         <span class="time">当前时间：2022年2月2日-22时22分22秒</span>
-        <FuncBtn :isScreen="true" style="border:none;color:#fff;background:none;height: auto;margin-left: 10px;font-size: 24px;"></FuncBtn>
+        <FuncBtn
+          :isScreen="true"
+          style="
+            border: none;
+            color: #fff;
+            background: none;
+            height: auto;
+            margin-left: 10px;
+            font-size: 24px;
+          "
+        ></FuncBtn>
       </div>
     </header>
     <!-- 页面主体部分 -->
@@ -26,7 +36,7 @@
           <div class="panel-footer"></div>
         </div>
         <div class="panel pie">
-          <h2>设备类型</h2>
+          <h2>设备类型{{ deviceIdList }}</h2>
           <div class="chart"></div>
           <div class="panel-footer"></div>
         </div>
@@ -90,6 +100,22 @@ import FuncBtn from "@/components/FuncBtn.vue";
 export default {
   components: {
     FuncBtn,
+  },
+  computed:{
+    deviceIdList(){
+      let list = JSON.parse(localStorage.getItem("Screen_deviceList")).rows;
+      let countWeekData = [];
+      let count = 0;
+      list.forEach(item=>{
+        this.getDeviceDetails(item.id).then(val=>{
+          count++;
+          console.log(count,'---',val);
+        })
+        // countWeekData.push();
+      })
+      console.log(countWeekData);
+      return 'test';
+    }
   },
   data() {
     return {
@@ -186,6 +212,9 @@ export default {
     };
   },
   methods: {
+    async getDeviceDetails(id) {
+      return await this.$api.getDetailWithWorkConditionData(id);
+    },
     fullScreen() {
       // 全屏方法
       let el = document.documentElement;
@@ -738,6 +767,7 @@ export default {
       // 传入判断响应是否成功的函数进行判断
       this.judgeResponse(deviceList, "Screen_deviceList");
     },
+    
     // 初始化转换地图数据
     initMapData() {
       let rdata = this.mapData.rows;

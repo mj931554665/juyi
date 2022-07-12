@@ -10,7 +10,11 @@
         <p>查看</p>
         <div class="panel-footer"></div>
       </div>
-      <div class="panel" v-if="hasVideo" @click="routerChange('realTimeMonitoring')">
+      <div
+        class="panel"
+        v-if="hasVideo"
+        @click="routerChange('realTimeMonitoring')"
+      >
         <span>视频监控</span>
         <p>实时</p>
         <div class="panel-footer"></div>
@@ -31,7 +35,13 @@
       <p class="equipmentNo">
         <i class="el-icon-c-scale-to-original"></i>&nbsp;<slot
           name="equipmentNo"
-        ></slot>
+        >
+        </slot>
+        <span class="data">
+          <slot name="powerTypeLable"></slot>
+          <slot name="carStatusLabel"></slot>
+          <slot name="modelLabel"></slot>
+        </span>
       </p>
       <p class="locationTime">
         <i class="el-icon-time"></i>&nbsp;<slot name="locationTime"
@@ -48,27 +58,20 @@
       <!-- <div>
         定位状态：<span><slot name="locationState"></slot></span>
       </div> -->
-      <div>
-        动力类型：<span><slot name="powerTypeLable"></slot></span>
-      </div>
-      <div>
-        设备状态：<span><slot name="carStatusLabel"></slot></span>
-      </div>
-      <!-- 设置盒子类型和宽度，取消换行 -->
-      <div style="display: flex; width: 100%">
-        设备型号：<span><slot name="modelLabel"></slot></span>
-      </div>
+      <div style="display: flex; width: 100%">项目名称：<span>test</span></div>
+      <div>操作人员：<span>test</span></div>
+      <div>项目时长：<span>test</span></div>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  props: ["hasVideo","id"],
+  props: ["hasVideo", "id"],
   methods: {
-    routerChange(path){
+    routerChange(path) {
       this.$router.push({
-        name:path,
+        name: path,
         params: {
           id: this.id,
         },
@@ -182,7 +185,16 @@ export default {
     margin-left: 10px;
     padding-bottom: 10px;
     border-bottom: 1px gray dotted;
-
+    .equipmentNo {
+      position: relative;
+      .data {
+        position: absolute;
+        right: 0px;
+        span {
+          margin-right: 20px;
+        }
+      }
+    }
     p {
       margin-top: 10px;
       color: #4a5458;

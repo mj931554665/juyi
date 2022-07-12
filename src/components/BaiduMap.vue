@@ -57,7 +57,7 @@
               <span slot="powerTypeLable">{{ deviceInfo.powerTypeLable }}</span>
               <span slot="carStatusLabel">{{ deviceInfo.carStatusLabel }}</span>
               <!-- 设置盒子类型，取消换行 -->
-              <span slot="modelLabel" style="display: flex">{{
+              <span slot="modelLabel" >{{
                 deviceInfo.modelLabel
               }}</span>
             </Popups>
@@ -167,7 +167,10 @@
         </div>
       </div>
     </el-card>
-    <TableInfo :onlineStatus="onlineStatus" :deviceList="deviceList"></TableInfo>
+    <TableInfo
+      :onlineStatus="onlineStatus"
+      :deviceList="deviceList"
+    ></TableInfo>
   </div>
 </template>
 
@@ -454,14 +457,14 @@ export default {
       }
     },
     // 获取设备定位数
-    async getEquipmentAmountByLocated(){
-      let locationStateNum = await this.$api.getEquipmentAmountByLocated()
-      this.judgeResponse(locationStateNum,"Home_locationStateNum")
+    async getEquipmentAmountByLocated() {
+      let locationStateNum = await this.$api.getEquipmentAmountByLocated();
+      this.judgeResponse(locationStateNum, "Home_locationStateNum");
     },
     // 获取设备总数
     async getTotalDevicesNum() {
-      let locationStateNum = await this.$api.getEquipmentAmountByType()
-      this.judgeResponse(locationStateNum,"Home_totalDevicesNum")
+      let locationStateNum = await this.$api.getEquipmentAmountByType();
+      this.judgeResponse(locationStateNum, "Home_totalDevicesNum");
     },
     // 获取设备上线，风险，定位数据 函数
     async getonlineStatus() {
@@ -482,6 +485,7 @@ export default {
     // 渲染地图上面的数据
     renderMap() {
       // 获取到设备列表数据
+      console.log(this.deviceList);
       let deviceList = this.deviceList.rows;
       // 数据进行foreach循环
       deviceList.forEach((item, key) => {
@@ -574,9 +578,9 @@ export default {
     // 筛选的函数，没有用
     filterList() {
       // 获取设备列表数据
-      let deviceList = this.deviceList.rows;
+      // let deviceList = this.deviceList.rows;
       // 暂时留数据，后续如需更改可以使用，下拉式搜索数据
-      this.deviceNameAndNumber = this.deviceList.rows;
+      // this.deviceNameAndNumber = this.deviceList.rows;
     },
     // 清空自定义吨位数据
     emptyModelLabe() {
@@ -615,9 +619,9 @@ export default {
     // 获取设备列表
     this.getqueryEquipmentsByPage();
     // 获取设备总数
-    this.getTotalDevicesNum()
+    this.getTotalDevicesNum();
     // 获取定位设备数
-    this.getEquipmentAmountByLocated()
+    this.getEquipmentAmountByLocated();
     // 根据设备列表添加筛选选项
     this.filterList();
     // 渲染地图上面的数据
@@ -643,10 +647,10 @@ export default {
         flex-direction: column;
       }
       // 去除百度logo
-      .anchorBL>a>img {
+      .anchorBL > a > img {
         display: none;
       }
-      .BMap_cpyCtrl.BMap_noprint.anchorBL{
+      .BMap_cpyCtrl.BMap_noprint.anchorBL {
         display: none;
       }
       //增加设备图片权重，防止被label压住无法显示

@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "11746059",
+      "name": "加油枪",
+      "font_class": "jiayouqiang",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
       "icon_id": "29522558",
       "name": "7A一分屏",
       "font_class": "a-7Ayifenping",

@@ -1,9 +1,10 @@
 <template>
   <div class="FloatCard-module">
-    <div class="FloatCard-item-header">
+    <div class="FloatCard-item-header" :class="more ? 'FloatCard-item-more' : ''">
       <slot name="header">
         <span> 某地区某设备 </span>
       </slot>
+      <slot name="more"></slot>
     </div>
 
     <div class="FloatCard-item-detail">
@@ -19,11 +20,19 @@
 
 <script>
 export default {
-  props:[]
+  props: {
+    more: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  mounted() {
+    // console.log(this.more);
+  },
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .FloatCard-module {
   /* width: 300px; */
   border: 1px solid #cfc5c5;
@@ -45,6 +54,19 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.FloatCard-item-more {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 30px;
+  .moreContent{
+    cursor: pointer;
+    font-weight: normal;
+    font-size: 14px;
+  }
+  .moreContent:hover{
+    color: #409EFF;
+  }
 }
 
 .FloatCard-item-detail {

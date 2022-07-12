@@ -57,7 +57,7 @@ export default {
   },
   // 2.18-设备工况信息
   getDetailWithWorkConditionData(id){
-    return axios.get('/equipment/detailWithWorkConditionData/5394c5f3e6c945d0b320e225d5020869')
+    return axios.get(`/equipment/detailWithWorkConditionData/${id}`)
   },
   getVehicleCode(vehicleCodes) {
     // 如果返回信息为空数组则代码该设备天眼不在线
