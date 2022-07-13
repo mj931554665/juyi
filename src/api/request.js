@@ -39,12 +39,19 @@ export default {
   getEquipmentAmountByLocated(){
     return axios.get('/equipment/getEquipmentAmountByLocated')
   },
-  // 2.3-设备列表
+  // 2.3-设备列表(有地图定位)
   getqueryEquipmentsByPage(pageNum, pageSize) {
     let formData = new FormData();
     formData.append('pageNum', pageNum);
     formData.append('pageSize', pageSize);
     return axios.post('/equipment/queryEquipmentsByPage', pageNum && pageSize ? formData : '')
+  },
+  // 2.17-设备列表信息（所有设备列表）
+  getselectList(pageNum, pageSize) {
+    let formData = new FormData();
+    formData.append('pageNum', pageNum);
+    formData.append('pageSize', pageSize);
+    return axios.post('/equipment/selectList', pageNum && pageSize ? formData : '')
   },
   // 2.16-设备详细信息（获取id
   getselectBaseInfoByPage(equipmentNo, name, plateNo, types) {

@@ -15,11 +15,11 @@ export default {
 
     height: {
       type: String,
-      // default: '100%'
+      default: '100%'
     },
     width: {
       type: String,
-      // default: '100%'
+      default: '100%'
     },
 
     options: {

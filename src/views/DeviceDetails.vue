@@ -6,7 +6,11 @@
       <div class="column">
         <FloatCard :more="true">
           <span slot="header">实时视频</span>
-          <span slot="more" class="moreContent" @click="routerChange('realTimeMonitoring')">
+          <span
+            slot="more"
+            class="moreContent"
+            @click="routerChange('realTimeMonitoring')"
+          >
             更多
             <i class="el-icon-arrow-right"></i>
           </span>
@@ -164,7 +168,11 @@
                   </div>
                   <div class="panel">
                     <h6>
-                      {{ deviceDetails.workConditionData.storageBatteryVoltage?deviceDetails.workConditionData.storageBatteryVoltage:'--'
+                      {{
+                        deviceDetails.workConditionData.storageBatteryVoltage
+                          ? deviceDetails.workConditionData
+                              .storageBatteryVoltage
+                          : "--"
                       }}<span>&nbsp;V</span>
                     </h6>
                     <p>蓄电池电压</p>
@@ -437,7 +445,11 @@
         </FloatCard>
         <FloatCard :more="true">
           <span slot="header">风险事件统计</span>
-          <span slot="more" class="moreContent" @click="routerChange('deviceAlarm')">
+          <span
+            slot="more"
+            class="moreContent"
+            @click="routerChange('deviceAlarm')"
+          >
             更多
             <i class="el-icon-arrow-right"></i>
           </span>
@@ -484,10 +496,6 @@ export default {
   },
   data() {
     return {
-      // 传入的设备id值，如没有就使用默认设备id值
-      id: this.$route.params.id
-        ? this.$route.params.id
-        : "c1e221866ab84ae28aeb89f975a667c4",
       // 模块二tab页标识数据
       module2: "first",
       // 模块四tab页标识数据
@@ -501,6 +509,12 @@ export default {
     };
   },
   computed: {
+    // 传入的设备id值，如没有就使用默认设备id值
+    id() {
+      return this.$route.params.id
+        ? this.$route.params.id
+        : "c1e221866ab84ae28aeb89f975a667c4";
+    },
     // 导航面包屑
     breadCrumbList() {
       this.$route.matched.shift();
@@ -554,7 +568,7 @@ export default {
       // 近七日油耗
       let dataY1 = this.dataOilCost;
       let dataY = this.dataWorkTime;
-      var option = {
+      let option = {
         // backgroundColor: "#0D2753",
         tooltip: {
           trigger: "axis",
@@ -823,15 +837,16 @@ export default {
     handleClick(tab, event) {},
     async getDeviceDetails() {
       let data = await this.$api.getDetailWithWorkConditionData(this.id);
+      console.log("1234", this.id);
       this.$api.judgeResponse(data, "DeviceDetails_deviceDetails");
       this.deviceDetails = JSON.parse(
         localStorage.getItem("DeviceDetails_deviceDetails")
       );
       console.log("设备详情", this.deviceDetails);
     },
-    routerChange(path){
+    routerChange(path) {
       this.$router.push({
-        name:path,
+        name: path,
         params: {
           id: this.deviceDetails,
         },

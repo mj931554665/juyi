@@ -65,10 +65,10 @@
         <span slot="title">风险报警</span>
       </el-menu-item>
 
-      <!-- <el-menu-item index="8" route="/login">
+      <el-menu-item index="8" route="/login">
         <i class="el-icon-tickets"></i>
         <span slot="title">登录页</span>
-      </el-menu-item> -->
+      </el-menu-item>
     </el-menu>
 
     <div class="sidebarControl" @click="sideChange">
