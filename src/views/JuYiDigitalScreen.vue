@@ -37,7 +37,7 @@
           <div class="panel-footer"></div>
         </div>
         <div class="panel pie">
-          <h2 v-show="true">设备统计{{ test }}</h2>
+          <h2>设备统计</h2>
           <div class="chart"></div>
           <div class="panel-footer"></div>
         </div>
@@ -105,185 +105,91 @@ export default {
     Echarts,
   },
   computed: {
-    deviceIdList() {
-      let list = JSON.parse(localStorage.getItem("Screen_selectList")).rows;
-      let countWeekData = [];
-      let count = 0;
-      list.forEach((item) => {
-        this.getDeviceDetails(item.id).then((val) => {
-          count++;
-          countWeekData.push(val.data.data);
-          console.log(count, "---", countWeekData);
-        });
-      });
-      return countWeekData;
+    weekAnalysisData_dataX() {
+      return ["07/13", "07/14", "07/15", "07/16", "07/17", "07/18", "07/19"];
     },
-    WeekDataDate() {
-      console.log(this.deviceIdList);
-      return [1, 2, 3, 4, 5, 6, 7];
+    weekAnalysisData_dataY1() {
+      return [98, 38, 48, 35, 92, 28, 93];
     },
-    // 近7日工作时长与油耗详情
+    weekAnalysisData_dataY() {
+      return [400, 500, 300, 300, 300, 400, 400, 400];
+    },
+    // 图表数据——近7日工作时长与油耗详情
     weekAnalysisData() {
       // this.WeekDataDate
-      let dataX = [
-        "人防办",
-        "人防办",
-        "人防办",
-        "人防办",
-        "人防办",
-        "人防办",
-        "人防办",
-        "人防办",
-      ];
+      let dataX = this.weekAnalysisData_dataX;
       // 近七日油耗
       // this.WeekDataOilCost
-      let dataY1 = [98, 38, 48, 35, 92, 28, 93, 85];
+      let dataY1 = this.weekAnalysisData_dataY1;
       // this.WeekDataWorkTime
-      let dataY = [400, 500, 300, 300, 300, 400, 400, 400, 300];
+      let dataY = this.weekAnalysisData_dataY;
       let option = {
-        // backgroundColor: "#0D2753",
+        color: ["#00f2f1", "#ed3f35"],
         tooltip: {
           trigger: "axis",
-          axisPointer: {
-            type: "none",
-          },
-          formatter: function (params) {
-            return (
-              dataX[params[0].dataIndex] +
-              "<br/>工作时长：" +
-              dataY[params[0].dataIndex] +
-              " h" +
-              "<br> 油耗：" +
-              dataY1[params[0].dataIndex] +
-              " L"
-            );
-          },
-        },
-        grid: {
-          top: "10%",
-          bottom: "0%",
-          left: "5%",
-          right: "5%",
-          containLabel: true,
         },
         legend: {
-          show: true,
-          data: ["油耗", "工作时长"],
-          left: "center",
-          top: "0",
           textStyle: {
-            padding: [4, 0, 0, 0],
-            color: "33FFFF",
+            color: "#4c9bfd",
           },
-          itemWidth: 15,
-          itemHeight: 10,
-          itemGap: 25,
+          right: "10%",
+        },
+        grid: {
+          top: "20%",
+          left: "3%",
+          right: "4%",
+          bottom: "3%",
+          show: true, //显示边框
+          borderColor: "#012f4a", //边框颜色
+          containLabel: true, //包含刻度在里面
         },
         xAxis: {
           type: "category",
-          data: dataX,
-          axisLine: {
-            lineStyle: {
-              color: "rgba(66, 192, 255, .3)",
-            },
-          },
-
+          data: this.lineStackVData.date,
+          // 去除刻度线
+          axisTick: false,
+          // 文本颜色
           axisLabel: {
-            rotate: -45,
-            textStyle: {
-              color: "#33FFFF",
+            color: "#4c9bfd",
+          },
+          // 去除轴线
+          axisLine: {
+            show: false,
+          },
+          // 去除轴内间距
+          boundaryGap: false,
+        },
+        yAxis: {
+          type: "value",
+          // 去除刻度线
+          axisTick: false,
+          // 文本颜色
+          axisLabel: {
+            color: "#4c9bfd",
+          },
+          // 分割线颜色
+          splitLine: {
+            lineStyle: {
+              color: "#012f4a",
             },
           },
         },
-
-        yAxis: [
-          {
-            type: "value",
-            splitLine: {
-              show: false,
-            },
-            axisLabel: {
-              textStyle: {
-                color: "#5FBBEB",
-              },
-            },
-            axisLine: {
-              lineStyle: {
-                fontSize: 12,
-                color: "rgba(66, 192, 255, .3)",
-              },
-            },
-          },
-          {
-            type: "value",
-            name: "",
-            nameTextStyle: {
-              color: "#d2d2d2",
-            },
-            // max: "100",
-            min: "0",
-            scale: true,
-            position: "right",
-            axisLine: {
-              lineStyle: {
-                color: "rgba(66, 192, 255, .3)",
-              },
-            },
-            splitLine: {
-              show: false,
-            },
-            axisLabel: {
-              show: true,
-              formatter: "{value} ", //右侧Y轴文字显示
-              textStyle: {
-                fontSize: 12,
-                color: "#42C0FF",
-              },
-            },
-          },
-        ],
         series: [
           {
-            name: "油耗",
-            type: "bar",
-            barWidth: "12px",
-            itemStyle: {
-              normal: {
-                color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                  {
-                    offset: 0,
-                    color: "#29acff",
-                  },
-                  {
-                    offset: 1,
-                    color: "#4bdfff",
-                  },
-                ]),
-                barBorderRadius: 6,
-              },
-            },
-            data: dataY1,
+            name: "工作时长",
+            data: this.lineStackVData.average,
+            type: "line",
+            stack: "Total",
+            // 折线平滑度
+            smooth: 0.5,
           },
           {
-            name: "工作时长",
+            name: "油耗详情",
+            data: this.lineStackVData.actual,
             type: "line",
-            yAxisIndex: 1, //使用的 y 轴的 index，在单个图表实例中存在多个 y轴的时候有用
-            smooth: false, //平滑曲线显示
-
-            symbol: "circle", //标记的图形为实心圆
-            symbolSize: 8, //标记的大小
-            itemStyle: {
-              normal: {
-                color: "#ffa43a",
-                borderColor: "rgba(255, 234, 0, 0.5)", //圆点透明 边框
-                borderWidth: 5,
-              },
-            },
-            lineStyle: {
-              color: "#ffa43a",
-            },
-
-            data: dataY,
+            stack: "Total",
+            // 折线平滑度
+            smooth: 0.5,
           },
         ],
       };
@@ -292,12 +198,11 @@ export default {
   },
   watch: {
     deviceIdList(newValue) {
-      console.log('newValue',newValue);
+      console.log("newValue", newValue);
     },
   },
   data() {
     return {
-      test: [],
       // 五个图表的数据
       barOutLineHData: {
         percentage: [5, 24, 26, 40, 3],
@@ -975,6 +880,7 @@ export default {
           address: rdata[i].address,
         };
       }
+      console.log(rarr);
       this.robj = robj;
       this.rarr = rarr;
     },
@@ -1102,6 +1008,41 @@ export default {
         myChart.resize();
       });
     },
+
+    deviceCountWeekData() {
+      let list = JSON.parse(localStorage.getItem("Screen_selectList")).rows;
+      let countWeekData = [];
+      // 近7日时间数据
+      let dataX = [];
+      let dataY1 = []; //油耗
+      let dataY = []; //工作时间
+      list.forEach((item) => {
+        this.getDeviceDetails(item.id).then((val) => {
+          // val.data.data.weekAnalysisData.details 近7日数据列表
+          if (val.data.data.weekAnalysisData.details) {
+            val.data.data.weekAnalysisData.details.forEach((item, key) => {
+              if (dataX.length<7) {
+                if (item.dataDate.slice(4, 8)[0] == 0) {
+                  // 截取拼接字符
+                  dataX.push(
+                    item.dataDate.slice(5, 6) + "/" + item.dataDate.slice(6, 8)
+                  );
+                } else {
+                  dataX.push(
+                    item.dataDate.slice(4, 6) + "月" + item.dataDate.slice(6, 8)
+                  );
+                }
+              }
+              this.lineStackVData.date = dataX;
+              console.log(item, key);
+              // dataY1.push(item.oilCost);
+              // dataY.push(item.workTime);
+              console.log(dataX);
+            });
+          }
+        });
+      });
+    },
   },
   created() {
     (function flexible(window, document) {
@@ -1177,6 +1118,7 @@ export default {
         t = setTimeout(time, 1000); //设定定时器，循环运行
       }
     })();
+    this.deviceCountWeekData();
   },
   mounted() {
     // 清空缓存数据
