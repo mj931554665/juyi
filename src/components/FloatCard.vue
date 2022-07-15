@@ -35,21 +35,20 @@ export default {
 <style lang="less" scoped>
 .FloatCard-module {
   /* width: 300px; */
-  border: 1px solid #cfc5c5;
+  outline: 1px solid #409EFF;
   background-color: #fff;
   border-radius: 10px;
   margin-bottom: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.5);
+  // box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.5);
 }
 
 .FloatCard-item-header {
-  background-color: #efefef;
-  border-bottom: 1px solid #a2a5ae;
+  background-color: #409EFF;
   border-radius: 10px 10px 0 0;
   height: 48px;
   padding: 0 15px;
   font-size: 16px;
-  color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -65,7 +64,8 @@ export default {
     font-size: 14px;
   }
   .moreContent:hover{
-    color: #409EFF;
+    color: #ffffff;
+    text-decoration: underline;
   }
 }
 

@@ -49,6 +49,12 @@ const routes = [
     name: 'login',
     component: () => import('../views/Login.vue')
   },
+  // 登录页
+  {
+    path: '/test',
+    name: 'test',
+    component: () => import('../views/Test.vue')
+  },
   {
     path: '/',
     name: 'index',

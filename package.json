@@ -12,6 +12,7 @@
     "echarts": "^5.3.3",
     "element-ui": "^2.15.9",
     "vue": "^2.6.14",
+    "vue-amap": "^0.5.10",
     "vue-baidu-map": "^0.21.22",
     "vue-router": "^3.5.1",
     "vuex": "^3.6.2"

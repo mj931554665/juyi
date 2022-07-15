@@ -27,8 +27,12 @@
             <a></a>
             <a></a>
           </h2>
-          <Echarts :options="weekAnalysisData"></Echarts>
-          <div class="chart"></div>
+          <div class="chart" v-show="!workchart"></div>
+          <EchartsComp
+            key="1"
+            :options="weekAnalysisData"
+            v-show="workchart"
+          ></EchartsComp>
           <div class="panel-footer"></div>
         </div>
         <div class="panel line2">
@@ -38,7 +42,9 @@
         </div>
         <div class="panel pie">
           <h2>设备统计</h2>
-          <div class="chart"></div>
+          <div class="chart">
+            <!-- <EchartsComp key="2" :options="equipmentStatistics"></EchartsComp> -->
+          </div>
           <div class="panel-footer"></div>
         </div>
       </div>
@@ -46,8 +52,8 @@
         <div class="no">
           <div class="no-hd">
             <ul>
-              <li>30565</li>
-              <li>192233</li>
+              <li style="color: #1CD6ED;">30565</li>
+              <li style="">192233</li>
             </ul>
           </div>
           <div class="no-bd">
@@ -76,7 +82,7 @@
           <div class="panel-footer"></div>
         </div>
         <div class="panel bar">
-          <h2>到期统计</h2>
+          <h2>数据统计</h2>
           <div class="baoxian">
             <p>
               保险到期 <span><span>0</span> ▶</span>
@@ -86,6 +92,21 @@
             </p>
             <p>
               特种设备检验到期 <span><span>0</span> ▶</span>
+            </p>
+            <p>
+              总设备操作人员 <span><span>284</span> ▶</span>
+            </p>
+            <p>
+              总设备安拆人员 <span><span>158</span> ▶</span>
+            </p>
+            <p>
+              设备高风险事件 <span><span>0</span> ▶</span>
+            </p>
+            <p>
+              设备中风险事件 <span><span>0</span> ▶</span>
+            </p>
+            <p>
+              设备低风险事件 <span><span>0</span> ▶</span>
             </p>
           </div>
           <div class="panel-footer"></div>
@@ -98,13 +119,157 @@
 <script>
 import * as echarts from "echarts";
 import FuncBtn from "@/components/FuncBtn.vue";
-import Echarts from "@/components/MyEcharts.vue";
+import EchartsComp from "@/components/EchartsComponent.vue";
 export default {
   components: {
     FuncBtn,
-    Echarts,
+    EchartsComp,
   },
   computed: {
+    equipmentStatistics() {
+      function generateData(totalNum, bigvalue, smallvalue, color) {
+        let dataArr = [];
+        for (var i = 0; i < totalNum; i++) {
+          if (i % 2 === 0) {
+            dataArr.push({
+              name: (i + 1).toString(),
+              value: bigvalue,
+              itemStyle: {
+                normal: {
+                  color: color,
+                  borderWidth: 0,
+                },
+              },
+            });
+          } else {
+            dataArr.push({
+              name: (i + 1).toString(),
+              value: smallvalue,
+              itemStyle: {
+                normal: {
+                  color: "rgb(0,0,0,0)",
+                  borderWidth: 0,
+                },
+              },
+            });
+          }
+        }
+        return dataArr;
+      }
+      let threeData = generateData(6, 40, 5, "rgb(12,65,144)");
+
+      let startAngle = 50; // 初始旋转角度
+      let option = {
+        tooltip: {
+          trigger: "item",
+          formatter: "{b} : {d}% <br/> {c}",
+        },
+
+        title: [
+          {
+            text: "设备总数",
+            x: "center",
+            top: "40%",
+            textStyle: {
+              color: "#fff",
+              fontSize: 16,
+              fontWeight: "100",
+            },
+          },
+          {
+            text: "147",
+            x: "center",
+            top: "50%",
+            textStyle: {
+              fontSize: 20,
+              color: "#00f0ff",
+              foontWeight: "500",
+            },
+          },
+        ],
+        series: [
+          {
+            type: "pie",
+            radius: ["50", "64.26"],
+            center: ["50%", "50%"],
+            color: [
+              // "rgb(255,183,112)",
+              "rgb(255,162,70)",
+              "rgb(125,235,255)",
+              "rgb(254,130,8)",
+              "rgb(77,194,255)",
+              "rgb(50,185,255)",
+              "rgb(24,176,255)",
+              "rgb(1,155,255)",
+              "rgb(39,115,254)",
+              "rgb(39,93,254)",
+            ],
+            itemStyle: {
+              normal: {
+                borderWidth: 5,
+                borderColor: "#031845",
+              },
+            },
+            data: [
+              {
+                name: "华南区",
+                value: 43,
+              },
+              {
+                name: "华东区",
+                value: 69,
+              },
+              {
+                name: "华中区",
+                value: 9,
+              },
+              // {
+              //   name: "华北区",
+              //   value: 1,
+              // },
+              {
+                name: "其他",
+                value: 26,
+              },
+            ],
+            labelLine: {
+              normal: {
+                show: true,
+                length: 18,
+                length2: 10,
+                lineStyle: {
+                  color: "#CCCCCC",
+                  width: 2,
+                  type: "dashed",
+                },
+              },
+            },
+            label: {
+              normal: {
+                formatter: "{b|{b} {c}}\n{hr|}",
+                rich: {
+                  b: {
+                    // fontSize: 12,
+                    color: "#FFF",
+                    align: "left",
+                    padding: [-20, 0, 0, 0],
+                  },
+                  hr: {
+                    borderColor: "#CCCCCC",
+                    width: "100%",
+                    borderWidth: 2,
+                    borderType: "dashed",
+                    height: 0,
+                  },
+                },
+              },
+            },
+          },
+        ],
+      };
+
+      return option;
+    },
     weekAnalysisData_dataX() {
       return ["07/13", "07/14", "07/15", "07/16", "07/17", "07/18", "07/19"];
     },
@@ -116,80 +281,156 @@ export default {
     },
     // 图表数据——近7日工作时长与油耗详情
     weekAnalysisData() {
-      // this.WeekDataDate
+      // const chart = this.$echarts.init(document.querySelector(".loadCurve"));
+      // 近七日日期
       let dataX = this.weekAnalysisData_dataX;
       // 近七日油耗
-      // this.WeekDataOilCost
       let dataY1 = this.weekAnalysisData_dataY1;
-      // this.WeekDataWorkTime
       let dataY = this.weekAnalysisData_dataY;
       let option = {
-        color: ["#00f2f1", "#ed3f35"],
+        // backgroundColor: "#0D2753",
         tooltip: {
           trigger: "axis",
-        },
-        legend: {
-          textStyle: {
-            color: "#4c9bfd",
+          axisPointer: {
+            type: "none",
           },
-          right: "10%",
+          formatter: function (params) {
+            return (
+              dataX[params[0].dataIndex] +
+              "<br/>工作时长：" +
+              dataY[params[0].dataIndex] +
+              " h" +
+              "<br> 油耗：" +
+              dataY1[params[0].dataIndex] +
+              " L"
+            );
+          },
         },
         grid: {
-          top: "20%",
-          left: "3%",
-          right: "4%",
-          bottom: "3%",
-          show: true, //显示边框
-          borderColor: "#012f4a", //边框颜色
-          containLabel: true, //包含刻度在里面
+          top: "10%",
+          bottom: "0%",
+          left: "5%",
+          right: "5%",
+          containLabel: true,
+        },
+        legend: {
+          show: true,
+          data: ["油耗", "工作时长"],
+          left: "center",
+          top: "0",
+          textStyle: {
+            padding: [4, 0, 0, 0],
+            color: "33FFFF",
+          },
+          itemWidth: 15,
+          itemHeight: 10,
+          itemGap: 25,
         },
         xAxis: {
           type: "category",
-          data: this.lineStackVData.date,
-          // 去除刻度线
-          axisTick: false,
-          // 文本颜色
-          axisLabel: {
-            color: "#4c9bfd",
-          },
-          // 去除轴线
+          data: dataX,
           axisLine: {
-            show: false,
-          },
-          // 去除轴内间距
-          boundaryGap: false,
-        },
-        yAxis: {
-          type: "value",
-          // 去除刻度线
-          axisTick: false,
-          // 文本颜色
-          axisLabel: {
-            color: "#4c9bfd",
-          },
-          // 分割线颜色
-          splitLine: {
             lineStyle: {
-              color: "#012f4a",
+              color: "rgba(66, 192, 255, .3)",
+            },
+          },
+
+          axisLabel: {
+            rotate: -45,
+            textStyle: {
+              color: "#33FFFF",
             },
           },
         },
-        series: [
+
+        yAxis: [
           {
-            name: "工作时长",
-            data: this.lineStackVData.average,
-            type: "line",
-            stack: "Total",
-            // 折线平滑度
-            smooth: 0.5,
+            type: "value",
+            splitLine: {
+              show: false,
+            },
+            axisLabel: {
+              textStyle: {
+                color: "#5FBBEB",
+              },
+            },
+            axisLine: {
+              lineStyle: {
+                fontSize: 12,
+                color: "rgba(66, 192, 255, .3)",
+              },
+            },
           },
           {
-            name: "油耗详情",
-            data: this.lineStackVData.actual,
+            type: "value",
+            name: "",
+            nameTextStyle: {
+              color: "#d2d2d2",
+            },
+            // max: "100",
+            min: "0",
+            scale: true,
+            position: "right",
+            axisLine: {
+              lineStyle: {
+                color: "rgba(66, 192, 255, .3)",
+              },
+            },
+            splitLine: {
+              show: false,
+            },
+            axisLabel: {
+              show: true,
+              formatter: "{value} ", //右侧Y轴文字显示
+              textStyle: {
+                fontSize: 12,
+                color: "#42C0FF",
+              },
+            },
+          },
+        ],
+        series: [
+          {
+            name: "油耗",
+            type: "bar",
+            barWidth: "12px",
+            itemStyle: {
+              normal: {
+                color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  {
+                    offset: 0,
+                    color: "#29acff",
+                  },
+                  {
+                    offset: 1,
+                    color: "#4bdfff",
+                  },
+                ]),
+                barBorderRadius: 6,
+              },
+            },
+            data: dataY1,
+          },
+          {
+            name: "工作时长",
             type: "line",
-            stack: "Total",
-            // 折线平滑度
-            smooth: 0.5,
+            yAxisIndex: 1, //使用的 y 轴的 index，在单个图表实例中存在多个 y轴的时候有用
+            smooth: false, //平滑曲线显示
+
+            symbol: "circle", //标记的图形为实心圆
+            symbolSize: 8, //标记的大小
+            itemStyle: {
+              normal: {
+                color: "#ffa43a",
+                borderColor: "rgba(255, 234, 0, 0.5)", //圆点透明 边框
+                borderWidth: 5,
+              },
+            },
+            lineStyle: {
+              color: "#ffa43a",
+            },
+
+            data: dataY,
           },
         ],
       };
@@ -203,6 +444,7 @@ export default {
   },
   data() {
     return {
+      workchart: true,
       // 五个图表的数据
       barOutLineHData: {
         percentage: [5, 24, 26, 40, 3],
@@ -692,70 +934,143 @@ export default {
     // 蓝色饼图
     pieBlue() {
       const chart = echarts.init(document.querySelector(".pie .chart"));
+      function generateData(totalNum, bigvalue, smallvalue, color) {
+        let dataArr = [];
+        for (var i = 0; i < totalNum; i++) {
+          if (i % 2 === 0) {
+            dataArr.push({
+              name: (i + 1).toString(),
+              value: bigvalue,
+              itemStyle: {
+                normal: {
+                  color: color,
+                  borderWidth: 0,
+                },
+              },
+            });
+          } else {
+            dataArr.push({
+              name: (i + 1).toString(),
+              value: smallvalue,
+              itemStyle: {
+                normal: {
+                  color: "rgb(0,0,0,0)",
+                  borderWidth: 0,
+                },
+              },
+            });
+          }
+        }
+        return dataArr;
+      }
+      let threeData = generateData(6, 40, 5, "rgb(12,65,144)");
+
+      let startAngle = 50; // 初始旋转角度
       let option = {
-        title: {
-          // text: "主标题",
+        tooltip: {
+          trigger: "item",
+          formatter: "{b} : {d}% <br/> {c}",
         },
-        legend: {
-          // 竖向排列
-          orient: "vertical",
-          top: "center",
-          right: "10%",
-          align: "left",
-          itemGap: 6,
-          itemWidth: 10, // 设置宽度
-          itemHeight: 10, // 设置高度
-          // 修改图例组件的文字为 12px
-          textStyle: {
-            color: "rgba(255,255,255,.5)",
-            fontSize: 12,
+
+        title: [
+          {
+            text: "设备总数",
+            x: "center",
+            top: "40%",
+            textStyle: {
+              color: "#fff",
+              fontSize: 16,
+              fontWeight: "100",
+            },
           },
-          data: this.pieBlueData.type,
-          formatter: function (name) {
-            let data = option.series[0].data;
-            // console.log(data, 'data')
-            let total = 0;
-            let tarValue;
-            for (let i = 0; i < data.length; i++) {
-              total += data[i].value;
-              if (data[i].name == name) {
-                tarValue = data[i].value;
-              }
-            }
-            let v = tarValue + "";
-            //计算出百分比
-            let p = Math.round((tarValue / total) * 100) + "%";
-            return `${name}  ${v} `;
-            //name是名称，v是数值
+          {
+            text: "147",
+            x: "center",
+            top: "50%",
+            textStyle: {
+              fontSize: 20,
+              color: "#00f0ff",
+              foontWeight: "500",
+            },
           },
-        },
+        ],
         series: [
           {
-            name: "设备类型占比",
             type: "pie",
-            //  修改内圆半径和外圆半径为  百分比是相对于容器宽度来说的
-            radius: ["40%", "60%"],
-            // 设置饼形图在容器中的位置
-            center: ["40%", "45%"],
-            avoidLabelOverlap: false,
-            // 不显示标签文字
-            label: {
-              //echarts饼图内部显示百分比设置
-              show: true,
-              position: "outside", //outside 外部显示  inside 内部显示
-              formatter: `{c}`,
-              color: "#ffffff", //颜色
-              fontSize: 12, //字体大小
+            radius: ["50", "64.26"],
+            center: ["50%", "50%"],
+            color: [
+              // "rgb(255,183,112)",
+              "rgb(255,162,70)",
+              "rgb(125,235,255)",
+              "rgb(254,130,8)",
+              "rgb(77,194,255)",
+              "rgb(50,185,255)",
+              "rgb(24,176,255)",
+              "rgb(1,155,255)",
+              "rgb(39,115,254)",
+              "rgb(39,93,254)",
+            ],
+            itemStyle: {
+              normal: {
+                borderWidth: 5,
+                borderColor: "#031845",
+              },
             },
-            // 显示连接线
+            data: [
+              {
+                name: "华南区",
+                value: 43,
+              },
+              {
+                name: "华东区",
+                value: 69,
+              },
+              {
+                name: "华中区",
+                value: 9,
+              },
+              // {
+              //   name: "华北区",
+              //   value: 1,
+              // },
+              {
+                name: "其他",
+                value: 26,
+              },
+            ],
             labelLine: {
-              // 连接扇形图线长
-              length: 15,
-              // 连接文字线长
-              length2: 20,
+              normal: {
+                show: true,
+                length: 18,
+                length2: 10,
+                lineStyle: {
+                  color: "#CCCCCC",
+                  width: 2,
+                  type: "dashed",
+                },
+              },
             },
-            data: this.pieBlueData.typeNum,
-            color: this.pieBlueData.color,
+            label: {
+              normal: {
+                formatter: "{b|{b} {c}}\n{hr|}",
+                rich: {
+                  b: {
+                    // fontSize: 12,
+                    color: "#FFF",
+                    align: "left",
+                    padding: [-20, 0, 0, 0],
+                  },
+                  hr: {
+                    borderColor: "#CCCCCC",
+                    width: "100%",
+                    borderWidth: 2,
+                    borderType: "dashed",
+                    height: 0,
+                  },
+                },
+              },
+            },
           },
         ],
       };
@@ -1021,7 +1336,7 @@ export default {
           // val.data.data.weekAnalysisData.details 近7日数据列表
           if (val.data.data.weekAnalysisData.details) {
             val.data.data.weekAnalysisData.details.forEach((item, key) => {
-              if (dataX.length<7) {
+              if (dataX.length < 7) {
                 if (item.dataDate.slice(4, 8)[0] == 0) {
                   // 截取拼接字符
                   dataX.push(
@@ -1033,6 +1348,7 @@ export default {
                   );
                 }
               }
+
               this.lineStackVData.date = dataX;
               console.log(item, key);
               // dataY1.push(item.oilCost);
@@ -1090,17 +1406,17 @@ export default {
     })(window, document);
     // 格式： 当前时间：2020年3月17-0时54分14秒
     (function () {
-      var t = null;
+      let t = null;
       t = setTimeout(time, 1000); //開始运行
       function time() {
         clearTimeout(t); //清除定时器
-        var dt = new Date();
-        var y = dt.getFullYear();
-        var mt = dt.getMonth() + 1;
-        var day = dt.getDate();
-        var h = dt.getHours(); //获取时
-        var m = dt.getMinutes(); //获取分
-        var s = dt.getSeconds(); //获取秒
+        let dt = new Date();
+        let y = dt.getFullYear();
+        let mt = dt.getMonth() + 1;
+        let day = dt.getDate();
+        let h = dt.getHours(); //获取时
+        let m = dt.getMinutes(); //获取分
+        let s = dt.getSeconds(); //获取秒
         document.querySelector(".time").innerHTML =
           "当前时间：" +
           y +
@@ -1118,7 +1434,7 @@ export default {
         t = setTimeout(time, 1000); //设定定时器，循环运行
       }
     })();
-    this.deviceCountWeekData();
+    // this.deviceCountWeekData();
   },
   mounted() {
     // 清空缓存数据
@@ -1127,9 +1443,9 @@ export default {
     this.robj = {};
     // 渲染图表
     this.barOutLineH();
-    // this.lineStackV();
+    this.lineStackV();
     this.lineCrossV();
-    // this.pieBlue();
+    this.pieBlue();
     this.pieNDGE();
     // 获取在线接口设备位置信息
     this.getqueryEquipmentsByPage();
@@ -1255,7 +1571,7 @@ header {
             height: 1rem;
             font-size: 0.875rem;
             color: #ffeb7b;
-            font-family: electronicFont;
+            // font-family: electronicFont;
             text-align: center;
           }
         }

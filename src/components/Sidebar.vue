@@ -1,7 +1,8 @@
 <template>
   <div id="Sidebar">
     <!-- loge预留区域 -->
-    <!-- <div><router-link style="height: 30px;width: 100%;display: inline-block;" to="/"></router-link></div> -->
+    <!-- <div><router-link style="height: 30px;width: 100%;display: inline-block;" to="/">
+    </router-link></div> -->
 
     <el-menu
       default-active="1"

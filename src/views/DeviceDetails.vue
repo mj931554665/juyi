@@ -1,6 +1,6 @@
 <template>
   <div class="DeviceDetails">
-    <NavbarComponent :breadCrumbList="breadCrumbList"></NavbarComponent>
+    <!-- <NavbarComponent :breadCrumbList="breadCrumbList"></NavbarComponent> -->
 
     <div class="mainBox">
       <div class="column">
@@ -119,7 +119,7 @@
           <span slot="header">设备数据</span>
           <div slot="content" class="module2">
             <el-tabs v-model="module2" @tab-click="handleClick">
-              <el-tab-pane label="近七日工作时长和油耗详情" name="first">
+              <el-tab-pane label="近7日油耗详情" name="first">
                 <p>
                   总计：{{ deviceDetails.baseInfo.weekOilCost }}&nbsp;L /
                   {{ deviceDetails.baseInfo.weekWorkTime }}&nbsp;h
@@ -247,22 +247,23 @@
               </div>
             </div>
             <div class="device_location">
-              <p>
-                <i class="el-icon-location-outline"></i>
-                {{ deviceDetails.baseInfo.address }}
+              <p class="position">
+                <label>
+                  <i class="el-icon-location-outline"></i>
+                  {{ deviceDetails.baseInfo.address }}
+                  </label
+                >
               </p>
-              <div class="date">
-                <p>
-                  <i class="el-icon-time"></i>
-                  定位时间：{{ deviceDetails.baseInfo.locationTime }}
-                </p>
-                <p>
-                  <i class="el-icon-time"></i>
-                  工况时间：{{
-                    deviceDetails.workConditionData.workingConditionTime
-                  }}
-                </p>
-              </div>
+              <p>
+                <i class="el-icon-time"></i>
+                定位时间：{{ deviceDetails.baseInfo.locationTime }}
+              </p>
+              <p>
+                <i class="el-icon-time"></i>
+                工况时间：{{
+                  deviceDetails.workConditionData.workingConditionTime
+                }}
+              </p>
             </div>
           </div>
         </FloatCard>
@@ -417,19 +418,28 @@
           </span>
           <div slot="content" class="module5">
             <div class="detail">
-              <p class="deviceName">
-                <span>设备名称：&nbsp;{{ deviceDetails.baseInfo.name }}</span>
-                <span class="message">
-                  <span>{{ deviceDetails.baseInfo.powerTypeLable }}</span>
-                  <i
-                    class="el-icon-location"
-                    v-if="deviceDetails.baseInfo.locationState"
-                  ></i>
-                </span>
+              <p>设备名称：&nbsp;{{ deviceDetails.baseInfo.name }}</p>
+              <p>
+                设备类型：&nbsp;{{
+                  deviceDetails.baseInfo.typeLabel
+                    ? deviceDetails.baseInfo.typeLabel
+                    : "--"
+                }}
               </p>
-              <p>设备类型：&nbsp;{{ deviceDetails.baseInfo.typeLabel }}</p>
-              <p>设备编号：&nbsp;{{ deviceDetails.baseInfo.equipmentNo }}</p>
-              <p>设备型号：&nbsp;{{ deviceDetails.baseInfo.modelLabel }}</p>
+              <p>
+                设备编号：&nbsp;{{
+                  deviceDetails.baseInfo.equipmentNo
+                    ? deviceDetails.baseInfo.equipmentNo
+                    : "--"
+                }}
+              </p>
+              <p>
+                设备型号：&nbsp;{{
+                  deviceDetails.baseInfo.modelLabel
+                    ? deviceDetails.baseInfo.modelLabel
+                    : "--"
+                }}
+              </p>
               <p>
                 责&nbsp;任&nbsp;人&nbsp;：&nbsp;{{
                   deviceDetails.baseInfo.staffName
@@ -438,7 +448,23 @@
                 }}
               </p>
               <p>
-                权限类型：&nbsp;{{ deviceDetails.baseInfo.permissionTypeLabel }}
+                权限类型：&nbsp;{{
+                  deviceDetails.baseInfo.permissionTypeLabel
+                    ? deviceDetails.baseInfo.permissionTypeLabel
+                    : "--"
+                }}
+              </p>
+              <p>
+                动力类型：&nbsp;{{
+                  deviceDetails.baseInfo.powerTypeLable
+                    ? deviceDetails.baseInfo.powerTypeLable
+                    : "--"
+                }}
+              </p>
+              <p>
+                定位状态：&nbsp;{{
+                  deviceDetails.baseInfo.locationState ? "已定位" : "未定位"
+                }}
               </p>
             </div>
           </div>
@@ -485,12 +511,12 @@
 </template>
 
 <script>
-import NavbarComponent from "@/components/NavbarComponent";
+// import NavbarComponent from "@/components/NavbarComponent";
 import FloatCard from "@/components/FloatCard.vue";
-import MyEcharts from "@/components/MyEcharts.vue";
+import MyEcharts from "@/components/EchartsComponent.vue";
 export default {
   components: {
-    NavbarComponent,
+    // NavbarComponent,
     FloatCard,
     MyEcharts,
   },
@@ -864,8 +890,8 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
-@import "@/assets/test/font/iconfont.css";
+<style lang="less">
+// @import "@/assets/test/font/iconfont.css";/
 .mainBox {
   display: flex;
   min-width: 1024px;
@@ -873,8 +899,12 @@ export default {
   margin: 20px auto;
   padding: 10px 20px 0;
   .column {
+    .FloatCard-item-header {
+      background-color: rgba(64, 158, 255, 0.54);
+    }
     flex: 6;
     .module1 {
+      height: 320px;
       .detail-line {
         position: relative;
         height: 100px;
@@ -967,7 +997,7 @@ export default {
       }
     }
     .module2 {
-      height: 280px;
+      height: 270px;
       .chart {
         height: 204px;
         width: 376px;
@@ -1043,6 +1073,7 @@ export default {
       }
     }
     .module3 {
+      height: 320px;
       .devicePic {
         display: flex;
         justify-content: center;
@@ -1174,14 +1205,15 @@ export default {
         text-align: center;
         color: #142628;
         // height: 61px;
-
-        p {
+        .position {
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          height: 31px;
           margin-top: 6px;
         }
-        .date {
-          display: flex;
-          font-size: 14px;
-          justify-content: space-around;
+        p {
+          margin-top: 3px;
         }
       }
     }
@@ -1252,24 +1284,16 @@ export default {
       }
     }
     .module5 {
+      height: 320px;
       .detail {
-        height: 100%;
+        // height: 100%;
         p {
-          margin: 28px 10px;
-        }
-        .deviceName {
-          display: flex;
-          justify-content: space-between;
-          .message {
-            margin-right: 25%;
-            i {
-              color: #1fc3c9;
-            }
-          }
+          padding: 24px 10px 0 10px;
         }
       }
     }
     .module6 {
+      height: 240px;
       .detail-line {
         height: 100%;
         padding-bottom: 26px;

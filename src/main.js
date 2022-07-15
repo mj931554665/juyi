@@ -8,6 +8,25 @@ import './assets/css/restcss.css'
 import api from './api/request'
 Vue.prototype.$api = api
 Vue.use(ElementUI);
+import VueAMap from 'vue-amap'; //引入高德地图
+
+// 高德地图
+Vue.use(VueAMap);
+VueAMap.initAMapApiLoader({
+  key: '09c0d8fba098058de0784ccb61dd8e93',
+  plugin: [                // 这里根据自己项目按需引入插件
+    "AMap.Autocomplete",
+    "AMap.PlaceSearch",
+    "AMap.Scale",
+    "AMap.OverView",
+    "AMap.ToolBar",
+    "AMap.MapType",
+    "AMap.PolyEditor",
+    "AMap.CircleEditor",
+    "AMap.Geocoder"
+  ]
+});
+
 import BaiduMap from 'vue-baidu-map';// 导入地图
 
 // 进行全局注册，一次性引入百度地图组件库的所有组件
