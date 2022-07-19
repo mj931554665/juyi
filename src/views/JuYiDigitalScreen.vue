@@ -1,292 +1,715 @@
 <template>
-  <div class="DigitalScreen" style="min-width: 1024px; min-height: 100vh">
+  <div class="DigitalScreen">
     <header>
-      <h1>钜亿安全监控云平台</h1>
+      <div class="headerLeftShow"></div>
+      <div class="headerTitle">
+        <div>
+          <div class="title">数字化大屏</div>
+        </div>
+      </div>
       <div class="showTime" style="display: flex">
-        <span class="time">当前时间：2022年2月2日-22时22分22秒</span>
-        <FuncBtn
-          :isScreen="true"
-          style="
-            border: none;
-            color: #fff;
-            background: none;
-            height: auto;
-            margin-left: 10px;
-            font-size: 24px;
-          "
-        ></FuncBtn>
+        <span class="time">2022-2-2 22:22:22</span>
+        <FuncBtn :isScreen="true" id="fullScreen"></FuncBtn>
       </div>
     </header>
     <!-- 页面主体部分 -->
-    <div class="mainbox">
-      <div class="column">
-        <!-- 封装一个公共样式 panel ，内部再放对应的图表 -->
-        <div class="panel line">
-          <h2>
-            近7日工作时长与油耗详情
-            <a></a>
-            <a></a>
-          </h2>
-          <div class="chart" v-show="!workchart"></div>
-          <EchartsComp
-            key="1"
-            :options="weekAnalysisData"
-            v-show="workchart"
-          ></EchartsComp>
-          <div class="panel-footer"></div>
-        </div>
-        <div class="panel line2">
-          <h2>设备统计</h2>
-          <div class="chart"></div>
-          <div class="panel-footer"></div>
-        </div>
-        <div class="panel pie">
-          <h2>设备统计</h2>
-          <div class="chart">
-            <!-- <EchartsComp key="2" :options="equipmentStatistics"></EchartsComp> -->
+    <div class="main">
+      <div class="leftTree">
+        <div class="leftTreeContent borderImg">
+          <div class="leftTreeTop">
+            <el-input
+              placeholder="搜索设备"
+              suffix-icon="el-icon-search"
+              clearable
+              v-model="searchInput"
+            >
+            </el-input>
           </div>
-          <div class="panel-footer"></div>
+          <div class="leftTreeBottom">
+            <div
+              class="equipmentItem textFont14"
+              v-for="(item, index) in deviceList"
+              :key="index"
+            >
+              <div
+                class="itemContent"
+                @click="checked(index)"
+                :class="checkedIndex == index ? 'checked' : ''"
+              >
+                <div
+                  :style="
+                    item.onlineStatus == '1' ? '' : 'background: #5e5e5f;'
+                  "
+                  class="prevIconOnline"
+                ></div>
+                <div>
+                  <span>{{ item.name }}</span>
+                  <i
+                    v-show="item.videoStatus"
+                    class="el-icon-video-camera-solid videoOnlineClass"
+                  ></i>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="column">
-        <div class="no">
-          <div class="no-hd">
-            <ul>
-              <li style="color: #1CD6ED;">30565</li>
-              <li style="">192233</li>
-            </ul>
+      <div class="mainContent">
+        <div class="leftScreen">
+          <div class="leftTop borderImg">
+            <div class="leftTopContent">
+              <div
+                class="equipmentName textFont16"
+                style="display: flex; align-items: center"
+              >
+                <i class="el-icon-s-tools"></i>
+                <span>{{
+                  checkDevice.name ? checkDevice.name : deviceList[0].name
+                }}</span>
+                <!-- <i class="el-icon-microphone"></i> -->
+
+                <!-- <div class="detailBtn">
+                  <div>详情</div>
+                  <i class="el-icon-arrow-right"></i>
+                </div> -->
+              </div>
+              <div class="splitLine"></div>
+              <div class="video">
+                <div class="channel-content">
+                  <div>
+                    <div title="通道1" class="channel-item active">
+                      <div>通道1</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div title="通道2" class="channel-item active">
+                      <div>通道2</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div title="通道3" class="channel-item active">
+                      <div>通道3</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div title="通道4" class="channel-item active">
+                      <div>通道4</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div title="通道5" class="channel-item active">
+                      <div>通道5</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div title="通道6" class="channel-item active">
+                      <div>通道6</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div title="通道7" class="channel-item active">
+                      <div>通道7</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div title="通道8" class="channel-item active">
+                      <div>通道8</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="videoBox">
+                  <div class="videoSize">
+                    <video src="@/assets/test/videotest.mp4"></video>
+                  </div>
+                  <div id="videoBottomBox0" class="videoBottomBox">
+                    <div style="float: left; padding-left: 1em">
+                      通道1
+                      <div class="el-dropdown" style="cursor: pointer">
+                        <span>
+                          <i title="选择像素" class="el-icon-setting"></i>
+                        </span>
+                      </div>
+                      0Kbps
+                    </div>
+                    <i title="录像" class="el-icon-video-camera-solid"></i>
+                    <i title="截图" class="el-icon-camera-solid"></i>
+                    <i title="全屏" class="el-icon-full-screen"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="location textFont14">
+                <div>
+                  <div class="locationTimeIcon"></div>
+                  <span class="textColor">
+                    {{
+                      checkDevice.workCondDataTime
+                        ? checkDevice.workCondDataTime
+                        : deviceList[0].workCondDataTime
+                    }}
+                  </span>
+                </div>
+                <div>
+                  <div class="addressIcon"></div>
+                  <div
+                    :title="
+                      checkDevice.address
+                        ? checkDevice.address
+                        : deviceList[0].address
+                    "
+                    class="address nowrapText textColor textNowarp"
+                  >
+                    {{
+                      checkDevice.address
+                        ? checkDevice.address
+                        : deviceList[0].address
+                    }}
+                  </div>
+                </div>
+              </div>
+              <div class="equipmentInfo textFont14">
+                <div class="equipmentInfoTitle textColor">
+                  设备编号：{{
+                    checkDevice.equipmentNo
+                      ? checkDevice.equipmentNo
+                      : deviceList[0].equipmentNo
+                  }}
+                  <span class="prevOnline">
+                    <!-- <div
+                      :style="
+                        checkDevice.onlineStatus == '1'
+                          ? ''
+                          : 'background: #5e5e5f;'
+                      "
+                    > 
+                    </div>-->
+                  </span>
+                  <div class="model">
+                    <!-- <span class="textColor">车牌号：--</span> -->
+                    <span class="mark">{{
+                      checkDevice.onlineStatusLabel
+                        ? checkDevice.onlineStatusLabel
+                        : deviceList[0].onlineStatusLabel
+                    }}</span>
+                    <span class="mark">{{
+                      checkDevice.modelLabel
+                        ? checkDevice.modelLabel
+                        : deviceList[0].modelLabel
+                    }}</span>
+                    <span class="mark">{{
+                      checkDevice.typeLabel
+                        ? checkDevice.typeLabel
+                        : deviceList[0].typeLabel
+                    }}</span>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <span>项目名称：test </span>
+                <span>操作人员：test</span>
+                <span>项目时长：test</span>
+              </div>
+            </div>
           </div>
-          <div class="no-bd">
-            <ul>
-              <li>总起重总量（吨）</li>
-              <li>总起重力矩（吨*米）</li>
-            </ul>
+          <div class="leftBottom borderImg">
+            <div class="leftBottomContent">
+              <div>
+                <div class="title textFont16">
+                  <i class="el-icon-s-tools"></i>
+                  <span class="textColor">实时工况</span>
+                </div>
+                <div class="splitLine"></div>
+                <el-carousel
+                  :interval="5000"
+                  arrow="always"
+                  indicator-position="outside"
+                  height="110px"
+                  class="workingCondition"
+                >
+                  <el-carousel-item>
+                    <div class="dataArea">
+                      <div class="panel">
+                        <div class="panel-item">
+                          <p><span>主钩额重</span></p>
+                          <h6>
+                            {{ workConditionData.mainHookRatedWeight }}&nbsp;t
+                          </h6>
+                        </div>
+                        <div class="columnLine"></div>
+                      </div>
+                      <div class="panel">
+                        <div class="panel-item">
+                          <p><span>主钩实重</span></p>
+                          <h6>
+                            {{ workConditionData.mainHookActualWeight }}&nbsp;t
+                          </h6>
+                        </div>
+                        <div class="columnLine"></div>
+                      </div>
+                      <div class="panel">
+                        <div class="panel-item">
+                          <p><span>主钩倍率</span></p>
+                          <h6>{{ workConditionData.mainHookRatios }}</h6>
+                        </div>
+                        <div class="columnLine"></div>
+                      </div>
+                      <div class="panel">
+                        <div class="panel-item">
+                          <p><span>主臂角度</span></p>
+                          <h6>{{ workConditionData.mainHookAngle }}°</h6>
+                        </div>
+                        <div class="columnLine"></div>
+                      </div>
+                      <div class="panel">
+                        <div class="panel-item">
+                          <p><span>副钩额重</span></p>
+                          <h6>
+                            {{ workConditionData.slaveHookRatedWeight }}&nbsp;t
+                          </h6>
+                        </div>
+                        <div class="columnLine"></div>
+                      </div>
+                      <div class="panel">
+                        <div class="panel-item">
+                          <p><span>副钩实重</span></p>
+                          <h6>
+                            {{ workConditionData.slaveHookActualWeight }}&nbsp;t
+                          </h6>
+                        </div>
+                        <div class="columnLine"></div>
+                      </div>
+                      <div class="panel">
+                        <div class="panel-item">
+                          <p><span>副钩倍率</span></p>
+                          <h6>{{ workConditionData.slaveHookRatios }}</h6>
+                        </div>
+                        <div class="columnLine"></div>
+                      </div>
+                      <div class="panel">
+                        <div class="panel-item">
+                          <p><span>高度</span></p>
+                          <h6>--</h6>
+                        </div>
+                        <div class="columnLine"></div>
+                      </div>
+                      <div class="panel">
+                        <div class="panel-item">
+                          <p><span>幅度</span></p>
+                          <h6>--</h6>
+                        </div>
+                        <div class="columnLine"></div>
+                      </div>
+                      <div class="panel">
+                        <div class="panel-item">
+                          <p><span>臂长</span></p>
+                          <h6>--</h6>
+                        </div>
+                        <div class="columnLine"></div>
+                      </div>
+                      <div class="panel">
+                        <div class="panel-item">
+                          <p><span>力矩百分比</span></p>
+                          <h6>
+                            {{ workConditionData.torquePercent }}%&nbsp;(负载率)
+                          </h6>
+                        </div>
+                        <div class="columnLine"></div>
+                      </div>
+                      <div class="panel">
+                        <div class="panel-item">
+                          <p><span>风速</span></p>
+                          <h6>{{ workConditionData.windSpeed }}&nbsp;m/s</h6>
+                        </div>
+                        <div class="columnLine"></div>
+                      </div>
+                    </div>
+                  </el-carousel-item>
+                  <el-carousel-item>
+                    <div class="dataArea">
+                      <div class="panel">
+                        <div class="panel-item">
+                          <p><span>发动机工作时长</span></p>
+                          <h6>
+                            {{ workConditionData.totalEnginWorkTime }}&nbsp;h
+                          </h6>
+                        </div>
+                        <div class="columnLine"></div>
+                      </div>
+                      <div class="panel">
+                        <div class="panel-item">
+                          <p><span>燃油油量</span></p>
+                          <h6>
+                            {{ workConditionData.remainingOilPercent }}&nbsp;%
+                          </h6>
+                        </div>
+                        <div class="columnLine"></div>
+                      </div>
+                      <div class="panel">
+                        <div class="panel-item">
+                          <p><span>发动机转速</span></p>
+                          <h6>{{ workConditionData.enginSpeed }}</h6>
+                        </div>
+                        <div class="columnLine"></div>
+                      </div>
+                    </div>
+                  </el-carousel-item>
+                </el-carousel>
+
+                <div class="title textFont16">
+                  <i class="el-icon-s-tools"></i>
+                  <span class="textColor">近七日油耗详情</span>
+                  <span style="float: right">总计：192L/49.4h</span>
+                </div>
+                <div class="splitLine"></div>
+                <div class="weekAnalysisData">
+                  <EchartsComp :options="chart1Data"></EchartsComp>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="map">
-          <div class="map1"></div>
-          <div class="map2"></div>
-          <div class="map3"></div>
-          <div class="chart"></div>
+        <div class="centerTopScreen">
+          <div class="centerTop borderImg"></div>
+        </div>
+        <div class="rightScreen">
+          <div class="rightTop borderImg">
+            <div class="content">
+              <div class="title textFont16">
+                <i class="el-icon-s-tools"></i>
+                <span class="textColor">设备统计</span>
+              </div>
+              <div class="splitLine"></div>
+              <div class="area chart1">
+                <div class="chart">
+                  <EchartsComp :options="chart2"></EchartsComp>
+                </div>
+                <div class="data">
+                  <div class="item">
+                    <div class="dot"></div>
+                    <div class="text">华东区：&nbsp;46%&nbsp;&nbsp;</div>
+                    <span>69</span>
+                  </div>
+                  <div class="item">
+                    <div class="dot"></div>
+                    <div class="text">华南区：&nbsp;29%&nbsp;&nbsp;</div>
+                    <span>43</span>
+                  </div>
+                  <div class="item">
+                    <div class="dot"></div>
+                    <div class="text">华中区：&nbsp;6%&nbsp;&nbsp;</div>
+                    <span>9</span>
+                  </div>
+                  <div class="item">
+                    <div class="dot"></div>
+                    <div class="text">其他区：&nbsp;26%&nbsp;&nbsp;</div>
+                    <span>17</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="content">
+              <div class="title textFont16">
+                <i class="el-icon-s-tools"></i>
+                <!-- <span class="textColor">24小时内风险事件</span> -->
+                <span class="textColor">风控数据</span>
+              </div>
+              <div class="splitLine"></div>
+              <div class="area chart2">
+                <div class="chart">
+                  <EchartsComp :options="chart3"></EchartsComp>
+                </div>
+                <div class="data">
+                  <div class="item">
+                    <div class="left">
+                      <div class="dot"></div>
+                      <div class="text">高风险：&nbsp;269</div>
+                    </div>
+                    <!-- <div class="right">
+                      <span>348</span>
+                      ▶
+                    </div> -->
+                  </div>
+                  <div class="item">
+                    <div class="left">
+                      <div class="dot"></div>
+                      <div class="text">中风险：&nbsp;0</div>
+                    </div>
+                    <!-- <div class="right">
+                      <span>348</span>
+                      ▶
+                    </div> -->
+                  </div>
+                  <div class="item">
+                    <div class="left">
+                      <div class="dot"></div>
+                      <div class="text">低风险：&nbsp;0</div>
+                    </div>
+                    <!-- <div class="right">
+                      <span>348</span>
+                      ▶
+                    </div> -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="content">
+              <div class="title textFont16">
+                <i class="el-icon-s-tools"></i>
+                <span class="textColor">运输公里数</span>
+              </div>
+              <div class="splitLine"></div>
+              <div class="area chart3">
+                <div class="chart">
+                  <EchartsComp :options="chart4"></EchartsComp>
+                </div>
+                <div class="data">
+                  <div class="item">
+                    <div class="left">
+                      <div class="dot"></div>
+                      <div class="text">周运输公里数：&nbsp;153&nbsp;km</div>
+                    </div>
+                  </div>
+                  <div class="item">
+                    <div class="left">
+                      <div class="dot"></div>
+                      <div class="text">月运输公里数：&nbsp;655&nbsp;km</div>
+                    </div>
+                  </div>
+                  <div class="item">
+                    <div class="left">
+                      <div class="dot"></div>
+                      <div class="text">年运输公里数：&nbsp;7977&nbsp;km</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="rightBottom borderImg">
+            <div class="content">
+              <div class="title textFont16">
+                <i class="el-icon-s-tools"></i>
+                <span class="textColor">到期统计</span>
+              </div>
+              <div class="splitLine"></div>
+              <div class="data">
+                <div class="expireTimeContent">
+                  <div class="expireTimeItem">保险到期</div>
+                  <div class="expireTimeCount">
+                    <span class="linkLine">0</span>
+                    ▶
+                  </div>
+                </div>
+                <div class="expireTimeContent">
+                  <div class="expireTimeItem">证照到期</div>
+                  <div class="expireTimeCount">
+                    <span class="linkLine">0</span>
+                    ▶
+                  </div>
+                </div>
+                <div class="expireTimeContent">
+                  <div class="expireTimeItem">特种设备检验到期</div>
+                  <div class="expireTimeCount">
+                    <span class="linkLine">0</span>
+                    ▶
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="column">
-        <div class="panel pie2">
-          <h2>地区分布</h2>
-          <div class="chart"></div>
-          <div class="panel-footer"></div>
-        </div>
-        <div class="panel bar2">
-          <h2>年限分析</h2>
-          <div class="chart"></div>
-          <div class="panel-footer"></div>
-        </div>
-        <div class="panel bar">
-          <h2>数据统计</h2>
-          <div class="baoxian">
-            <p>
-              保险到期 <span><span>0</span> ▶</span>
-            </p>
-            <p>
-              证件到期 <span><span>0</span> ▶</span>
-            </p>
-            <p>
-              特种设备检验到期 <span><span>0</span> ▶</span>
-            </p>
-            <p>
-              总设备操作人员 <span><span>284</span> ▶</span>
-            </p>
-            <p>
-              总设备安拆人员 <span><span>158</span> ▶</span>
-            </p>
-            <p>
-              设备高风险事件 <span><span>0</span> ▶</span>
-            </p>
-            <p>
-              设备中风险事件 <span><span>0</span> ▶</span>
-            </p>
-            <p>
-              设备低风险事件 <span><span>0</span> ▶</span>
-            </p>
-          </div>
-          <div class="panel-footer"></div>
-        </div>
+      <div class="map">
+        <ScreenMap></ScreenMap>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import * as echarts from "echarts";
+import ScreenMap from "@/components/ScreenMap.vue";
 import FuncBtn from "@/components/FuncBtn.vue";
 import EchartsComp from "@/components/EchartsComponent.vue";
 export default {
   components: {
     FuncBtn,
+    ScreenMap,
     EchartsComp,
   },
   computed: {
-    equipmentStatistics() {
-      function generateData(totalNum, bigvalue, smallvalue, color) {
-        let dataArr = [];
-        for (var i = 0; i < totalNum; i++) {
-          if (i % 2 === 0) {
-            dataArr.push({
-              name: (i + 1).toString(),
-              value: bigvalue,
-              itemStyle: {
-                normal: {
-                  color: color,
-                  borderWidth: 0,
-                },
-              },
-            });
-          } else {
-            dataArr.push({
-              name: (i + 1).toString(),
-              value: smallvalue,
-              itemStyle: {
-                normal: {
-                  color: "rgb(0,0,0,0)",
-                  borderWidth: 0,
-                },
-              },
-            });
-          }
-        }
-        return dataArr;
-      }
-      let threeData = generateData(6, 40, 5, "rgb(12,65,144)");
-
-      let startAngle = 50; // 初始旋转角度
+    // 页面四个图表的配置数据
+    chart2() {
       let option = {
         tooltip: {
           trigger: "item",
-          formatter: "{b} : {d}% <br/> {c}",
         },
-
-        title: [
-          {
-            text: "设备总数",
-            x: "center",
-            top: "40%",
-            textStyle: {
-              color: "#fff",
-              fontSize: 16,
-              fontWeight: "100",
-            },
+        title: {
+          text: "设备总数",
+          textStyle: {
+            fontSize: "10px",
+            color: "#78898f",
           },
-          {
-            text: "147",
-            x: "center",
-            top: "50%",
-            textStyle: {
-              fontSize: 20,
-              color: "#00f0ff",
-              foontWeight: "500",
-            },
-          },
-        ],
+          left: "center",
+          top: "58%",
+        },
         series: [
           {
+            name: "履带吊",
             type: "pie",
-            radius: ["50", "64.26"],
-            center: ["50%", "50%"],
-            color: [
-              // "rgb(255,183,112)",
-              "rgb(255,162,70)",
-              "rgb(125,235,255)",
-              "rgb(254,130,8)",
-              "rgb(77,194,255)",
-              "rgb(50,185,255)",
-              "rgb(24,176,255)",
-              "rgb(1,155,255)",
-              "rgb(39,115,254)",
-              "rgb(39,93,254)",
-            ],
-            itemStyle: {
-              normal: {
-                borderWidth: 5,
-                borderColor: "#031845",
-              },
-            },
-            data: [
-              {
-                name: "华南区",
-                value: 43,
-              },
-              {
-                name: "华东区",
-                value: 69,
-              },
-              {
-                name: "华中区",
-                value: 9,
-              },
-              // {
-              //   name: "华北区",
-              //   value: 1,
-              // },
-              {
-                name: "其他",
-                value: 26,
-              },
-            ],
-            labelLine: {
-              normal: {
-                show: true,
-                length: 18,
-                length2: 10,
-                lineStyle: {
-                  color: "#CCCCCC",
-                  width: 2,
-                  type: "dashed",
-                },
-              },
-            },
+            radius: ["70%", "80%"],
+            avoidLabelOverlap: false,
+            color: "#75d059",
             label: {
-              normal: {
-                formatter: "{b|{b} {c}}\n{hr|}",
-                rich: {
-                  b: {
-                    // fontSize: 12,
-                    color: "#FFF",
-                    align: "left",
-                    padding: [-20, 0, 0, 0],
-                  },
-                  hr: {
-                    borderColor: "#CCCCCC",
-                    width: "100%",
-                    borderWidth: 2,
-                    borderType: "dashed",
-                    height: 0,
-                  },
-                },
+              textStyle: {
+                color: "#05afe0",
               },
+              formatter: "{c}",
+              show: true,
+              fontSize: "16",
+              fontWeight: "bold",
+              position: "center",
             },
+            data: [{ value: 153, name: "履带吊" }],
           },
         ],
       };
-
       return option;
     },
-    weekAnalysisData_dataX() {
-      return ["07/13", "07/14", "07/15", "07/16", "07/17", "07/18", "07/19"];
+    chart3() {
+      let option = {
+        tooltip: {
+          trigger: "item",
+        },
+        series: [
+          {
+            color: ["#ff0000", "#ff8a00", "#ebce41"],
+            name: "风险事件",
+            type: "pie",
+            radius: ["70%", "80%"],
+            label: {
+              textStyle: {
+                color: "#05afe0",
+              },
+              formatter: "{b} {c}",
+              show: true,
+              fontSize: "13",
+              fontWeight: "bold",
+              position: "center",
+            },
+            data: [
+              { value: 391, name: "高风险" },
+              { value: 0, name: "中风险" },
+              { value: 0, name: "低风险" },
+            ],
+          },
+        ],
+      };
+      return option;
     },
-    weekAnalysisData_dataY1() {
-      return [98, 38, 48, 35, 92, 28, 93];
+    chart4() {
+      let option = {
+        tooltip: {
+          trigger: "item",
+        },
+        title: {
+          text: "运输总数",
+          textStyle: {
+            fontSize: "10px",
+            color: "#78898f",
+          },
+          left: "center",
+          top: "58%",
+        },
+        series: [
+          {
+            name: "履带吊",
+            type: "pie",
+            radius: ["70%", "80%"],
+            avoidLabelOverlap: false,
+            color: "#f5a118",
+            label: {
+              textStyle: {
+                color: "#05afe0",
+              },
+              formatter: "{c} km",
+              show: true,
+              fontSize: "15",
+              fontWeight: "bold",
+              position: "center",
+            },
+            data: [{ value: 7977, name: "年运输公里数" }],
+          },
+        ],
+      };
+      return option;
     },
-    weekAnalysisData_dataY() {
-      return [400, 500, 300, 300, 300, 400, 400, 400];
+    deviceList() {
+      let deviceList = JSON.parse(
+        localStorage.getItem("Screen_deviceOnlineList")
+      );
+      return deviceList.rows ? deviceList.rows : [{ name: "暂无数据" }];
     },
-    // 图表数据——近7日工作时长与油耗详情
-    weekAnalysisData() {
-      // const chart = this.$echarts.init(document.querySelector(".loadCurve"));
-      // 近七日日期
-      let dataX = this.weekAnalysisData_dataX;
-      // 近七日油耗
-      let dataY1 = this.weekAnalysisData_dataY1;
-      let dataY = this.weekAnalysisData_dataY;
+  },
+  data() {
+    return {
+      // 搜索框数据
+      searchInput: "",
+      // 搜索列表选中项
+      checkedIndex: 0,
+      // 设备数据
+      checkDevice: {},
+      // 工况数据
+      workConditionData: {},
+      // 周数据统计（油耗，工作时长
+      weekAnalysisData: {},
+      // 第一个图表的数据
+      chart1Data: {},
+      dataX: [],
+      dataY1: [],
+      dataY: [],
+    };
+  },
+  methods: {
+    checked(i) {
+      // 选中项样式
+      this.checkedIndex = i;
+      // 已有列表数据赋值
+      this.checkDevice = this.deviceList[i];
+      console.log(this.deviceList[i]);
+      // 获取实时工况数据
+      this.getDeviceDetails(this.deviceList[i].id).then((val) => {
+        this.workConditionData = val.data.data.workConditionData;
+        // 周工作数据
+        this.weekAnalysisData = val.data.data.weekAnalysisData;
+        // this.initChart1Date(val.data.data.weekAnalysisData.details);
+        // this.chart1();
+      });
+    },
+    async getDeviceDetails(id) {
+      return await this.$api.getDetailWithWorkConditionData(id);
+    },
+    chart1(value) {
+      // 声明图表x轴初始变量
+      let dataX = [];
+      let dataY1 = [];
+      let dataY = [];
+      // 对数据进行遍历，提取日期数据并转换格式
+      console.log("this.weekData.details", this.weekData.details);
+      value.forEach((item) => {
+        // 近七日耗油量
+        dataY1.push(item.oilCost);
+        // 近七日工作时间
+        dataY.push(item.workTime);
+        if (item.dataDate.slice(4, 8)[0] == 0) {
+          // 截取拼接字符
+          dataX.push(
+            item.dataDate.slice(5, 6) + "/" + item.dataDate.slice(6, 8)
+          );
+        } else {
+          dataX.push(
+            item.dataDate.slice(4, 6) + "月" + item.dataDate.slice(6, 8)
+          );
+        }
+      });
       let option = {
         // backgroundColor: "#0D2753",
         tooltip: {
@@ -396,17 +819,8 @@ export default {
             barWidth: "12px",
             itemStyle: {
               normal: {
-                color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                  {
-                    offset: 0,
-                    color: "#29acff",
-                  },
-                  {
-                    offset: 1,
-                    color: "#4bdfff",
-                  },
-                ]),
-                barBorderRadius: 6,
+                color: "#11384e",
+                borderColor: "#267ea9",
               },
             },
             data: dataY1,
@@ -421,991 +835,32 @@ export default {
             symbolSize: 8, //标记的大小
             itemStyle: {
               normal: {
-                color: "#ffa43a",
-                borderColor: "rgba(255, 234, 0, 0.5)", //圆点透明 边框
-                borderWidth: 5,
+                color: "rgb(117, 249, 185)",
+                borderColor: "rgba(117, 249, 185,0.8)", //圆点透明 边框
+                borderWidth: "1px",
               },
             },
             lineStyle: {
-              color: "#ffa43a",
+              color: "rgba(117, 249, 185,0.5)",
             },
 
             data: dataY,
           },
         ],
       };
-      return option;
-    },
-  },
-  watch: {
-    deviceIdList(newValue) {
-      console.log("newValue", newValue);
-    },
-  },
-  data() {
-    return {
-      workchart: true,
-      // 五个图表的数据
-      barOutLineHData: {
-        percentage: [5, 24, 26, 40, 3],
-        data: [5, 59, 38, 35, 8],
-        count: [59, 59, 59, 59, 59],
-      },
-      lineStackVData: {
-        date: ["6/30", "7/01", "7/02", "7/03", "7/04", "7/05", "7/06"],
-        average: [3.65, 7.75, 8.45, 10.05, 11.75, 5.59, 3.75],
-        actual: [4.9, 7.5, 8.9, 12.5, 15.8, 4.7, 4],
-      },
-      lineCrossVData: {
-        date: [
-          "01",
-          "02",
-          "03",
-          "04",
-          "05",
-          "06",
-          "07",
-          "08",
-          "09",
-          "10",
-          "11",
-          "12",
-          "13",
-          "14",
-          "15",
-          "16",
-          "17",
-          "18",
-          "19",
-          "20",
-          "21",
-          "22",
-          "23",
-          "24",
-          "25",
-          "26",
-          "26",
-          "28",
-          "29",
-          "30",
-        ],
-        actual: [
-          30, 40, 30, 40, 30, 40, 30, 60, 20, 40, 20, 40, 30, 40, 30, 40, 30,
-          40, 30, 60, 20, 40, 20, 40, 30, 60, 20, 40, 20, 40,
-        ],
-        expected: [
-          50, 30, 50, 60, 10, 50, 30, 50, 60, 40, 60, 40, 80, 30, 50, 60, 10,
-          50, 30, 70, 20, 50, 10, 40, 50, 30, 70, 20, 50, 10, 40,
-        ],
-      },
-      pieBlueData: {
-        type: ["汽车吊", "履带吊", "塔吊", "辅助设备", "其他"],
-        typeNum: [
-          { value: 0, name: "汽车吊" },
-          { value: 145, name: "履带吊" },
-          { value: 0, name: "塔吊" },
-          { value: 0, name: "辅助设备" },
-          { value: 0, name: "其他" },
-        ],
-        color: ["#065afb", "#277fbc", "#06f2ab", "#e696ab", "#06a0ab"],
-      },
-      pieNDGEData: {
-        data: [
-          { value: 20, name: "云南" },
-          { value: 26, name: "北京" },
-          { value: 24, name: "山东" },
-          { value: 25, name: "湖南" },
-          { value: 20, name: "福建" },
-          { value: 25, name: "浙江" },
-          { value: 30, name: "江苏" },
-          { value: 42, name: "广东" },
-        ],
-        color: [
-          "#006cff",
-          "#60cda0",
-          "#ed8884",
-          "#ff9f7f",
-          "#0096ff",
-          "#9fe6b8",
-          "#32c5e9",
-          "#1d9dff",
-        ],
-      },
-      // 地图数据
-      mapData: JSON.parse(localStorage.getItem("Screen_deviceList")),
-      rarr: [],
-      robj: {},
-    };
-  },
-  methods: {
-    async getDeviceDetails(id) {
-      return await this.$api.getDetailWithWorkConditionData(id);
-    },
-    fullScreen() {
-      // 全屏方法
-      let el = document.documentElement;
-      let rfs =
-        el.requestFullScreen ||
-        el.webkitRequestFullScreen ||
-        el.mozRequestFullScreen ||
-        el.msRequestFullScreen;
-
-      //typeof rfs != "undefined" && rfs
-      if (rfs) {
-        rfs.call(el);
-      } else if (typeof window.ActiveXObject !== "undefined") {
-        //for IE，这里其实就是模拟了按下键盘的F11，使浏览器全屏
-        let wscript = new ActiveXObject("WScript.Shell");
-        if (wscript != null) {
-          wscript.SendKeys("{F11}");
-        }
-      }
-      // 修改屏幕状态数据
-      this.ScreenStatus = true;
-    },
-    // 外边框柱形图
-    barOutLineH() {
-      let chart = echarts.init(document.querySelector(".bar2 .chart"));
-      // 声明颜色数组
-      let myColor = ["#1089E7", "#F57474", "#56D0E3", "#F8B448", "#8B78F6"];
-      let option = {
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "shadow",
-          },
-        },
-        // legend: {},
-        grid: {
-          top: "10%",
-          left: "22%",
-          // right: '4%',
-          bottom: "10%",
-          // containLabel: true
-        },
-        xAxis: {
-          // 不显示x轴
-          show: false,
-          // type: 'value',
-          // boundaryGap: [0, 0.01]
-        },
-        yAxis: [
-          {
-            //不显示y轴线条
-            axisLine: {
-              show: false,
-            },
-            // 不显示刻度
-            axisTick: {
-              show: false,
-            },
-            // y轴文字的颜色设置为白色
-            axisLabel: {
-              color: "#fff",
-            },
-            type: "category",
-            // y轴更换第一个对象更换data数据
-            data: ["2022", "2021", "2020", "2019", "2018"],
-            inverse: true,
-          },
-          {
-            // 是否显示
-            show: true,
-            //不显示y轴线条
-            axisLine: {
-              show: false,
-            },
-            // 不显示刻度
-            axisTick: {
-              show: false,
-            },
-            // y轴文字的颜色设置为白色
-            axisLabel: {
-              color: "#fff",
-              fontSize: 12,
-              // 文字的显示格式
-              formatter: "{value}%",
-            },
-            type: "category",
-            // y轴更换第二个对象更换data数据
-            data: this.barOutLineHData.percentage,
-          },
-        ],
-        series: [
-          {
-            // 给series  第一个对象里面的 添加
-            yAxisIndex: 0,
-            name: "设备数",
-            // 柱子之间的距离
-            barCategoryGap: 50,
-            //柱子的宽度
-            barWidth: 10,
-            // 2. 给 itemStyle  里面的color 属性设置一个 返回值函数
-            itemStyle: {
-              // 柱子设为圆角
-              borderRadius: 20,
-              // params 传进来的是柱子对象
-              color: function (param) {
-                // dataIndex 是当前柱子的索引号
-                return myColor[param.dataIndex];
-              },
-            },
-            type: "bar",
-            data: this.barOutLineHData.data,
-            // 图形上的文本标签
-            label: {
-              show: true,
-              // 图形内显示
-              position: "inside",
-              // 文字的显示格式
-              formatter: "{c}",
-              color: "#fff",
-            },
-            axisLabel: {
-              color: "#fff",
-            },
-          },
-          {
-            // 给series  第二个对象里面的 添加
-            yAxisIndex: 1,
-            name: "最大数",
-            type: "bar",
-            barCategoryGap: 50,
-            barWidth: 15,
-            itemStyle: {
-              color: "none",
-              borderColor: "#00c1de",
-              borderWidth: 3,
-              borderRadius: 15,
-            },
-            data: this.barOutLineHData.count,
-          },
-        ],
-      };
-      // 3.把配置项给实例对象
-      chart.setOption(option);
-      // 4.让图表跟随屏幕自适应
-      window.addEventListener("resize", function () {
-        chart.resize();
-      });
-    },
-    // 层叠折线图
-    lineStackV() {
-      {
-        // 1,实例化对象
-        const chart = echarts.init(document.querySelector(".line .chart"));
-        // 2,指定配置
-        let option = {
-          color: ["#00f2f1", "#ed3f35"],
-          tooltip: {
-            trigger: "axis",
-          },
-          legend: {
-            textStyle: {
-              color: "#4c9bfd",
-            },
-            right: "10%",
-          },
-          grid: {
-            top: "20%",
-            left: "3%",
-            right: "4%",
-            bottom: "3%",
-            show: true, //显示边框
-            borderColor: "#012f4a", //边框颜色
-            containLabel: true, //包含刻度在里面
-          },
-          xAxis: {
-            type: "category",
-            data: this.lineStackVData.date,
-            // 去除刻度线
-            axisTick: false,
-            // 文本颜色
-            axisLabel: {
-              color: "#4c9bfd",
-            },
-            // 去除轴线
-            axisLine: {
-              show: false,
-            },
-            // 去除轴内间距
-            boundaryGap: false,
-          },
-          yAxis: {
-            type: "value",
-            // 去除刻度线
-            axisTick: false,
-            // 文本颜色
-            axisLabel: {
-              color: "#4c9bfd",
-            },
-            // 分割线颜色
-            splitLine: {
-              lineStyle: {
-                color: "#012f4a",
-              },
-            },
-          },
-          series: [
-            {
-              name: "平均时长",
-              data: this.lineStackVData.average,
-              type: "line",
-              stack: "Total",
-              // 折线平滑度
-              smooth: 0.5,
-            },
-            {
-              name: "实际时长",
-              data: this.lineStackVData.actual,
-              type: "line",
-              stack: "Total",
-              // 折线平滑度
-              smooth: 0.5,
-            },
-          ],
-        };
-
-        // 3,把配置给实例对象
-        chart.setOption(option);
-        // 4,图表跟随屏幕自适应
-        window.addEventListener("resize", function () {
-          chart.resize();
-        });
-      }
-    },
-    // 交叉折线图
-    lineCrossV() {
-      // 1,实例化对象
-      const chart = echarts.init(document.querySelector(".line2 .chart"));
-      let option = {
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "cross",
-            label: {
-              backgroundColor: "#6a7985",
-            },
-          },
-        },
-        legend: {
-          data: ["实际租出", "预计租出"],
-          textStyle: {
-            fontSize: "12",
-            color: "rgba(255,255,255,.5)",
-          },
-        },
-        toolbox: {},
-        grid: {
-          left: "10",
-          top: "30",
-          right: "10",
-          bottom: "10",
-          containLabel: true,
-        },
-        xAxis: [
-          {
-            type: "category",
-            boundaryGap: false,
-            // x轴更换数据
-            data: this.lineCrossVData.date,
-            // 文本颜色为rgba(255,255,255,.6)  文字大小为 12
-            axisLabel: {
-              color: "rgba(255,255,255,.6)",
-              fontSize: "12",
-            },
-            // x轴线的颜色为   rgba(255,255,255,.2)
-            axisLine: {
-              lineStyle: {
-                color: "rgba(255,255,255,.2)",
-              },
-            },
-          },
-        ],
-        yAxis: [
-          {
-            type: "value",
-            axisTick: { show: false },
-            axisLine: {
-              lineStyle: {
-                color: "rgba(255,255,255,.1)",
-              },
-            },
-            axisLabel: {
-              color: "rgba(255,255,255,.6)",
-              fontSize: 12,
-            },
-            // 修改分割线的颜色
-            splitLine: {
-              lineStyle: {
-                color: "rgba(255,255,255,.1)",
-              },
-            },
-          },
-        ],
-        series: [
-          {
-            name: "实际租出",
-            type: "line",
-            smooth: true,
-            symbol: "circle",
-            symbolSize: 5,
-            showSymbol: false,
-            lineStyle: {
-              color: "#0184d5",
-              width: 2,
-            },
-            areaStyle: {
-              color: new echarts.graphic.LinearGradient(
-                0,
-                0,
-                0,
-                1,
-                [
-                  {
-                    offset: 0,
-                    color: "rgba(1, 132, 213, 0.4)",
-                  },
-                  {
-                    offset: 0.8,
-                    color: "rgba(1, 132, 213, 0.1)",
-                  },
-                ],
-                false
-              ),
-              shadowColor: "rgba(0, 0, 0, 0.1)",
-            },
-            itemStyle: {
-              color: "#0184d5",
-              borderColor: "rgba(221, 220, 107, .1)",
-              borderWidth: 12,
-            },
-            data: this.lineCrossVData.actual,
-          },
-          {
-            name: "预计租出",
-            type: "line",
-            smooth: true,
-            // 设置拐点 小圆点
-            symbol: "circle",
-            // 拐点大小
-            symbolSize: 5,
-            // 开始不显示拐点， 鼠标经过显示
-            showSymbol: false,
-            lineStyle: {
-              color: "#00d887",
-              width: 2,
-            },
-            areaStyle: {
-              color: new echarts.graphic.LinearGradient(
-                0,
-                0,
-                0,
-                1,
-                [
-                  {
-                    offset: 0,
-                    color: "rgba(0, 216, 135, 0.4)",
-                  },
-                  {
-                    offset: 0.8,
-                    color: "rgba(0, 216, 135, 0.1)",
-                  },
-                ],
-                false
-              ),
-              shadowColor: "rgba(0, 0, 0, 0.1)",
-            },
-            // 设置拐点颜色以及边框
-            itemStyle: {
-              color: "#00d887",
-              borderColor: "rgba(221, 220, 107, .1)",
-              borderWidth: 12,
-            },
-            data: this.lineCrossVData.expected,
-          },
-        ],
-      };
-      chart.setOption(option);
-      window.addEventListener("resize", function () {
-        chart.resize();
-      });
-    },
-    // 蓝色饼图
-    pieBlue() {
-      const chart = echarts.init(document.querySelector(".pie .chart"));
-      function generateData(totalNum, bigvalue, smallvalue, color) {
-        let dataArr = [];
-        for (var i = 0; i < totalNum; i++) {
-          if (i % 2 === 0) {
-            dataArr.push({
-              name: (i + 1).toString(),
-              value: bigvalue,
-              itemStyle: {
-                normal: {
-                  color: color,
-                  borderWidth: 0,
-                },
-              },
-            });
-          } else {
-            dataArr.push({
-              name: (i + 1).toString(),
-              value: smallvalue,
-              itemStyle: {
-                normal: {
-                  color: "rgb(0,0,0,0)",
-                  borderWidth: 0,
-                },
-              },
-            });
-          }
-        }
-        return dataArr;
-      }
-      let threeData = generateData(6, 40, 5, "rgb(12,65,144)");
-
-      let startAngle = 50; // 初始旋转角度
-      let option = {
-        tooltip: {
-          trigger: "item",
-          formatter: "{b} : {d}% <br/> {c}",
-        },
-
-        title: [
-          {
-            text: "设备总数",
-            x: "center",
-            top: "40%",
-            textStyle: {
-              color: "#fff",
-              fontSize: 16,
-              fontWeight: "100",
-            },
-          },
-          {
-            text: "147",
-            x: "center",
-            top: "50%",
-            textStyle: {
-              fontSize: 20,
-              color: "#00f0ff",
-              foontWeight: "500",
-            },
-          },
-        ],
-        series: [
-          {
-            type: "pie",
-            radius: ["50", "64.26"],
-            center: ["50%", "50%"],
-            color: [
-              // "rgb(255,183,112)",
-              "rgb(255,162,70)",
-              "rgb(125,235,255)",
-              "rgb(254,130,8)",
-              "rgb(77,194,255)",
-              "rgb(50,185,255)",
-              "rgb(24,176,255)",
-              "rgb(1,155,255)",
-              "rgb(39,115,254)",
-              "rgb(39,93,254)",
-            ],
-            itemStyle: {
-              normal: {
-                borderWidth: 5,
-                borderColor: "#031845",
-              },
-            },
-            data: [
-              {
-                name: "华南区",
-                value: 43,
-              },
-              {
-                name: "华东区",
-                value: 69,
-              },
-              {
-                name: "华中区",
-                value: 9,
-              },
-              // {
-              //   name: "华北区",
-              //   value: 1,
-              // },
-              {
-                name: "其他",
-                value: 26,
-              },
-            ],
-            labelLine: {
-              normal: {
-                show: true,
-                length: 18,
-                length2: 10,
-                lineStyle: {
-                  color: "#CCCCCC",
-                  width: 2,
-                  type: "dashed",
-                },
-              },
-            },
-            label: {
-              normal: {
-                formatter: "{b|{b} {c}}\n{hr|}",
-                rich: {
-                  b: {
-                    // fontSize: 12,
-                    color: "#FFF",
-                    align: "left",
-                    padding: [-20, 0, 0, 0],
-                  },
-                  hr: {
-                    borderColor: "#CCCCCC",
-                    width: "100%",
-                    borderWidth: 2,
-                    borderType: "dashed",
-                    height: 0,
-                  },
-                },
-              },
-            },
-          },
-        ],
-      };
-
-      chart.setOption(option);
-      // 4. 让图表跟随屏幕自动的去适应
-      window.addEventListener("resize", function () {
-        chart.resize();
-      });
-    },
-    // 南丁格尔饼形图
-    pieNDGE() {
-      // 南丁格尔玫瑰图
-      const chart = echarts.init(document.querySelector(".pie2 .chart"));
-
-      let option = {
-        tooltip: {
-          show: true,
-        },
-        legend: {
-          bottom: "0",
-          textStyle: {
-            color: "rgba(255,255,255,.5)",
-            fontSize: 10,
-          },
-          itemWidth: 10,
-          itemHeight: 10,
-        },
-        series: [
-          {
-            // 自定义饼图颜色
-            color: this.pieNDGEData.color,
-            name: "地区分布",
-            type: "pie",
-            radius: ["10%", "70%"],
-            center: ["50%", "45%"],
-            roseType: "radius",
-            itemStyle: {
-              borderRadius: 8,
-              fontSize: "10px",
-            },
-            // 文本标签控制饼形图文字的相关样式， 注意它是一个对象
-            label: {
-              fontSize: 10,
-              color: "rgba(255,255,255,.8)",
-            },
-            // 引导线调整
-            labelLine: {
-              // 连接扇形图线长
-              length: 6,
-              // 连接文字线长
-              length2: 8,
-            },
-            data: this.pieNDGEData.data,
-          },
-        ],
-      };
-
-      chart.setOption(option);
-
-      // 4. 让图表跟随屏幕自动的去适应
-      window.addEventListener("resize", function () {
-        chart.resize();
-      });
-    },
-    // 获取地图设备位置数据
-    // ------分割线------
-    // 判断数据是否获取成功，成功则存入，不成功则弹出错误，登录失效则返回登录页面
-    judgeResponse(response, storageName) {
-      if (response.data.code === 200) {
-        localStorage.setItem(storageName, JSON.stringify(response.data.data));
-      } else if (response.data.code === 401) {
-        this.$notify.error({
-          title: response.data.code + " 错误",
-          message: response.data.message,
-        });
-        this.$router.replace({ path: "/login" });
-      } else {
-        this.$notify({
-          title: response.data.code + " 警告",
-          message: response.data.message,
-          type: "warning",
-          duration: 0,
-        });
-      }
-    },
-    // 获取设备列表数据（有地图定位的
-    async getqueryEquipmentsByPage() {
-      // 获取已定位的设备总数显示在地图上
-      let amount = 999;
-      // 传入在线设备数据获取定位设备列表
-      let deviceList = await this.$api.getqueryEquipmentsByPage("0", amount);
-      // 传入判断响应是否成功的函数进行判断
-      this.judgeResponse(deviceList, "Screen_deviceList");
-    },
-    // 获取设备列表数据（有地图定位的
-    async getselectList() {
-      // 获取已定位的设备总数显示在地图上
-      let amount = 999;
-      // 传入大小获取设备列表
-      let selectList = await this.$api.getselectList("0", amount);
-      this.judgeResponse(selectList, "Screen_selectList");
-    },
-
-    // 初始化转换地图数据
-    initMapData() {
-      let rdata = this.mapData.rows;
-      let robj = {};
-      let rarr = [];
-      for (let i = 0; i < rdata.length; i++) {
-        robj[rdata[i].name] = [Number(rdata[i].lng), Number(rdata[i].lat)];
-        rarr[i] = {
-          name: rdata[i].name,
-          equipmentNo: rdata[i].equipmentNo,
-          powerTypeLable: rdata[i].powerTypeLable,
-          locationState: rdata[i].locationState,
-          id: rdata[i].id,
-          hasVideo: rdata[i].hasVideo,
-          carStatusLabel: rdata[i].carStatusLabel,
-          onlineStatusLabel: rdata[i].onlineStatusLabel,
-          locationTime: rdata[i].locationTime,
-          address: rdata[i].address,
-        };
-      }
-      console.log(rarr);
-      this.robj = robj;
-      this.rarr = rarr;
-    },
-    // 初始化地图
-    initMap() {
-      let myChart = echarts.init(document.querySelector(".map .chart"));
-
-      let data = this.rarr;
-
-      let geoCoordMap = this.robj;
-      let convertData = function (data) {
-        let res = [];
-        for (let i = 0; i < data.length; i++) {
-          let geoCoord = geoCoordMap[data[i].name];
-          if (geoCoord) {
-            res.push({
-              name: data[i].name,
-              value: geoCoord.concat(data[i].value),
-              equipmentNo: data[i].equipmentNo,
-              powerTypeLable: data[i].powerTypeLable,
-              locationState: data[i].locationState,
-              id: data[i].id,
-              hasVideo: data[i].hasVideo,
-              carStatusLabel: data[i].carStatusLabel,
-              onlineStatusLabel: data[i].onlineStatusLabel,
-              locationTime: data[i].locationTime,
-              address: data[i].address,
-            });
-          }
-        }
-        return res;
-      };
-      let option = {
-        tooltip: {
-          // 鼠标是否可以进入悬浮框
-          enterable: false,
-          // 触发方式 mousemove, click, none, mousemove|click
-          triggerOn: `none`,
-          // item 图形触发， axis 坐标轴触发， none 不触发
-          trigger: `item`,
-          // 浮层隐藏的延迟
-          hideDelay: 800,
-          // 浮层的渲染模式
-          renderMode: "html",
-          // 将 tooltip 框限制在图表的区域内
-          appendToBody: true,
-          confine: true,
-          // 背景色
-          backgroundColor: `rgba(0,0,0,0.2)`,
-          // 字体颜色
-          textStyle: {
-            color: "#fff",
-          },
-          alwaysShowContent: true,
-
-          //自定义修改显示
-          formatter: function (data) {
-            return "<div><p>设备编号：" + data.value[2] + "</p></div>";
-          },
-        },
-        geo: {
-          map: "china",
-          left: "center",
-          top: "30%",
-          // 把中国地图放大了1.2倍
-          zoom: 1.4,
-          roam: true,
-          itemStyle: {
-            show: true,
-            // 地图省份的背景颜色
-            areaColor: "rgba(20, 41, 87,0.6)",
-            // 地图各省份边框颜色
-            borderColor: "#195BB9",
-            // 地图各省份边框宽度
-            borderWidth: 1,
-            emphasis: {
-              areaColor: "#2B91B7",
-              // color: "#fff",
-            },
-          },
-          emphasis: {
-            areaColor: "#2B91B7",
-            label: {
-              color: "#fff",
-            },
-          },
-          label: {
-            color: "#fff",
-          },
-        },
-        series: [
-          {
-            name: "设备",
-            type: "scatter",
-            coordinateSystem: "geo",
-            data: convertData(data),
-            symbolSize: "40",
-            symbol:
-              "image://" + require("@/assets/images/digitalScreen/device.png"),
-            label: {
-              position: "insideLeft", // 设置标签向内
-              formatter: "{b}", // 设置标签格式
-              position: "right",
-              color: "#fff",
-              emphasis: {
-                show: true,
-                color: "#fff",
-              },
-            },
-            itemStyle: {
-              // 地图图标透明度
-              opacity: 1,
-              emphasis: {
-                show: true,
-              },
-            },
-          },
-        ],
-      };
-      const appData = require("@/utils/china.json"); //本地json路径
-      echarts.registerMap("chibishi", appData); //注册
-      option.geo.map = "chibishi";
-      myChart.setOption(option);
-      window.addEventListener("resize", function () {
-        myChart.resize();
-      });
-    },
-
-    deviceCountWeekData() {
-      let list = JSON.parse(localStorage.getItem("Screen_selectList")).rows;
-      let countWeekData = [];
-      // 近7日时间数据
-      let dataX = [];
-      let dataY1 = []; //油耗
-      let dataY = []; //工作时间
-      list.forEach((item) => {
-        this.getDeviceDetails(item.id).then((val) => {
-          // val.data.data.weekAnalysisData.details 近7日数据列表
-          if (val.data.data.weekAnalysisData.details) {
-            val.data.data.weekAnalysisData.details.forEach((item, key) => {
-              if (dataX.length < 7) {
-                if (item.dataDate.slice(4, 8)[0] == 0) {
-                  // 截取拼接字符
-                  dataX.push(
-                    item.dataDate.slice(5, 6) + "/" + item.dataDate.slice(6, 8)
-                  );
-                } else {
-                  dataX.push(
-                    item.dataDate.slice(4, 6) + "月" + item.dataDate.slice(6, 8)
-                  );
-                }
-              }
-
-              this.lineStackVData.date = dataX;
-              console.log(item, key);
-              // dataY1.push(item.oilCost);
-              // dataY.push(item.workTime);
-              console.log(dataX);
-            });
-          }
-        });
-      });
+      this.chart1 = option;
     },
   },
   created() {
-    (function flexible(window, document) {
-      let docEl = document.documentElement;
-      let dpr = window.devicePixelRatio || 1;
-
-      // adjust body font size
-      function setBodyFontSize() {
-        if (document.body) {
-          document.body.style.fontSize = 12 * dpr + "px";
-        } else {
-          document.addEventListener("DOMContentLoaded", setBodyFontSize);
-        }
-      }
-      setBodyFontSize();
-
-      // set 1rem = viewWidth / 10
-      function setRemUnit() {
-        let rem = docEl.clientWidth / 24;
-        docEl.style.fontSize = rem + "px";
-      }
-
-      setRemUnit();
-
-      // reset rem unit on page resize
-      window.addEventListener("resize", setRemUnit);
-      window.addEventListener("pageshow", function (e) {
-        if (e.persisted) {
-          setRemUnit();
-        }
-      });
-
-      // detect 0.5px supports
-      if (dpr >= 2) {
-        let fakeBody = document.createElement("body");
-        let testElement = document.createElement("div");
-        testElement.style.border = ".5px solid transparent";
-        fakeBody.appendChild(testElement);
-        docEl.appendChild(fakeBody);
-        if (testElement.offsetHeight === 1) {
-          docEl.classList.add("hairlines");
-        }
-        docEl.removeChild(fakeBody);
-      }
-    })(window, document);
-    // 格式： 当前时间：2020年3月17-0时54分14秒
-    (function () {
+    this.getDeviceDetails(this.deviceList[0].id).then((val) => {
+      console.log(val.data.data);
+      // 工况数据
+      this.workConditionData = val.data.data.workConditionData;
+      // 周工作数据
+      this.weekAnalysisData = val.data.data.weekAnalysisData;
+      console.log(val.data.data.weekAnalysisData.details);
+      // this.chart1(value);
+    })(function () {
       let t = null;
       t = setTimeout(time, 1000); //開始运行
       function time() {
@@ -1418,338 +873,633 @@ export default {
         let m = dt.getMinutes(); //获取分
         let s = dt.getSeconds(); //获取秒
         document.querySelector(".time").innerHTML =
-          "当前时间：" +
-          y +
-          "年" +
-          mt +
-          "月" +
-          day +
-          "日-" +
-          h +
-          "时" +
-          m +
-          "分" +
-          s +
-          "秒";
+          y + "-" + mt + "-" + day + " -" + h + ":" + m + ":" + s;
         t = setTimeout(time, 1000); //设定定时器，循环运行
       }
     })();
-    // this.deviceCountWeekData();
   },
-  mounted() {
-    // 清空缓存数据
-    // this.mapData={};
-    this.rarr = [];
-    this.robj = {};
-    // 渲染图表
-    this.barOutLineH();
-    this.lineStackV();
-    this.lineCrossV();
-    this.pieBlue();
-    this.pieNDGE();
-    // 获取在线接口设备位置信息
-    this.getqueryEquipmentsByPage();
-    // 获取所有设备列表信息
-    this.getselectList();
-    // 初始化数据
-    this.initMapData();
-    // 初始化地图
-    this.initMap();
-    // 全屏方法
-    this.fullScreen();
-  },
+  mounted() {},
 };
 </script>
 
-<style lang="less" scoped>
-* {
-  margin: 0px;
-  padding: 0px;
-  box-sizing: border-box;
-}
-
-ul,
-li {
-  list-style: none;
-}
-
+<style lang="less">
 .DigitalScreen {
-  background: url(@/assets/images/digitalScreen/bg.jpg);
-}
-
-@font-face {
-  font-family: electronicFont;
-  src: url(@/assets/font/DS-DIGIT.TTF);
-}
-
-header {
-  position: relative;
-  height: 1.25rem;
-  background: url(@/assets/images/digitalScreen/head_bg.png);
-
-  h1 {
-    color: #fff;
-    font-size: 0.475rem;
-    text-align: center;
-    line-height: 1rem;
+  box-sizing: border-box;
+  font-size: 13.25px;
+  color: rgb(0, 198, 255);
+  min-width: 1280px;
+  min-height: 620px;
+  width: 100%;
+  height: 100vh;
+  min-width: 1440px;
+  letter-spacing: 1px;
+  .checked {
+    background: rgba(0, 198, 255, 0.15);
+    span {
+      color: #00c6ff !important;
+    }
   }
-
-  .showTime {
-    position: absolute;
-    right: 0.375rem;
-    top: 0;
-    line-height: 0.9375rem;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.25rem;
-  }
-}
-
-.mainbox {
-  display: flex;
-  min-width: 1024px;
-  max-width: 1920px;
-  margin: 0 auto;
-  padding: 0.125rem 0.125rem 0;
-
-  .column {
-    flex: 3;
-  }
-
-  .column:nth-child(2) {
-    flex: 5;
-    margin: 0 0.125rem 0.1875rem;
+  .textNowarp {
     overflow: hidden;
-    .no {
-      background: rgba(101, 132, 226, 0.125rem);
-      padding: 0.1875rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  #fullScreen {
+    border: none;
+    color: #50666e;
+    background: none;
+    height: auto;
+    margin-left: 10px;
+    font-size: 24px;
+  }
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+    /**/
+  }
+  ::-webkit-scrollbar-track {
+    background-color: transparent !important;
+    border-radius: 2px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 168, 255, 0.25);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 168, 255, 0.3);
+  }
+  ::-webkit-scrollbar-corner {
+    background: #179a16;
+  }
 
-      .no-hd {
+  header {
+    display: flex;
+    justify-content: space-between;
+    height: 53px;
+    background: #000002;
+    border-bottom: 1px solid rgba(0, 198, 255, 0.2);
+    .headerLeftShow {
+      height: 12px;
+      width: 18.5px;
+      background: url("@/assets/images/kzuqi/10009.png");
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      margin: 20px 0 0 25px;
+      cursor: pointer;
+    }
+    .headerTitle {
+      position: absolute;
+      left: 50%;
+      -webkit-transform: translate(-50%);
+      transform: translate(-50%);
+      height: 53px;
+      width: 905px;
+      background-image: url("@/assets/images/kzuqi/biaoti.png");
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      > div {
+        position: absolute;
+        left: 50%;
+        -webkit-transform: translate(-50%);
+        transform: translate(-50%);
+        line-height: 53px;
+        width: 450px;
+        text-align: center;
+        color: #01c5fe;
+        .title {
+          font-size: 30px;
+        }
+      }
+    }
+    .showTime {
+      height: 53px;
+      display: flex;
+      align-items: center;
+    }
+  }
+  .main {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 54px);
+    // height: 100%;
+    .borderImg {
+      border: 1px solid #006381;
+      background-image: url("@/assets/images/kzuqi/leftUp.png"),
+        url("@/assets/images/kzuqi/rightUp.png"),
+        url("@/assets/images/kzuqi/leftDown.png"),
+        url("@/assets/images/kzuqi/rightDown.png");
+      background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+      background-position: top left 0, 100% 0, bottom left 0, 100% 100%;
+    }
+    .prevOnline {
+      color: #00c6ff;
+    }
+    .textFont14,
+    .textFont16 {
+      font-size: 12px;
+    }
+    .splitLine {
+      margin: 8px 0;
+      height: 2px;
+      background-image: url("@/assets/images/kzuqi/fenggexian.png");
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+    }
+    .title {
+      display: flex;
+      align-items: center;
+    }
+    .title > i {
+      font-size: 16px;
+    }
+    .leftTree {
+      position: relative;
+      float: left;
+      padding: 8px 0 12px 16px;
+      width: 12.5%;
+      height: calc(100% - 20px);
+      z-index: 230;
+      background: rgba(0, 0, 2, 0.8);
+      .leftTreeTop {
         position: relative;
-        border: 1px solid rgba(25, 286, 139, 0.17);
-
-        &::before {
-          position: absolute;
-          top: 0%;
-          left: 0%;
-          content: "";
-          width: 30px;
-          height: 10px;
-          border-top: 2px solid #02a6b5;
-          border-left: 2px solid #02a6b5;
+        margin: 10px;
+        .el-input {
+          display: block;
         }
-
-        &::after {
-          position: absolute;
-          bottom: 0%;
-          right: 0%;
-          content: "";
-          width: 30px;
-          height: 10px;
-          border-bottom: 2px solid #02a6b5;
-          border-right: 2px solid #02a6b5;
+        .el-input__inner {
+          height: 28px;
+          color: rgba(173, 200, 205, 0.4);
+          background: rgba(0, 0, 2, 0.8);
+          border: 1px solid rgba(0, 198, 255, 0.3);
+          border-radius: 14px;
+          padding: 0 30px 0 12px;
         }
-
-        ul {
-          display: flex;
-
-          li:nth-child(1) {
-            &::after {
-              content: "";
-              position: absolute;
-              top: 25%;
-              right: 0;
-              height: 50%;
-              width: 1px;
-              background-color: rgba(255, 255, 255, 0.2);
+        .el-input__icon {
+          line-height: normal;
+        }
+      }
+      .leftTreeBottom {
+        letter-spacing: 0;
+        overflow-y: auto;
+        // height: 620.8px;
+        height: calc(100% - 80px);
+        .equipmentItem {
+          min-height: 26.5px;
+          .itemContent {
+            display: flex;
+            line-height: 16.6px;
+            padding: 4px 0;
+            .prevIconOffline,
+            .prevIconOnline {
+              margin: 5px 5.2px 0 10.5px;
+              width: 5.275px;
+              height: 5.275px;
+              border-radius: 50%;
+            }
+            .prevIconOnline {
+              background: #00c6ff;
+            }
+            span {
+              color: #adc8cd;
+              margin-right: 3px;
             }
           }
+        }
+        .equipmentItem:hover {
+          background: rgba(0, 198, 255, 0.15);
+          cursor: pointer;
+        }
+      }
+      .leftTreeContent {
+        // width: 100%;
+        height: 100%;
+        background-size: 9% !important;
+      }
+    }
+    .mainContent {
+      width: 100%;
+      height: 100%;
+      .leftScreen {
+        position: relative;
+        float: left;
+        padding: 8px 0 12px 10px;
+        width: 23.9%;
+        min-width: 320px;
+        height: calc(100% - 20px);
+        background: rgba(0, 0, 2, 0.8);
+        z-index: 231;
+        .leftBottom,
+        .leftTop {
+          width: 100%;
+          height: calc(50% - 5px);
+          background-size: 4.8%;
+          box-sizing: border-box;
+          .leftTopContent {
+            margin: 10.6px;
+            margin-bottom: 0;
+            .textColor {
+              color: #adc8cd;
+            }
+            span {
+              color: #adc8cd;
+              margin: 0 3px;
+            }
+            .detailBtn {
+              float: right;
+              display: flex;
+              padding-left: 9px;
+              width: 45px;
+              min-width: 45px;
+              height: 19.8px;
+              text-align: center;
+              line-height: 19.8px;
+              background-color: #00c6ff;
+              color: #000002;
+              border-radius: 2.65px;
+              cursor: pointer;
+              i {
+                position: relative;
+                margin: 0;
+                line-height: 19.8px;
+                color: #000002;
+                font-weight: 700;
+              }
+            }
+            .equipmentName {
+              height: 18px;
+            }
+            .video {
+              height: 61%;
+              .channel-content {
+                z-index: 50;
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                overflow-y: hidden;
+                overflow-x: auto;
 
-          li {
-            position: relative;
-            flex: 1;
-            line-height: 1rem;
-            height: 1rem;
-            font-size: 0.875rem;
-            color: #ffeb7b;
-            // font-family: electronicFont;
-            text-align: center;
+                .channel-item {
+                  position: relative;
+                  width: 60px;
+                  height: 25px;
+                  margin: 5px 10px;
+                  line-height: 25.6px;
+                  // color: #999;
+                  background: rgba(0, 0, 2, 0.8);
+                  border: 1px solid rgba(0, 198, 255, 0.8);
+                  border-radius: 3.2px;
+                  cursor: pointer;
+                  font-size: 12px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+
+                  &:before {
+                    position: absolute;
+                    top: 8px;
+                    left: 4px;
+                    display: block;
+                    margin: 2.4px;
+                    content: "";
+                    width: 4px;
+                    height: 4px;
+                    background: #13ca40;
+                    border-radius: 50%;
+                  }
+
+                  div {
+                    padding-left: 7.8px;
+                    margin-right: 4.8px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    text-align: center;
+                    line-height: normal;
+                  }
+                }
+                .channel-item:hover {
+                  color: rgba(0, 198, 255, 0.8);
+                  background: rgba(0, 198, 255, 0.2);
+                  // border: 1px solid rgba(0, 198, 255, 0.8);
+                  cursor: pointer;
+                }
+              }
+
+              .videoBox {
+                position: relative;
+
+                .videoBottomBox {
+                  width: 100%;
+                  height: 20px;
+                  color: rgba(200, 229, 233, 0.7);
+                  background: #041e30;
+                  text-align: right;
+                }
+
+                i {
+                  margin-right: 5px;
+                  cursor: pointer;
+                }
+
+                .videoSize {
+                  display: flex;
+                  justify-content: center;
+
+                  video {
+                    height: 124px;
+                  }
+                }
+              }
+            }
+            .location {
+              margin-top: 2.2px;
+              padding-bottom: 2.3px;
+              border-bottom: 0.8px solid rgba(0, 198, 255, 0.3);
+              > div {
+                display: flex;
+                line-height: 18.5px;
+              }
+              .addressIcon,
+              .locationTimeIcon {
+                margin-right: 4.6px;
+                min-width: 15.8px;
+                height: 15.8px;
+                background-repeat: no-repeat;
+                background-position: 100% 100%;
+                background-size: 100%;
+              }
+              .locationTimeIcon {
+                background-image: url("@/assets/images/kzuqi/shijian.png");
+              }
+              .addressIcon {
+                background-image: url("@/assets/images/kzuqi/dingwei.png");
+              }
+            }
+            .equipmentInfo {
+              margin-top: 2.3px;
+              > div {
+                display: flex;
+                line-height: 18.5px;
+              }
+              .equipmentInfoTitle,
+              .equipmentInfoTitle span {
+                display: flex;
+                .prevOnline div {
+                  margin: 5.4px 5.2px 0 5px;
+                  width: 0.57em;
+                  height: 0.57em;
+                  background: #00c6ff;
+                  border-radius: 50%;
+                }
+              }
+              .equipmentInfoTitle {
+                display: flex;
+                align-items: center;
+              }
+              .model {
+                display: flex;
+                .mark {
+                  padding: 1.8px 1px;
+                  color: rgba(0, 198, 255, 0.8);
+                  background-color: #000002;
+                  border: 1px solid rgba(0, 198, 255, 0.5);
+                  border-radius: 6.12px;
+                  font-size: 12px;
+                  white-space: nowrap;
+                }
+              }
+            }
+          }
+        }
+        .leftBottom {
+          margin-top: 10px;
+          .leftBottomContent,
+          .leftTopContent,
+          .rightBottomContent,
+          .rightTopContent {
+            margin: 10.6px;
+            span {
+              margin: 0 3px;
+              color: #adc8cd;
+            }
+            .weekAnalysisData {
+              height: 120px;
+            }
+            .workingCondition {
+              font-size: 12px;
+              .dataArea {
+                padding: 2.5px 0;
+                display: flex;
+                flex-wrap: wrap;
+                .panel {
+                  width: calc(25% - 2px);
+                  display: flex;
+                  text-align: center;
+                  justify-content: center;
+                  flex-wrap: wrap;
+                  .panel-item {
+                    width: calc(100% - 2px);
+                    height: 36px;
+                    margin-top: 2px;
+                    > p {
+                      margin-bottom: 5px;
+                    }
+                  }
+                  .columnLine[data-v-8ffcbcbe] {
+                    float: right;
+                    width: 1px;
+                    height: 16px;
+                    background: #8ea1a5;
+                    opacity: 0.3;
+                  }
+                }
+              }
+              .el-carousel__arrow--left {
+                left: -12px;
+              }
+              .el-carousel__arrow--right {
+                right: -6px;
+              }
+            }
           }
         }
       }
-
-      .no-bd {
-        ul {
-          display: flex;
-
-          li {
-            flex: 1;
-            line-height: 0.5rem;
-            height: 0.5rem;
-            text-align: center;
-            font-size: 0.225rem;
-            color: rgba(255, 255, 255, 0.7);
-            padding-top: 0.125rem;
+      .centerTopScreen {
+        position: relative;
+        float: left;
+        padding: 8px 12px;
+        height: 88px;
+        z-index: 230;
+        width: calc(100% - 930px);
+        min-width: 340px;
+        background: rgba(0, 0, 2, 0.8);
+        .centerTop {
+          height: 100%;
+          background-size: 3%;
+        }
+      }
+      .rightScreen {
+        position: relative;
+        float: right;
+        padding: 8px 13px 12px 0;
+        height: calc(100% - 20px);
+        background: rgba(0, 0, 2, 0.8);
+        z-index: 230;
+        .rightTop {
+          width: 304px;
+          height: calc(75% - 10px);
+          background-size: 4.8%;
+          .content {
+            height: 30%;
+            margin: 10px 12px 0;
+            .area {
+              display: flex;
+              height: calc(100% - 28px);
+              .chart {
+                width: 40%;
+              }
+              .data {
+                width: 60%;
+                margin: 16px 0;
+                font-size: 12px;
+              }
+            }
+            .chart1 {
+              .data {
+                color: #adc8cd;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+                .item {
+                  display: flex;
+                  align-items: center;
+                  .dot {
+                    margin: 2px 12px 0px;
+                    width: 5px;
+                    height: 5px;
+                    border-radius: 50%;
+                    background: rgb(5, 87, 173);
+                  }
+                  .text {
+                    width: 100px;
+                  }
+                  span {
+                    color: #00c6ff;
+                  }
+                }
+              }
+            }
+            .chart2 {
+              .data {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-evenly;
+                color: #adc8cd;
+                .item {
+                  width: 100%;
+                  display: flex;
+                  justify-content: space-between;
+                  .left {
+                    display: flex;
+                    .dot {
+                      margin: 2px 12px 0px;
+                      width: 5px;
+                      height: 5px;
+                      border-radius: 50%;
+                      background: #ff0000;
+                    }
+                    .dot:nth-child(2) {
+                      background-color: #ff8a00;
+                    }
+                    .dot:nth-child(3) {
+                      background-color: #ebce41;
+                    }
+                  }
+                  .right {
+                    color: #fc6501;
+                    cursor: pointer;
+                    span {
+                      text-decoration: underline;
+                    }
+                  }
+                }
+              }
+            }
+            .chart3 {
+              .data {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-evenly;
+                color: #adc8cd;
+              }
+            }
+          }
+          // .content:nth-child(3) {
+          //   height: 34%;
+          //   .chart3 {
+          //     height: calc(100% - 34px);
+          //     .countTitle {
+          //       text-align: center;
+          //     }
+          //   }
+          // }
+        }
+        .rightBottom {
+          margin-top: 10px;
+          width: 304px;
+          height: calc(25% - 10px);
+          background-size: 4.8%;
+          .content {
+            margin: 10px 12px 0;
+            height: 100%;
+            .data {
+              height: calc(100% - 46px);
+              display: flex;
+              flex-direction: column;
+              font-size: 12px;
+              justify-content: space-evenly;
+              .expireTimeContent {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                .expireTimeItem {
+                  display: flex;
+                  align-items: center;
+                  color: #adc8cd;
+                }
+                .expireTimeItem::before {
+                  content: "";
+                  display: block;
+                  float: left;
+                  margin: 0px 12px 0;
+                  content: "";
+                  width: 20px;
+                  height: 20px;
+                  background-position: 0 50%;
+                  background-size: 100%;
+                  background-image: url("@/assets/images/kzuqi/baoxian.png");
+                }
+                .expireTimeCount {
+                  margin-right: 80px;
+                  color: #fc6501;
+                  cursor: pointer;
+                  .linkLine {
+                    text-decoration: underline;
+                  }
+                }
+              }
+            }
           }
         }
       }
     }
     .map {
-      position: relative;
-      height: 10.125rem;
-      .chart {
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 5;
-        height: 10.125rem;
-        width: 100%;
-      }
-      .map1,
-      .map2,
-      .map3 {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        height: 6.475rem;
-        width: 6.475rem;
-        background: url(@/assets/images/digitalScreen/map.png) no-repeat;
-        background-size: 100% 100%;
-        opacity: 0.3;
-      }
-      .map2 {
-        width: 8.0375rem;
-        height: 8.0375rem;
-        background: url(@/assets/images/digitalScreen/lbx.png) no-repeat;
-        background-size: 100% 100%;
-        opacity: 0.6;
-        animation: rotate 15s linear infinite;
-      }
-      .map3 {
-        width: 7.075rem;
-        height: 7.075rem;
-        background: url(@/assets/images/digitalScreen/jt.png) no-repeat;
-        background-size: 100% 100%;
-        animation: rotate 10s linear infinite reverse;
-      }
-      @keyframes rotate {
-        from {
-          transform: translate(-50%, -50%) rotate(0deg);
-        }
-        to {
-          transform: translate(-50%, -50%) rotate(360deg);
-        }
-      }
-    }
-  }
-
-  .panel {
-    position: relative;
-    height: 3.875rem;
-    border: 1px solid rgba(25, 186, 139, 0.17);
-    background: url(@/assets/images/digitalScreen/line\(1\).png)
-      rgba(255, 255, 255, 0.03);
-    padding: 0 0.1875rem 40px;
-    margin-bottom: 0.1875rem;
-
-    &::before {
-      content: "";
       position: absolute;
-      top: 0;
       left: 0;
-      width: 10px;
-      height: 10px;
-      border-left: 2px solid #02a6b5;
-      border-top: 2px solid #02a6b5;
-    }
-
-    &::after {
-      content: "";
-      position: absolute;
       top: 0;
-      right: 0;
-      width: 10px;
-      height: 10px;
-      border-right: 2px solid #02a6b5;
-      border-top: 2px solid #02a6b5;
-    }
-
-    .panel-footer {
-      position: absolute;
-      bottom: 0;
-      left: 0;
       width: 100%;
-
-      &::before {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 10px;
-        height: 10px;
-        border-left: 2px solid #02a6b5;
-        border-bottom: 2px solid #02a6b5;
-      }
-
-      &::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        width: 10px;
-        height: 10px;
-        border-right: 2px solid #02a6b5;
-        border-bottom: 2px solid #02a6b5;
-      }
-    }
-
-    h2 {
-      position: relative;
-      height: 0.6rem;
-      line-height: 0.6rem;
-      color: #fff;
-      text-align: center;
-      font-size: 0.25rem;
-      font-weight: 400;
-      a {
-        position: relative;
-        color: #fff;
-        text-decoration: none;
-        margin: 0 0.0125rem;
-        &:nth-child(1) {
-          right: -40px;
-        }
-        &:nth-child(2) {
-          right: -40px;
-        }
-        &:hover {
-          color: rgb(163, 195, 224);
-        }
-      }
-    }
-
-    .chart {
-      height: 3rem;
-      // background-color: aquamarine;
-    }
-  }
-}
-.baoxian {
-  display: flex;
-  color: #fff;
-  flex-direction: column;
-  align-items: stretch;
-  height: 100%;
-  padding: 0 1rem 0 0.5rem;
-  justify-content: space-evenly;
-  p {
-    display: flex;
-    justify-content: space-between;
-    color: #00c6ff;
-    span {
-      span {
-        text-decoration: underline;
-      }
+      min-height: 691px;
+      height: 100%;
+      background-color: #030b11;
     }
   }
 }

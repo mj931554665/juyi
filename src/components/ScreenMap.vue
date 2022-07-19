@@ -2,14 +2,13 @@
   <div class="component">
     <!-- ready,地图组件渲染完毕时触发，返回一个百度地图的核心类和地图实例 -->
     <baidu-map
-      id="map"
+      id="bmap"
       class="mapStyle"
       :center="centerPoint"
-      :zoom="zoom"
+      :zoom="1"
       :mapStyle="mapStyle"
       :scroll-wheel-zoom="true"
       :min-zoom="5"
-      
       @ready="handler"
     >
       <!-- 聚合点组件（需引入） -->
@@ -60,7 +59,7 @@ export default {
       Map: "",
       //中心轴坐标
       centerPoint: {
-        lng: 120,
+        lng: 96,
         lat: 36,
       },
       // 坐标点位置
@@ -167,11 +166,11 @@ export default {
 </script>
 
 <style scoped>
-.mapStyle {
+#bmap{
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: calc(100vh - 130px);
-}
-.cardStyle {
-  height: calc(100vh - 130px);
+  height: 100%;
 }
 </style>

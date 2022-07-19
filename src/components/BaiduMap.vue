@@ -4,7 +4,6 @@
       <!-- ready,地图组件渲染完毕时触发，返回一个百度地图的核心类和地图实例 -->
       <baidu-map
         id="map"
-        ref="bMap"
         class="mapStyle"
         :center="centerPoint"
         :zoom="zoom"
@@ -167,18 +166,12 @@
         </div>
       </div>
     </el-card>
-    <TableInfo
-      :onlineStatus="onlineStatus"
-      :deviceList="deviceList"
-    ></TableInfo>
   </div>
 </template>
 
 <script>
 // 引入设备信息弹窗组件
 import Popups from "@/components/Popups.vue";
-// 引入右侧悬浮卡片组件
-import TableInfo from "@/components/TableInfo.vue";
 // 引入聚合点组件（vue-baidu-map自带）
 import { BmlMarkerClusterer } from "vue-baidu-map";
 export default {
@@ -186,7 +179,6 @@ export default {
   components: {
     BmlMarkerClusterer,
     Popups,
-    TableInfo,
   },
   data() {
     return {

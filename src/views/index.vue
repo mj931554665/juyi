@@ -1,10 +1,18 @@
 <template>
   <div>
-    <el-container style="height: 100%;">
+    <!-- <el-container style="height: 100%;">
       <el-aside style="width: auto;min-height: 100vh;">
         <NavbarVue />
       </el-aside>
       <el-main>
+        <router-view />
+      </el-main>
+    </el-container> -->
+    <el-container>
+      <el-header height="100%" style="padding: 0;">
+        <NavbarVue />
+      </el-header>
+      <el-main height="100%">
         <router-view />
       </el-main>
     </el-container>
@@ -12,19 +20,19 @@
 </template>
 
 <script>
-
-import NavbarVue from "../components/Sidebar.vue";
+import NavbarVue from "../components/Navbar.vue";
 
 export default {
-components: {
-    NavbarVue
-  }
-}
+  components: {
+    NavbarVue,
+  },
+};
 </script>
 
 <style>
 /* 消除element布局自带内边距 */
-.el-card__body, .el-main{
+.el-card__body,
+.el-main {
   padding: 0 !important;
 }
 </style>

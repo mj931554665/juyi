@@ -6,7 +6,8 @@
 import * as echarts from 'echarts'
 
 const idGen = () => {
-  return new Date().getTime()
+  let id = new Date().getTime() + "" + Math.random()*10000;
+  return id;
 }
 
 export default {
@@ -62,6 +63,7 @@ export default {
   },
 
   computed: {
+
     style() {
       return {
         height: this.height,

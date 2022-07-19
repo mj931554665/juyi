@@ -18,76 +18,76 @@
             <div class="item-detail">
               <div class="detail-line">
                 <div class="channel-content">
-                  <div data-v-7a856cc4="">
+                  <div>
                     <div
-                      data-v-7a856cc4=""
+                    
                       title="通道1"
                       class="channel-item active"
                     >
-                      <div data-v-7a856cc4="">通道1</div>
+                      <div>通道1</div>
                     </div>
                   </div>
-                  <div data-v-7a856cc4="">
+                  <div>
                     <div
-                      data-v-7a856cc4=""
+                    
                       title="通道2"
                       class="channel-item active"
                     >
-                      <div data-v-7a856cc4="">通道2</div>
+                      <div>通道2</div>
                     </div>
                   </div>
-                  <div data-v-7a856cc4="">
+                  <div>
                     <div
-                      data-v-7a856cc4=""
+                    
                       title="通道3"
                       class="channel-item active"
                     >
-                      <div data-v-7a856cc4="">通道3</div>
+                      <div>通道3</div>
                     </div>
                   </div>
-                  <div data-v-7a856cc4="">
+                  <div>
                     <div
-                      data-v-7a856cc4=""
+                    
                       title="通道4"
                       class="channel-item active"
                     >
-                      <div data-v-7a856cc4="">通道4</div>
+                      <div>通道4</div>
                     </div>
                   </div>
-                  <div data-v-7a856cc4="">
+                  <div>
                     <div
-                      data-v-7a856cc4=""
+                    
                       title="通道5"
                       class="channel-item active"
                     >
-                      <div data-v-7a856cc4="">通道5</div>
+                      <div>通道5</div>
                     </div>
                   </div>
-                  <div data-v-7a856cc4="">
+                  <div>
                     <div
-                      data-v-7a856cc4=""
+                    
                       title="通道6"
                       class="channel-item active"
                     >
-                      <div data-v-7a856cc4="">通道6</div>
+                      <div>通道6</div>
                     </div>
                   </div>
-                  <div data-v-7a856cc4="">
+                  <div>
                     <div
-                      data-v-7a856cc4=""
+                    
                       title="通道7"
                       class="channel-item active"
                     >
-                      <div data-v-7a856cc4="">通道7</div>
+                      <div>通道7</div>
                     </div>
                   </div>
-                  <div data-v-7a856cc4="">
+                  <div>
                     <div
-                      data-v-7a856cc4=""
+                    
                       title="通道8"
                       class="channel-item active"
                     >
-                      <div data-v-7a856cc4="">通道8</div>
+                      <div>通道8</div>
                     </div>
                   </div>
                 </div>
@@ -594,6 +594,7 @@ export default {
       // 近七日油耗
       let dataY1 = this.dataOilCost;
       let dataY = this.dataWorkTime;
+      console.log(dataX,'--',dataY1,'--',dataY);
       let option = {
         // backgroundColor: "#0D2753",
         tooltip: {
