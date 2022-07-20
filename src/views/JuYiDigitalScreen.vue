@@ -1,10 +1,10 @@
 <template>
   <div class="DigitalScreen">
     <header>
-      <div class="headerLeftShow"></div>
+      <div class="headerLeftShow" @click="hideLeftTree = !hideLeftTree" :class="hideLeftTree?'':'leftTreehide'"></div>
       <div class="headerTitle">
         <div>
-          <div class="title">数字化大屏</div>
+          <div class="title">钜亿数字化大屏</div>
         </div>
       </div>
       <div class="showTime" style="display: flex">
@@ -14,7 +14,7 @@
     </header>
     <!-- 页面主体部分 -->
     <div class="main">
-      <div class="leftTree">
+      <div class="leftTree" v-show="hideLeftTree">
         <div class="leftTreeContent borderImg">
           <div class="leftTreeTop">
             <el-input
@@ -410,7 +410,7 @@
               <div class="title textFont16">
                 <i class="el-icon-s-tools"></i>
                 <!-- <span class="textColor">24小时内风险事件</span> -->
-                <span class="textColor">风控数据</span>
+                <span class="textColor">风险事件</span>
               </div>
               <div class="splitLine"></div>
               <div class="area chart2">
@@ -454,7 +454,7 @@
             <div class="content">
               <div class="title textFont16">
                 <i class="el-icon-s-tools"></i>
-                <span class="textColor">运输公里数</span>
+                <span class="textColor">运输里程</span>
               </div>
               <div class="splitLine"></div>
               <div class="area chart3">
@@ -465,19 +465,19 @@
                   <div class="item">
                     <div class="left">
                       <div class="dot"></div>
-                      <div class="text">周运输公里数：&nbsp;153&nbsp;km</div>
+                      <div class="text">周运输里程：&nbsp;153&nbsp;万公里</div>
                     </div>
                   </div>
                   <div class="item">
                     <div class="left">
                       <div class="dot"></div>
-                      <div class="text">月运输公里数：&nbsp;655&nbsp;km</div>
+                      <div class="text">月运输里程：&nbsp;655&nbsp;万公里</div>
                     </div>
                   </div>
                   <div class="item">
                     <div class="left">
                       <div class="dot"></div>
-                      <div class="text">年运输公里数：&nbsp;7977&nbsp;km</div>
+                      <div class="text">年运输里程：&nbsp;7977&nbsp;万公里</div>
                     </div>
                   </div>
                 </div>
@@ -486,34 +486,68 @@
           </div>
           <div class="rightBottom borderImg">
             <div class="content">
-              <div class="title textFont16">
-                <i class="el-icon-s-tools"></i>
-                <span class="textColor">到期统计</span>
-              </div>
-              <div class="splitLine"></div>
-              <div class="data">
-                <div class="expireTimeContent">
-                  <div class="expireTimeItem">保险到期</div>
-                  <div class="expireTimeCount">
-                    <span class="linkLine">0</span>
-                    ▶
+              <el-carousel :interval="3000" arrow="always" height="150px">
+                <el-carousel-item>
+                  <div class="title textFont16">
+                    <i class="el-icon-s-tools"></i>
+                    <span class="textColor">到期统计</span>
                   </div>
-                </div>
-                <div class="expireTimeContent">
-                  <div class="expireTimeItem">证照到期</div>
-                  <div class="expireTimeCount">
-                    <span class="linkLine">0</span>
-                    ▶
+                  <div class="splitLine"></div>
+                  <div class="data">
+                    <div class="expireTimeContent">
+                      <div class="expireTimeItem">保险到期</div>
+                      <div class="expireTimeCount">
+                        <span class="linkLine">0</span>
+                        ▶
+                      </div>
+                    </div>
+                    <div class="expireTimeContent">
+                      <div class="expireTimeItem">证照到期</div>
+                      <div class="expireTimeCount">
+                        <span class="linkLine">0</span>
+                        ▶
+                      </div>
+                    </div>
+                    <div class="expireTimeContent">
+                      <div class="expireTimeItem">特种设备检验到期</div>
+                      <div class="expireTimeCount">
+                        <span class="linkLine">0</span>
+                        ▶
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div class="expireTimeContent">
-                  <div class="expireTimeItem">特种设备检验到期</div>
-                  <div class="expireTimeCount">
-                    <span class="linkLine">0</span>
-                    ▶
+                </el-carousel-item>
+                <el-carousel-item>
+                  <div class="title textFont16">
+                    <i class="el-icon-s-tools"></i>
+                    <span class="textColor">维保统计</span>
                   </div>
-                </div>
-              </div>
+                  <div class="splitLine"></div>
+                  <div class="data">
+                    <div class="expireTimeContent">
+                      <div class="expireTimeItem">维修统计</div>
+                      <div class="expireTimeCount">
+                        <span class="linkLine">0</span>
+                        ▶
+                      </div>
+                    </div>
+                    <div class="expireTimeContent">
+                      <div class="expireTimeItem">保养统计</div>
+                      <div class="expireTimeCount">
+                        <span class="linkLine">0</span>
+                        ▶
+                      </div>
+                    </div>
+                    <div class="expireTimeContent">
+                      <div class="expireTimeItem">清洁统计</div>
+                      <div class="expireTimeCount">
+                        <span class="linkLine">0</span>
+                        ▶
+                      </div>
+                    </div>
+                  </div>
+                </el-carousel-item>
+              </el-carousel>
             </div>
           </div>
         </div>
@@ -579,9 +613,18 @@ export default {
         tooltip: {
           trigger: "item",
         },
+        title: {
+          text: "风险总数",
+          textStyle: {
+            fontSize: "10px",
+            color: "#78898f",
+          },
+          left: "center",
+          top: "58%",
+        },
         series: [
           {
-            color: ["#ff0000", "#ff8a00", "#ebce41"],
+            color: ["#dd0000", "#ff8a00", "#ebce41"],
             name: "风险事件",
             type: "pie",
             radius: ["70%", "80%"],
@@ -589,9 +632,9 @@ export default {
               textStyle: {
                 color: "#05afe0",
               },
-              formatter: "{b} {c}",
+              formatter: "{c}",
               show: true,
-              fontSize: "13",
+              fontSize: "16",
               fontWeight: "bold",
               position: "center",
             },
@@ -630,7 +673,7 @@ export default {
               textStyle: {
                 color: "#05afe0",
               },
-              formatter: "{c} km",
+              formatter: "{c}",
               show: true,
               fontSize: "15",
               fontWeight: "bold",
@@ -646,11 +689,17 @@ export default {
       let deviceList = JSON.parse(
         localStorage.getItem("Screen_deviceOnlineList")
       );
-      return deviceList.rows ? deviceList.rows : [{ name: "暂无数据" }];
+      if (deviceList) {
+        return deviceList.rows;
+      } else {
+        return [{ name: "暂无数据" }];
+      }
     },
   },
   data() {
     return {
+      // 是否隐藏左侧图表
+      hideLeftTree: true,
       // 搜索框数据
       searchInput: "",
       // 搜索列表选中项
@@ -669,6 +718,26 @@ export default {
     };
   },
   methods: {
+    // 判断数据是否获取成功，成功则存入，不成功则弹出错误，登录失效则返回登录页面
+    judgeResponse(response, storageName) {
+      if (response.data.code === 200) {
+        localStorage.setItem(storageName, JSON.stringify(response.data.data));
+      } else if (response.data.code === 401) {
+        this.$notify.error({
+          title: response.data.code + " 错误",
+          message: response.data.message,
+        });
+        // this.$router.replace({ path: "/login" });
+      } else {
+        this.$notify({
+          title: response.data.code + " 警告",
+          message: response.data.message,
+          type: "warning",
+          duration: 0,
+        });
+      }
+    },
+    // 切换设备
     checked(i) {
       // 选中项样式
       this.checkedIndex = i;
@@ -679,14 +748,25 @@ export default {
       this.getDeviceDetails(this.deviceList[i].id).then((val) => {
         this.workConditionData = val.data.data.workConditionData;
         // 周工作数据
-        this.weekAnalysisData = val.data.data.weekAnalysisData;
+        // this.weekAnalysisData = val.data.data.weekAnalysisData;
         // this.initChart1Date(val.data.data.weekAnalysisData.details);
-        // this.chart1();
+        //
       });
     },
+    // 获取设备列表数据（有地图定位的
+    async getqueryEquipmentsByPage() {
+      // 获取已定位的设备总数显示在地图上
+      let amount = 999;
+      // 传入在线设备数据获取定位设备列表
+      let deviceList = await this.$api.getqueryEquipmentsByPage("0", amount);
+      // 传入判断响应是否成功的函数进行判断
+      this.judgeResponse(deviceList, "Screen_deviceOnlineList");
+    },
+    // 获取设备工况信息
     async getDeviceDetails(id) {
       return await this.$api.getDetailWithWorkConditionData(id);
     },
+    // 近7日工况信息表
     chart1(value) {
       // 声明图表x轴初始变量
       let dataX = [];
@@ -852,6 +932,7 @@ export default {
     },
   },
   created() {
+    this.getqueryEquipmentsByPage();
     this.getDeviceDetails(this.deviceList[0].id).then((val) => {
       console.log(val.data.data);
       // 工况数据
@@ -941,11 +1022,14 @@ export default {
     .headerLeftShow {
       height: 12px;
       width: 18.5px;
-      background: url("@/assets/images/kzuqi/10009.png");
+      background: url("@/assets/images/kzuqi/show.png");
       background-repeat: no-repeat;
       background-size: 100% 100%;
       margin: 20px 0 0 25px;
       cursor: pointer;
+    }
+    .leftTreehide {
+      background-image: url("@/assets/images/kzuqi/hide.png");
     }
     .headerTitle {
       position: absolute;
@@ -981,6 +1065,7 @@ export default {
     position: relative;
     width: 100%;
     height: calc(100% - 54px);
+    display: flex;
     // height: 100%;
     .borderImg {
       border: 1px solid #006381;
@@ -1014,9 +1099,8 @@ export default {
     }
     .leftTree {
       position: relative;
-      float: left;
-      padding: 8px 0 12px 16px;
-      width: 12.5%;
+      padding: 8px 0 12px 14px;
+      width: 203px;
       height: calc(100% - 20px);
       z-index: 230;
       background: rgba(0, 0, 2, 0.8);
@@ -1079,11 +1163,13 @@ export default {
     .mainContent {
       width: 100%;
       height: 100%;
+      display: flex;
+      justify-content: space-between;
       .leftScreen {
         position: relative;
         float: left;
         padding: 8px 0 12px 10px;
-        width: 23.9%;
+        width: 357px;
         min-width: 320px;
         height: calc(100% - 20px);
         background: rgba(0, 0, 2, 0.8);
@@ -1329,12 +1415,12 @@ export default {
         padding: 8px 12px;
         height: 88px;
         z-index: 230;
-        width: calc(100% - 930px);
+        width: 100%;
         min-width: 340px;
         background: rgba(0, 0, 2, 0.8);
         .centerTop {
           height: 100%;
-          background-size: 3%;
+          background-size: 16px;
         }
       }
       .rightScreen {
@@ -1400,18 +1486,13 @@ export default {
                   justify-content: space-between;
                   .left {
                     display: flex;
+                    align-items: center;
                     .dot {
-                      margin: 2px 12px 0px;
+                      margin: 0px 12px;
                       width: 5px;
                       height: 5px;
                       border-radius: 50%;
                       background: #ff0000;
-                    }
-                    .dot:nth-child(2) {
-                      background-color: #ff8a00;
-                    }
-                    .dot:nth-child(3) {
-                      background-color: #ebce41;
                     }
                   }
                   .right {
@@ -1420,6 +1501,16 @@ export default {
                     span {
                       text-decoration: underline;
                     }
+                  }
+                }
+                .item:nth-child(2) {
+                  .dot {
+                    background-color: #ff8a00;
+                  }
+                }
+                .item:nth-child(3) {
+                  .dot {
+                    background-color: #ebce41;
                   }
                 }
               }
@@ -1433,15 +1524,6 @@ export default {
               }
             }
           }
-          // .content:nth-child(3) {
-          //   height: 34%;
-          //   .chart3 {
-          //     height: calc(100% - 34px);
-          //     .countTitle {
-          //       text-align: center;
-          //     }
-          //   }
-          // }
         }
         .rightBottom {
           margin-top: 10px;
@@ -1487,6 +1569,12 @@ export default {
                   }
                 }
               }
+            }
+            .el-carousel__arrow--left {
+              left: -14px;
+            }
+            .el-carousel__arrow--right {
+              right: -6px;
             }
           }
         }

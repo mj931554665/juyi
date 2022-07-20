@@ -19,74 +19,42 @@
               <div class="detail-line">
                 <div class="channel-content">
                   <div>
-                    <div
-                    
-                      title="通道1"
-                      class="channel-item active"
-                    >
+                    <div title="通道1" class="channel-item active">
                       <div>通道1</div>
                     </div>
                   </div>
                   <div>
-                    <div
-                    
-                      title="通道2"
-                      class="channel-item active"
-                    >
+                    <div title="通道2" class="channel-item active">
                       <div>通道2</div>
                     </div>
                   </div>
                   <div>
-                    <div
-                    
-                      title="通道3"
-                      class="channel-item active"
-                    >
+                    <div title="通道3" class="channel-item active">
                       <div>通道3</div>
                     </div>
                   </div>
                   <div>
-                    <div
-                    
-                      title="通道4"
-                      class="channel-item active"
-                    >
+                    <div title="通道4" class="channel-item active">
                       <div>通道4</div>
                     </div>
                   </div>
                   <div>
-                    <div
-                    
-                      title="通道5"
-                      class="channel-item active"
-                    >
+                    <div title="通道5" class="channel-item active">
                       <div>通道5</div>
                     </div>
                   </div>
                   <div>
-                    <div
-                    
-                      title="通道6"
-                      class="channel-item active"
-                    >
+                    <div title="通道6" class="channel-item active">
                       <div>通道6</div>
                     </div>
                   </div>
                   <div>
-                    <div
-                    
-                      title="通道7"
-                      class="channel-item active"
-                    >
+                    <div title="通道7" class="channel-item active">
                       <div>通道7</div>
                     </div>
                   </div>
                   <div>
-                    <div
-                    
-                      title="通道8"
-                      class="channel-item active"
-                    >
+                    <div title="通道8" class="channel-item active">
                       <div>通道8</div>
                     </div>
                   </div>
@@ -251,8 +219,7 @@
                 <label>
                   <i class="el-icon-location-outline"></i>
                   {{ deviceDetails.baseInfo.address }}
-                  </label
-                >
+                </label>
               </p>
               <p>
                 <i class="el-icon-time"></i>
@@ -594,7 +561,7 @@ export default {
       // 近七日油耗
       let dataY1 = this.dataOilCost;
       let dataY = this.dataWorkTime;
-      console.log(dataX,'--',dataY1,'--',dataY);
+      console.log(dataX, "--", dataY1, "--", dataY);
       let option = {
         // backgroundColor: "#0D2753",
         tooltip: {
@@ -901,7 +868,16 @@ export default {
   padding: 10px 20px 0;
   .column {
     .FloatCard-item-header {
-      background-color: rgba(64, 158, 255, 0.54);
+      // background-color: rgba(64, 158, 255, 0.54);
+    }
+    .el-tabs__active-bar.is-top {
+      background-color: #f2ce91;
+    }
+    .el-tabs__item.is-top.is-active {
+      color: #f2ce91;
+    }
+    .el-tabs__item.is-top:hover {
+      color: #f2ce91;
     }
     flex: 6;
     .module1 {
@@ -1087,6 +1063,9 @@ export default {
           background: url("@/assets/test/ldd3.png") no-repeat;
           background-size: contain;
           font-size: 14px;
+          > div {
+            font-size: 12px;
+          }
           .fuelMeter {
             position: absolute;
             top: 186px;
@@ -1113,14 +1092,16 @@ export default {
           .mainHookRatedWeight {
             position: absolute;
             top: 78px;
-            left: 27px;
+            left: 22px;
             color: #818181;
+            width: 33px;
           }
           .mainHookActualWeight {
             position: absolute;
             top: 78px;
-            left: 71px;
+            left: 60px;
             color: #818181;
+            width: 33px;
           }
           .mainHookRadius {
             position: absolute;
@@ -1179,14 +1160,16 @@ export default {
           .slaveHookRatedWeight {
             position: absolute;
             top: 78px;
-            right: 71px;
+            right: 57px;
             color: #818181;
+            width: 33px;
           }
           .slaveHookActualWeight {
             position: absolute;
             top: 78px;
-            right: 33px;
+            right: 19px;
             color: #818181;
+            width: 33px;
           }
           .slaveHookRadius {
             position: absolute;
@@ -1294,7 +1277,7 @@ export default {
       }
     }
     .module6 {
-      height: 240px;
+      height: 255px;
       .detail-line {
         height: 100%;
         padding-bottom: 26px;
@@ -1302,7 +1285,7 @@ export default {
           display: flex;
           background-color: #e7cece;
           border-radius: 10px;
-          margin-top: 30px;
+          margin-top: 15px;
           cursor: pointer;
           i {
             font-size: 55px;

@@ -7,10 +7,10 @@
       class="el-menu-demo"
       mode="horizontal"
       @select="handleSelect"
-      background-color="#fff"
+      background-color="#2c2b30"
       active-background-color="#000"
-      text-color="#000"
-      active-text-color="red"
+      text-color="#f5f5f7"
+      active-text-color="#f2ce91"
       :router="true"
     >
       <el-menu-item index="1" active route="/">首页</el-menu-item>
@@ -79,8 +79,8 @@ export default {
   background-color: #ff0000;
   font-weight: bold;
   display: flex;
-  background: #fff;
-  border-bottom: solid 1px #e6e6e6;
+  background: #2c2b30;
+  // border-bottom: solid 10px #f2ce90;
   .logo{
     width: 170px;
     height: 60px;
@@ -96,8 +96,8 @@ export default {
   .el-menu-item:hover,
   .el-submenu__title:hover,
   .el-submenu__title:hover i {
-    background-color: #ff0000 !important;
-    color: #fff !important;
+    background-color: #2c2b30 !important;
+    color: #f2ce91 !important;
   }
 }
 /* 因为导航一般来说只存在一个，所以没用id限制 */
@@ -105,8 +105,8 @@ export default {
   padding: 0 !important;
 }
 .el-menu-item:hover {
-  background-color: #ff0000 !important;
-  color: #fff !important;
+  background-color: #2c2b30 !important;
+  color: #f2ce91 !important;
 }
 .el-menu.el-menu--popup.el-menu--popup-bottom-start{
   min-width: 116px !important;

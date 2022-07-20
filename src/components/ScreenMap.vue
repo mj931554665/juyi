@@ -8,7 +8,7 @@
       :zoom="1"
       :mapStyle="mapStyle"
       :scroll-wheel-zoom="true"
-      :min-zoom="5"
+      
       @ready="handler"
     >
       <!-- 聚合点组件（需引入） -->

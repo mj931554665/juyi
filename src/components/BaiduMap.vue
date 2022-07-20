@@ -631,7 +631,7 @@ export default {
     .mapStyle {
       width: 100%;
       /* height: calc(100vh - 130px); */
-      height: 100vh;
+      height: calc(100vh - 60px);
       // 修改地图控件位置
       .anchorTL {
         inset: 44px auto auto 10px !important;
