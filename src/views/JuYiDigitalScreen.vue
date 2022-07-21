@@ -1,10 +1,14 @@
 <template>
   <div class="DigitalScreen">
     <header>
-      <div class="headerLeftShow" @click="hideLeftTree = !hideLeftTree" :class="hideLeftTree?'':'leftTreehide'"></div>
+      <div
+        class="headerLeftShow"
+        @click="hideLeftTree = !hideLeftTree"
+        :class="hideLeftTree ? '' : 'leftTreehide'"
+      ></div>
       <div class="headerTitle">
         <div>
-          <div class="title">钜亿数字化大屏</div>
+          <div class="title">钜亿安全监控大屏</div>
         </div>
       </div>
       <div class="showTime" style="display: flex">
@@ -63,16 +67,31 @@
                 style="display: flex; align-items: center"
               >
                 <i class="el-icon-s-tools"></i>
-                <span>{{
-                  checkDevice.name ? checkDevice.name : deviceList[0].name
-                }}</span>
+                <span>{{ checkDevice.name }}</span>
                 <!-- <i class="el-icon-microphone"></i> -->
 
                 <!-- <div class="detailBtn">
                   <div>详情</div>
                   <i class="el-icon-arrow-right"></i>
                 </div> -->
+                
               </div>
+              <div class="data">
+                  <div class="equipmentInfoTitle textColor">
+                    设备编号：{{ checkDevice.equipmentNo }}
+                    <span class="prevOnline">
+                      <!-- <div
+                      :style="
+                        checkDevice.onlineStatus == '1'
+                          ? ''
+                          : 'background: #5e5e5f;'
+                      "
+                    > 
+                    </div>-->
+                    </span>
+                  </div>
+
+                </div>
               <div class="splitLine"></div>
               <div class="video">
                 <div class="channel-content">
@@ -141,72 +160,34 @@
                 <div>
                   <div class="locationTimeIcon"></div>
                   <span class="textColor">
-                    {{
-                      checkDevice.workCondDataTime
-                        ? checkDevice.workCondDataTime
-                        : deviceList[0].workCondDataTime
-                    }}
+                    {{ checkDevice.workCondDataTime }}
                   </span>
                 </div>
                 <div>
                   <div class="addressIcon"></div>
                   <div
-                    :title="
-                      checkDevice.address
-                        ? checkDevice.address
-                        : deviceList[0].address
-                    "
+                    :title="checkDevice.address"
                     class="address nowrapText textColor textNowarp"
                   >
-                    {{
-                      checkDevice.address
-                        ? checkDevice.address
-                        : deviceList[0].address
-                    }}
+                    {{ checkDevice.address }}
                   </div>
                 </div>
               </div>
               <div class="equipmentInfo textFont14">
-                <div class="equipmentInfoTitle textColor">
-                  设备编号：{{
-                    checkDevice.equipmentNo
-                      ? checkDevice.equipmentNo
-                      : deviceList[0].equipmentNo
-                  }}
-                  <span class="prevOnline">
-                    <!-- <div
-                      :style="
-                        checkDevice.onlineStatus == '1'
-                          ? ''
-                          : 'background: #5e5e5f;'
-                      "
-                    > 
-                    </div>-->
-                  </span>
+                
                   <div class="model">
                     <!-- <span class="textColor">车牌号：--</span> -->
                     <span class="mark">{{
                       checkDevice.onlineStatusLabel
-                        ? checkDevice.onlineStatusLabel
-                        : deviceList[0].onlineStatusLabel
                     }}</span>
-                    <span class="mark">{{
-                      checkDevice.modelLabel
-                        ? checkDevice.modelLabel
-                        : deviceList[0].modelLabel
-                    }}</span>
-                    <span class="mark">{{
-                      checkDevice.typeLabel
-                        ? checkDevice.typeLabel
-                        : deviceList[0].typeLabel
-                    }}</span>
+                    <span class="mark">{{ checkDevice.modelLabel }}</span>
+                    <span class="mark">{{ checkDevice.typeLabel }}</span>
                   </div>
+                <div class="operator">
+                  <span>项目名称：test </span>
+                  <span>操作人员：test</span>
+                  <span>项目时长：test</span>
                 </div>
-              </div>
-              <div>
-                <span>项目名称：test </span>
-                <span>操作人员：test</span>
-                <span>项目时长：test</span>
               </div>
             </div>
           </div>
@@ -291,6 +272,10 @@
                         </div>
                         <div class="columnLine"></div>
                       </div>
+                    </div>
+                  </el-carousel-item>
+                  <el-carousel-item>
+                    <div class="dataArea">
                       <div class="panel">
                         <div class="panel-item">
                           <p><span>幅度</span></p>
@@ -321,10 +306,6 @@
                         </div>
                         <div class="columnLine"></div>
                       </div>
-                    </div>
-                  </el-carousel-item>
-                  <el-carousel-item>
-                    <div class="dataArea">
                       <div class="panel">
                         <div class="panel-item">
                           <p><span>发动机工作时长</span></p>
@@ -368,7 +349,18 @@
           </div>
         </div>
         <div class="centerTopScreen">
-          <div class="centerTop borderImg"></div>
+          <div class="centerTop borderImg">
+            <div class="bigNumber">
+              <div>
+                <h2>30565</h2>
+                <p>总起重总量（吨）</p>
+              </div>
+              <div>
+                <h2>192233</h2>
+                <p>总起重力矩（吨*米）</p>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="rightScreen">
           <div class="rightTop borderImg">
@@ -421,7 +413,7 @@
                   <div class="item">
                     <div class="left">
                       <div class="dot"></div>
-                      <div class="text">高风险：&nbsp;269</div>
+                      <div class="text">高风险：&nbsp;0</div>
                     </div>
                     <!-- <div class="right">
                       <span>348</span>
@@ -465,19 +457,19 @@
                   <div class="item">
                     <div class="left">
                       <div class="dot"></div>
-                      <div class="text">周运输里程：&nbsp;153&nbsp;万公里</div>
+                      <div class="text">周里程：&nbsp;153&nbsp;万公里</div>
                     </div>
                   </div>
                   <div class="item">
                     <div class="left">
                       <div class="dot"></div>
-                      <div class="text">月运输里程：&nbsp;655&nbsp;万公里</div>
+                      <div class="text">月里程：&nbsp;655&nbsp;万公里</div>
                     </div>
                   </div>
                   <div class="item">
                     <div class="left">
                       <div class="dot"></div>
-                      <div class="text">年运输里程：&nbsp;7977&nbsp;万公里</div>
+                      <div class="text">年里程：&nbsp;7977&nbsp;万公里</div>
                     </div>
                   </div>
                 </div>
@@ -547,6 +539,29 @@
                     </div>
                   </div>
                 </el-carousel-item>
+                <el-carousel-item>
+                  <div class="title textFont16">
+                    <i class="el-icon-s-tools"></i>
+                    <span class="textColor">人员统计</span>
+                  </div>
+                  <div class="splitLine"></div>
+                  <div class="data">
+                    <div class="expireTimeContent">
+                      <div class="expireTimeItem">安拆人员</div>
+                      <div class="expireTimeCount">
+                        <span class="linkLine">0</span>
+                        ▶
+                      </div>
+                    </div>
+                    <div class="expireTimeContent">
+                      <div class="expireTimeItem">操作人员</div>
+                      <div class="expireTimeCount">
+                        <span class="linkLine">0</span>
+                        ▶
+                      </div>
+                    </div>
+                  </div>
+                </el-carousel-item>
               </el-carousel>
             </div>
           </div>
@@ -579,7 +594,7 @@ export default {
         title: {
           text: "设备总数",
           textStyle: {
-            fontSize: "10px",
+            fontSize: 10,
             color: "#78898f",
           },
           left: "center",
@@ -593,16 +608,14 @@ export default {
             avoidLabelOverlap: false,
             color: "#75d059",
             label: {
-              textStyle: {
-                color: "#05afe0",
-              },
+              color: "#22a946",
               formatter: "{c}",
               show: true,
               fontSize: "16",
               fontWeight: "bold",
               position: "center",
             },
-            data: [{ value: 153, name: "履带吊" }],
+            data: [{ value: 156, name: "履带吊" }],
           },
         ],
       };
@@ -616,7 +629,7 @@ export default {
         title: {
           text: "风险总数",
           textStyle: {
-            fontSize: "10px",
+            fontSize: 10,
             color: "#78898f",
           },
           left: "center",
@@ -629,9 +642,7 @@ export default {
             type: "pie",
             radius: ["70%", "80%"],
             label: {
-              textStyle: {
-                color: "#05afe0",
-              },
+              color: "#05afe0",
               formatter: "{c}",
               show: true,
               fontSize: "16",
@@ -639,7 +650,7 @@ export default {
               position: "center",
             },
             data: [
-              { value: 391, name: "高风险" },
+              { value: 0, name: "高风险" },
               { value: 0, name: "中风险" },
               { value: 0, name: "低风险" },
             ],
@@ -656,7 +667,7 @@ export default {
         title: {
           text: "运输总数",
           textStyle: {
-            fontSize: "10px",
+            fontSize: 10,
             color: "#78898f",
           },
           left: "center",
@@ -668,11 +679,9 @@ export default {
             type: "pie",
             radius: ["70%", "80%"],
             avoidLabelOverlap: false,
-            color: "#f5a118",
+            color: "#1a1bc2",
             label: {
-              textStyle: {
-                color: "#05afe0",
-              },
+              color: "#05afe0",
               formatter: "{c}",
               show: true,
               fontSize: "15",
@@ -685,28 +694,18 @@ export default {
       };
       return option;
     },
-    deviceList() {
-      let deviceList = JSON.parse(
-        localStorage.getItem("Screen_deviceOnlineList")
-      );
-      if (deviceList) {
-        return deviceList.rows;
-      } else {
-        return [{ name: "暂无数据" }];
-      }
-    },
   },
   data() {
     return {
       // 是否隐藏左侧图表
-      hideLeftTree: true,
+      hideLeftTree: false,
       // 搜索框数据
       searchInput: "",
       // 搜索列表选中项
       checkedIndex: 0,
       // 设备数据
       checkDevice: {},
-      // 工况数据
+      // 实时工况数据
       workConditionData: {},
       // 周数据统计（油耗，工作时长
       weekAnalysisData: {},
@@ -715,6 +714,8 @@ export default {
       dataX: [],
       dataY1: [],
       dataY: [],
+      // 设备列表
+      deviceList: [],
     };
   },
   methods: {
@@ -743,28 +744,16 @@ export default {
       this.checkedIndex = i;
       // 已有列表数据赋值
       this.checkDevice = this.deviceList[i];
-      console.log(this.deviceList[i]);
+      let id = this.deviceList[i].id;
       // 获取实时工况数据
-      this.getDeviceDetails(this.deviceList[i].id).then((val) => {
-        this.workConditionData = val.data.data.workConditionData;
+      this.$api.getDetailWithWorkConditionData(id).then((val) => {
+        // 赋值工况数据
+        let detail = val.data.data;
+        this.workConditionData = detail.workConditionData;
         // 周工作数据
-        // this.weekAnalysisData = val.data.data.weekAnalysisData;
-        // this.initChart1Date(val.data.data.weekAnalysisData.details);
-        //
+        // 赋值工况数据给图表
+        this.chart1(detail.weekAnalysisData.details);
       });
-    },
-    // 获取设备列表数据（有地图定位的
-    async getqueryEquipmentsByPage() {
-      // 获取已定位的设备总数显示在地图上
-      let amount = 999;
-      // 传入在线设备数据获取定位设备列表
-      let deviceList = await this.$api.getqueryEquipmentsByPage("0", amount);
-      // 传入判断响应是否成功的函数进行判断
-      this.judgeResponse(deviceList, "Screen_deviceOnlineList");
-    },
-    // 获取设备工况信息
-    async getDeviceDetails(id) {
-      return await this.$api.getDetailWithWorkConditionData(id);
     },
     // 近7日工况信息表
     chart1(value) {
@@ -773,7 +762,6 @@ export default {
       let dataY1 = [];
       let dataY = [];
       // 对数据进行遍历，提取日期数据并转换格式
-      console.log("this.weekData.details", this.weekData.details);
       value.forEach((item) => {
         // 近七日耗油量
         dataY1.push(item.oilCost);
@@ -816,7 +804,7 @@ export default {
           right: "5%",
           containLabel: true,
         },
-        legend: {
+        /* legend: {
           show: true,
           data: ["油耗", "工作时长"],
           left: "center",
@@ -828,7 +816,7 @@ export default {
           itemWidth: 15,
           itemHeight: 10,
           itemGap: 25,
-        },
+        }, */
         xAxis: {
           type: "category",
           data: dataX,
@@ -840,9 +828,7 @@ export default {
 
           axisLabel: {
             rotate: -45,
-            textStyle: {
-              color: "#33FFFF",
-            },
+            color: "#33FFFF",
           },
         },
 
@@ -853,9 +839,7 @@ export default {
               show: false,
             },
             axisLabel: {
-              textStyle: {
-                color: "#5FBBEB",
-              },
+              color: "#5FBBEB",
             },
             axisLine: {
               lineStyle: {
@@ -885,10 +869,8 @@ export default {
             axisLabel: {
               show: true,
               formatter: "{value} ", //右侧Y轴文字显示
-              textStyle: {
-                fontSize: 12,
-                color: "#42C0FF",
-              },
+              fontSize: 12,
+              color: "#42C0FF",
             },
           },
         ],
@@ -898,10 +880,8 @@ export default {
             type: "bar",
             barWidth: "12px",
             itemStyle: {
-              normal: {
-                color: "#11384e",
-                borderColor: "#267ea9",
-              },
+              color: "#11384e",
+              borderColor: "#267ea9",
             },
             data: dataY1,
           },
@@ -914,11 +894,9 @@ export default {
             symbol: "circle", //标记的图形为实心圆
             symbolSize: 8, //标记的大小
             itemStyle: {
-              normal: {
-                color: "rgb(117, 249, 185)",
-                borderColor: "rgba(117, 249, 185,0.8)", //圆点透明 边框
-                borderWidth: "1px",
-              },
+              color: "rgb(117, 249, 185)",
+              borderColor: "rgba(117, 249, 185,0.8)", //圆点透明 边框
+              borderWidth: "1px",
             },
             lineStyle: {
               color: "rgba(117, 249, 185,0.5)",
@@ -928,20 +906,29 @@ export default {
           },
         ],
       };
-      this.chart1 = option;
+      this.chart1Data = option;
+    },
+    initData() {
+      this.$api.getselectList("0", "999").then((val) => {
+        // 给设备列表赋值
+        this.deviceList = val.data.data.rows;
+        // 给设备数据赋值
+        this.checkDevice = val.data.data.rows[0];
+        // 获取第一个设备的id
+        let id = val.data.data.rows[0].id;
+        // 获取默认设备工况数据
+        this.$api.getDetailWithWorkConditionData(id).then((val) => {
+          // 赋值工况数据
+          let detail = val.data.data;
+          this.workConditionData = detail.workConditionData;
+          // 赋值工况数据给图表
+          this.chart1(detail.weekAnalysisData.details);
+        });
+      });
     },
   },
   created() {
-    this.getqueryEquipmentsByPage();
-    this.getDeviceDetails(this.deviceList[0].id).then((val) => {
-      console.log(val.data.data);
-      // 工况数据
-      this.workConditionData = val.data.data.workConditionData;
-      // 周工作数据
-      this.weekAnalysisData = val.data.data.weekAnalysisData;
-      console.log(val.data.data.weekAnalysisData.details);
-      // this.chart1(value);
-    })(function () {
+    (function () {
       let t = null;
       t = setTimeout(time, 1000); //開始运行
       function time() {
@@ -958,6 +945,7 @@ export default {
         t = setTimeout(time, 1000); //设定定时器，循环运行
       }
     })();
+    this.initData();
   },
   mounted() {},
 };
@@ -974,6 +962,13 @@ export default {
   height: 100vh;
   min-width: 1440px;
   letter-spacing: 1px;
+  // 去除百度logo
+  .anchorBL > a > img {
+    display: none;
+  }
+  .BMap_cpyCtrl.BMap_noprint.anchorBL {
+    display: none;
+  }
   .checked {
     background: rgba(0, 198, 255, 0.15);
     span {
@@ -1183,6 +1178,10 @@ export default {
           .leftTopContent {
             margin: 10.6px;
             margin-bottom: 0;
+            .operator {
+              margin: 3px 0 0;
+              font-size: 12px;
+            }
             .textColor {
               color: #adc8cd;
             }
@@ -1228,7 +1227,7 @@ export default {
                   position: relative;
                   width: 60px;
                   height: 25px;
-                  margin: 5px 10px;
+                  margin: 0px 4px;
                   line-height: 25.6px;
                   // color: #999;
                   background: rgba(0, 0, 2, 0.8);
@@ -1343,7 +1342,9 @@ export default {
               }
               .model {
                 display: flex;
+                justify-content:space-evenly;
                 .mark {
+                  margin: 0;
                   padding: 1.8px 1px;
                   color: rgba(0, 198, 255, 0.8);
                   background-color: #000002;
@@ -1421,6 +1422,23 @@ export default {
         .centerTop {
           height: 100%;
           background-size: 16px;
+          .bigNumber {
+            height: 100%;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            div {
+              h2 {
+                font-size: 21px;
+                color: #ffffff;
+                margin: 0 0 12px 0;
+                text-align: center;
+              }
+              p {
+                text-align: center;
+              }
+            }
+          }
         }
       }
       .rightScreen {
@@ -1521,6 +1539,18 @@ export default {
                 flex-direction: column;
                 justify-content: space-evenly;
                 color: #adc8cd;
+                .item {
+                  .left {
+                    display: flex;
+                    .dot {
+                      margin: 2px 12px 0px;
+                      width: 5px;
+                      height: 5px;
+                      border-radius: 50%;
+                      background: rgb(5, 87, 173);
+                    }
+                  }
+                }
               }
             }
           }
@@ -1543,6 +1573,7 @@ export default {
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
+                margin: 0 10px;
                 .expireTimeItem {
                   display: flex;
                   align-items: center;
@@ -1561,7 +1592,7 @@ export default {
                   background-image: url("@/assets/images/kzuqi/baoxian.png");
                 }
                 .expireTimeCount {
-                  margin-right: 80px;
+                  margin-right: 20px;
                   color: #fc6501;
                   cursor: pointer;
                   .linkLine {

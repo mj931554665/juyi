@@ -5,13 +5,13 @@
       id="bmap"
       class="mapStyle"
       :center="centerPoint"
-      :zoom="1"
+      :zoom="5"
       :mapStyle="mapStyle"
       :scroll-wheel-zoom="true"
       
       @ready="handler"
     >
-      <!-- 聚合点组件（需引入） -->
+      <!-- 聚合点组件（需引入）:mapStyle="mapStyle" -->
       <bml-marker-clusterer :averageCenter="false">
         <bm-marker
           v-for="marker in markerArr"

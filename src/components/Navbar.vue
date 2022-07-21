@@ -83,7 +83,7 @@ export default {
   // border-bottom: solid 10px #f2ce90;
   .logo{
     width: 170px;
-    height: 60px;
+    height: 70px;
     background: url("@/assets/images/s-juyilogo.png") no-repeat;
     background-size: contain;
     background-position-y: center;

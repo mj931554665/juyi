@@ -613,7 +613,7 @@ export default {
           axisLabel: {
             rotate: -45,
             textStyle: {
-              color: "#33FFFF",
+              color: "#000",
             },
           },
         },
@@ -626,7 +626,7 @@ export default {
             },
             axisLabel: {
               textStyle: {
-                color: "#5FBBEB",
+                color: "#000",
               },
             },
             axisLine: {
@@ -659,7 +659,7 @@ export default {
               formatter: "{value} ", //右侧Y轴文字显示
               textStyle: {
                 fontSize: 12,
-                color: "#42C0FF",
+                color: "#000",
               },
             },
           },
@@ -674,7 +674,7 @@ export default {
                 color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
                   {
                     offset: 0,
-                    color: "#29acff",
+                    color: "#205aff",
                   },
                   {
                     offset: 1,
@@ -801,7 +801,7 @@ export default {
                     colorStops: [
                       {
                         offset: 0,
-                        color: "#4bf3f9", // 0% 处的颜色
+                        color: "#205aff", // 0% 处的颜色
                       },
                       {
                         offset: 1,
@@ -865,7 +865,7 @@ export default {
   min-width: 1024px;
   max-width: 1920px;
   margin: 20px auto;
-  padding: 10px 20px 0;
+  padding: 10px 35px 0;
   .column {
     .FloatCard-item-header {
       // background-color: rgba(64, 158, 255, 0.54);
