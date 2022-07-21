@@ -1,9 +1,11 @@
 <template>
   <div id="Navbar">
     <!-- loge预留区域 -->
-    <router-link style="margin-right: 40px;" to="/"><div class="logo"></div></router-link>
+    <router-link  to="/"
+      ><div class="logo"></div
+    ></router-link>
     <el-menu
-      :default-active="activeIndex2"
+      :default-active="activeIndex"
       class="el-menu-demo"
       mode="horizontal"
       @select="handleSelect"
@@ -30,7 +32,7 @@
         >设备工况</el-menu-item
       >
       <el-menu-item index="5" route="/riskAlert">风险报警</el-menu-item>
-      <el-menu-item @click="screenRule">数字化大屏</el-menu-item>
+      <el-menu-item @click="screenRule">钜亿安全监控大屏</el-menu-item>
     </el-menu>
   </div>
 </template>
@@ -39,6 +41,7 @@ export default {
   data() {
     return {
       isCollapse: true,
+      activeIndex: ''
     };
   },
   methods: {
@@ -47,6 +50,9 @@ export default {
         path: "/screen",
       });
       window.open(routeLink.href, "_blank");
+    },
+    handleSelect(key, keyPath) {
+      console.log(key, keyPath);
     },
     handleOpen(key, keyPath) {
       console.log(key, keyPath);
@@ -81,17 +87,22 @@ export default {
   display: flex;
   background: #2c2b30;
   // border-bottom: solid 10px #f2ce90;
-  .logo{
+  .logo {
     width: 170px;
     height: 70px;
-    background: url("@/assets/images/s-juyilogo.png") no-repeat;
+    background: url("@/assets/images/logo.png") no-repeat;
     background-size: contain;
     background-position-y: center;
-    margin: 0 20px;
+    margin: 0 25px 0 35px;
     cursor: pointer;
   }
-  .el-menu.el-menu--horizontal{
-    border-bottom:none ;
+  .el-menu-item,
+  .el-submenu__title {
+    height: 70px;
+    line-height: 70px;
+  }
+  .el-menu.el-menu--horizontal {
+    border-bottom: none;
   }
   .el-menu-item:hover,
   .el-submenu__title:hover,
@@ -108,7 +119,8 @@ export default {
   background-color: #2c2b30 !important;
   color: #f2ce91 !important;
 }
-.el-menu.el-menu--popup.el-menu--popup-bottom-start{
+.el-menu.el-menu--popup.el-menu--popup-bottom-start {
   min-width: 116px !important;
+  font-weight: bold !important;
 }
 </style>

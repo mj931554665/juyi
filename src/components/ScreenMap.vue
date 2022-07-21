@@ -59,7 +59,7 @@ export default {
       Map: "",
       //中心轴坐标
       centerPoint: {
-        lng: 96,
+        lng: 106,
         lat: 36,
       },
       // 坐标点位置

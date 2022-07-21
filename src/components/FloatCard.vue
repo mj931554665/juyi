@@ -1,6 +1,9 @@
 <template>
   <div class="FloatCard-module">
-    <div class="FloatCard-item-header" :class="more ? 'FloatCard-item-more' : ''">
+    <div
+      class="FloatCard-item-header"
+      :class="more ? 'FloatCard-item-more' : ''"
+    >
       <slot name="header">
         <span> 某地区某设备 </span>
       </slot>
@@ -8,12 +11,10 @@
     </div>
 
     <div class="FloatCard-item-detail">
-      <div class="detail-line">
-        <slot name="content">
-          <span>图标--</span>
-          <span>设备地址：某省某地区</span>
-        </slot>
-      </div>
+      <slot name="content">
+        <span>图标--</span>
+        <span>设备地址：某省某地区</span>
+      </slot>
     </div>
   </div>
 </template>
@@ -38,14 +39,14 @@ export default {
   // outline: 1px solid #409EFF;
   background-color: #fff;
   // border-radius: 10px;
-  margin-bottom: 10px;    
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.5);
+  margin-bottom: 10px;
+  // box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.5);
 }
 
 .FloatCard-item-header {
   // background-color: #409EFF;
   // border-radius: 10px 10px 0 0;
-  height: 48px;
+  height: 49px;
   padding: 0 15px;
   font-size: 16px;
   color: rgb(0, 0, 0);
@@ -59,12 +60,12 @@ export default {
   display: flex;
   justify-content: space-between;
   padding: 0 30px;
-  .moreContent{
+  .moreContent {
     cursor: pointer;
     font-weight: normal;
     font-size: 14px;
   }
-  .moreContent:hover{
+  .moreContent:hover {
     color: #ff0000;
     text-decoration: underline;
   }
@@ -73,5 +74,6 @@ export default {
 .FloatCard-item-detail {
   padding: 15px 15px 20px;
   color: rgb(0, 0, 0);
+  height: calc(100% - 85px);
 }
 </style>

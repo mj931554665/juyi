@@ -74,13 +74,12 @@
                   <div>详情</div>
                   <i class="el-icon-arrow-right"></i>
                 </div> -->
-                
               </div>
               <div class="data">
-                  <div class="equipmentInfoTitle textColor">
-                    设备编号：{{ checkDevice.equipmentNo }}
-                    <span class="prevOnline">
-                      <!-- <div
+                <div class="equipmentInfoTitle textColor">
+                  设备编号：{{ checkDevice.equipmentNo }}
+                  <span class="prevOnline">
+                    <!-- <div
                       :style="
                         checkDevice.onlineStatus == '1'
                           ? ''
@@ -88,10 +87,9 @@
                       "
                     > 
                     </div>-->
-                    </span>
-                  </div>
-
+                  </span>
                 </div>
+              </div>
               <div class="splitLine"></div>
               <div class="video">
                 <div class="channel-content">
@@ -174,15 +172,12 @@
                 </div>
               </div>
               <div class="equipmentInfo textFont14">
-                
-                  <div class="model">
-                    <!-- <span class="textColor">车牌号：--</span> -->
-                    <span class="mark">{{
-                      checkDevice.onlineStatusLabel
-                    }}</span>
-                    <span class="mark">{{ checkDevice.modelLabel }}</span>
-                    <span class="mark">{{ checkDevice.typeLabel }}</span>
-                  </div>
+                <div class="model">
+                  <!-- <span class="textColor">车牌号：--</span> -->
+                  <span class="mark">{{ checkDevice.onlineStatusLabel }}</span>
+                  <span class="mark">{{ checkDevice.modelLabel }}</span>
+                  <span class="mark">{{ checkDevice.typeLabel }}</span>
+                </div>
                 <div class="operator">
                   <span>项目名称：test </span>
                   <span>操作人员：test</span>
@@ -199,142 +194,153 @@
                   <span class="textColor">实时工况</span>
                 </div>
                 <div class="splitLine"></div>
-                <el-carousel
-                  :interval="5000"
-                  arrow="always"
-                  indicator-position="outside"
-                  height="110px"
-                  class="workingCondition"
-                >
-                  <el-carousel-item>
-                    <div class="dataArea">
-                      <div class="panel">
-                        <div class="panel-item">
-                          <p><span>主钩额重</span></p>
-                          <h6>
-                            {{ workConditionData.mainHookRatedWeight }}&nbsp;t
-                          </h6>
+                <div 
+                  class="workingCondition">
+                  <el-carousel
+                    :interval="5000"
+                    arrow="always"
+                    indicator-position="outside"
+                    height="100px"
+                  >
+                    <el-carousel-item>
+                      <div class="dataArea">
+                        <div class="panel">
+                          <div class="panel-item">
+                            <p><span>主钩额重</span></p>
+                            <h6>
+                              {{ workConditionData.mainHookRatedWeight }}&nbsp;t
+                            </h6>
+                          </div>
+                          <div class="columnLine"></div>
                         </div>
-                        <div class="columnLine"></div>
-                      </div>
-                      <div class="panel">
-                        <div class="panel-item">
-                          <p><span>主钩实重</span></p>
-                          <h6>
-                            {{ workConditionData.mainHookActualWeight }}&nbsp;t
-                          </h6>
+                        <div class="panel">
+                          <div class="panel-item">
+                            <p><span>主钩实重</span></p>
+                            <h6>
+                              {{
+                                workConditionData.mainHookActualWeight
+                              }}&nbsp;t
+                            </h6>
+                          </div>
+                          <div class="columnLine"></div>
                         </div>
-                        <div class="columnLine"></div>
-                      </div>
-                      <div class="panel">
-                        <div class="panel-item">
-                          <p><span>主钩倍率</span></p>
-                          <h6>{{ workConditionData.mainHookRatios }}</h6>
+                        <div class="panel">
+                          <div class="panel-item">
+                            <p><span>主钩倍率</span></p>
+                            <h6>{{ workConditionData.mainHookRatios }}</h6>
+                          </div>
+                          <div class="columnLine"></div>
                         </div>
-                        <div class="columnLine"></div>
-                      </div>
-                      <div class="panel">
-                        <div class="panel-item">
-                          <p><span>主臂角度</span></p>
-                          <h6>{{ workConditionData.mainHookAngle }}°</h6>
+                        <div class="panel">
+                          <div class="panel-item">
+                            <p><span>主臂角度</span></p>
+                            <h6>{{ workConditionData.mainHookAngle }}°</h6>
+                          </div>
+                          <div class="columnLine"></div>
                         </div>
-                        <div class="columnLine"></div>
-                      </div>
-                      <div class="panel">
-                        <div class="panel-item">
-                          <p><span>副钩额重</span></p>
-                          <h6>
-                            {{ workConditionData.slaveHookRatedWeight }}&nbsp;t
-                          </h6>
+                        <div class="panel">
+                          <div class="panel-item">
+                            <p><span>副钩额重</span></p>
+                            <h6>
+                              {{
+                                workConditionData.slaveHookRatedWeight
+                              }}&nbsp;t
+                            </h6>
+                          </div>
+                          <div class="columnLine"></div>
                         </div>
-                        <div class="columnLine"></div>
-                      </div>
-                      <div class="panel">
-                        <div class="panel-item">
-                          <p><span>副钩实重</span></p>
-                          <h6>
-                            {{ workConditionData.slaveHookActualWeight }}&nbsp;t
-                          </h6>
+                        <div class="panel">
+                          <div class="panel-item">
+                            <p><span>副钩实重</span></p>
+                            <h6>
+                              {{
+                                workConditionData.slaveHookActualWeight
+                              }}&nbsp;t
+                            </h6>
+                          </div>
+                          <div class="columnLine"></div>
                         </div>
-                        <div class="columnLine"></div>
-                      </div>
-                      <div class="panel">
-                        <div class="panel-item">
-                          <p><span>副钩倍率</span></p>
-                          <h6>{{ workConditionData.slaveHookRatios }}</h6>
+                        <div class="panel">
+                          <div class="panel-item">
+                            <p><span>副钩倍率</span></p>
+                            <h6>{{ workConditionData.slaveHookRatios }}</h6>
+                          </div>
+                          <div class="columnLine"></div>
                         </div>
-                        <div class="columnLine"></div>
-                      </div>
-                      <div class="panel">
-                        <div class="panel-item">
-                          <p><span>高度</span></p>
-                          <h6>--</h6>
+                        <div class="panel">
+                          <div class="panel-item">
+                            <p><span>高度</span></p>
+                            <h6>--</h6>
+                          </div>
+                          <div class="columnLine"></div>
                         </div>
-                        <div class="columnLine"></div>
                       </div>
-                    </div>
-                  </el-carousel-item>
-                  <el-carousel-item>
-                    <div class="dataArea">
-                      <div class="panel">
-                        <div class="panel-item">
-                          <p><span>幅度</span></p>
-                          <h6>--</h6>
+                    </el-carousel-item>
+                    <el-carousel-item>
+                      <div class="dataArea">
+                        <div class="panel">
+                          <div class="panel-item">
+                            <p><span>发动机工作时长</span></p>
+                            <h6>
+                              {{ workConditionData.totalEnginWorkTime }}&nbsp;h
+                            </h6>
+                          </div>
+                          <div class="columnLine"></div>
                         </div>
-                        <div class="columnLine"></div>
-                      </div>
-                      <div class="panel">
-                        <div class="panel-item">
-                          <p><span>臂长</span></p>
-                          <h6>--</h6>
+                        <div class="panel">
+                          <div class="panel-item">
+                            <p><span>力矩百分比</span></p>
+                            <h6>
+                              {{
+                                workConditionData.torquePercent
+                              }}%&nbsp;(负载率)
+                            </h6>
+                          </div>
+                          <div class="columnLine"></div>
                         </div>
-                        <div class="columnLine"></div>
-                      </div>
-                      <div class="panel">
-                        <div class="panel-item">
-                          <p><span>力矩百分比</span></p>
-                          <h6>
-                            {{ workConditionData.torquePercent }}%&nbsp;(负载率)
-                          </h6>
+                        <div class="panel">
+                          <div class="panel-item">
+                            <p><span>发动机转速</span></p>
+                            <h6>{{ workConditionData.enginSpeed }}</h6>
+                          </div>
+                          <div class="columnLine"></div>
                         </div>
-                        <div class="columnLine"></div>
-                      </div>
-                      <div class="panel">
-                        <div class="panel-item">
-                          <p><span>风速</span></p>
-                          <h6>{{ workConditionData.windSpeed }}&nbsp;m/s</h6>
+                        <div class="panel">
+                          <div class="panel-item">
+                            <p><span>幅度</span></p>
+                            <h6>--</h6>
+                          </div>
+                          <div class="columnLine"></div>
                         </div>
-                        <div class="columnLine"></div>
-                      </div>
-                      <div class="panel">
-                        <div class="panel-item">
-                          <p><span>发动机工作时长</span></p>
-                          <h6>
-                            {{ workConditionData.totalEnginWorkTime }}&nbsp;h
-                          </h6>
+                        <div class="panel">
+                          <div class="panel-item">
+                            <p><span>臂长</span></p>
+                            <h6>--</h6>
+                          </div>
+                          <div class="columnLine"></div>
                         </div>
-                        <div class="columnLine"></div>
-                      </div>
-                      <div class="panel">
-                        <div class="panel-item">
-                          <p><span>燃油油量</span></p>
-                          <h6>
-                            {{ workConditionData.remainingOilPercent }}&nbsp;%
-                          </h6>
+                        <div class="panel">
+                          <div class="panel-item">
+                            <p><span>风速</span></p>
+                            <h6>{{ workConditionData.windSpeed }}&nbsp;m/s</h6>
+                          </div>
+                          <div class="columnLine"></div>
                         </div>
-                        <div class="columnLine"></div>
-                      </div>
-                      <div class="panel">
-                        <div class="panel-item">
-                          <p><span>发动机转速</span></p>
-                          <h6>{{ workConditionData.enginSpeed }}</h6>
+                        <div class="panel">
+                          <div class="panel-item">
+                            <p><span>燃油油量</span></p>
+                            <h6>
+                              {{ workConditionData.remainingOilPercent }}&nbsp;%
+                            </h6>
+                          </div>
+                          <div class="columnLine"></div>
                         </div>
-                        <div class="columnLine"></div>
                       </div>
-                    </div>
-                  </el-carousel-item>
-                </el-carousel>
-
+                    </el-carousel-item>
+                  </el-carousel>
+                </div>
+              </div>
+              <div>
                 <div class="title textFont16">
                   <i class="el-icon-s-tools"></i>
                   <span class="textColor">近七日油耗详情</span>
@@ -354,6 +360,10 @@
               <div>
                 <h2>30565</h2>
                 <p>总起重总量（吨）</p>
+              </div>
+              <div>
+                <h2>817650</h2>
+                <p>总工作时长（小时）</p>
               </div>
               <div>
                 <h2>192233</h2>
@@ -560,6 +570,22 @@
                         ▶
                       </div>
                     </div>
+                    
+                    <div class="expireTimeContent">
+                      <div class="expireTimeItem">安管人员</div>
+                      <div class="expireTimeCount">
+                        <span class="linkLine">0</span>
+                        ▶
+                      </div>
+                    </div>
+                    
+                    <div class="expireTimeContent">
+                      <div class="expireTimeItem">技术人员</div>
+                      <div class="expireTimeCount">
+                        <span class="linkLine">0</span>
+                        ▶
+                      </div>
+                    </div>
                   </div>
                 </el-carousel-item>
               </el-carousel>
@@ -608,7 +634,7 @@ export default {
             avoidLabelOverlap: false,
             color: "#75d059",
             label: {
-              color: "#22a946",
+              color: "#05afe0",
               formatter: "{c}",
               show: true,
               fontSize: "16",
@@ -679,7 +705,7 @@ export default {
             type: "pie",
             radius: ["70%", "80%"],
             avoidLabelOverlap: false,
-            color: "#1a1bc2",
+            color: "#2144c9",
             label: {
               color: "#05afe0",
               formatter: "{c}",
@@ -1342,7 +1368,7 @@ export default {
               }
               .model {
                 display: flex;
-                justify-content:space-evenly;
+                justify-content: space-evenly;
                 .mark {
                   margin: 0;
                   padding: 1.8px 1px;
@@ -1363,22 +1389,35 @@ export default {
           .leftTopContent,
           .rightBottomContent,
           .rightTopContent {
-            margin: 10.6px;
+            height: 100%;
+            margin: 10px;
+            > div {
+              height: calc(50% - 20px);
+            }
             span {
               margin: 0 3px;
               color: #adc8cd;
             }
             .weekAnalysisData {
-              height: 120px;
+              height: 100%;
             }
             .workingCondition {
+              position: relative;
               font-size: 12px;
+              height: calc(100% - 34px);
+              .el-carousel.el-carousel--horizontal{
+                top: calc(50% - 60px);
+              }
+              .el-carousel__indicator.el-carousel__indicator--horizontal{
+                padding: 0 4px;
+              }
               .dataArea {
+                height: 100%;
                 padding: 2.5px 0;
                 display: flex;
                 flex-wrap: wrap;
                 .panel {
-                  width: calc(25% - 2px);
+                  width: calc(25% - 0px);
                   display: flex;
                   text-align: center;
                   justify-content: center;
@@ -1386,7 +1425,9 @@ export default {
                   .panel-item {
                     width: calc(100% - 2px);
                     height: 36px;
-                    margin-top: 2px;
+                    display: flex;
+                    justify-content: space-between;
+                    flex-direction: column;
                     > p {
                       margin-bottom: 5px;
                     }
@@ -1460,6 +1501,10 @@ export default {
               height: calc(100% - 28px);
               .chart {
                 width: 40%;
+                >div{
+                  display: flex;
+                  align-items: center;
+                }
               }
               .data {
                 width: 60%;

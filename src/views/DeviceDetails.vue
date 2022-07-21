@@ -864,7 +864,7 @@ export default {
   display: flex;
   min-width: 1024px;
   max-width: 1920px;
-  margin: 20px auto;
+  margin: 10px auto;
   padding: 10px 35px 0;
   .column {
     .FloatCard-item-header {
@@ -1305,7 +1305,7 @@ export default {
   }
   .column:nth-child(2) {
     flex: 8;
-    margin: 0 20px 0;
+    margin: 0 10px 0;
     height: 100%;
   }
 }

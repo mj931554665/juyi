@@ -73,17 +73,29 @@ export default {
   getDetailWithWorkConditionData(id){
     return axios.get(`/equipment/detailWithWorkConditionData/${id}`)
   },
+  // 2.5-视频通道信息（新天眼）
   getVehicleCode(vehicleCodes) {
     // 如果返回信息为空数组则代码该设备天眼不在线
     let formData = new FormData();
-    formData.append('vehicleCodes', '20CC03208229');
+    formData.append('vehicleCodes', vehicleCodes);
     return axios.post('/cranecloud/map/getVideoCarByVehicleCode', formData)
   },
-  getVideoChannelState() {
+  // 2.6-视频各通道状态（新天眼）
+  getVideoChannelState(terminalId) {
     return axios.get('cranecloud/converge/getVideoChannelState', {
       params:{
-        terminalId:localStorage.getItem('terminalId')
+        terminalId:terminalId
       }
     })
   },
+  // 2.7-实时视频地址获取（新天眼）
+  getvideoPlay(vehicleCode){
+    return axios.get('/cranecloud/videoClient/videoPlay',{
+      params:{
+        vehicleCode:vehicleCode,
+        videoTerType:1
+
+      }
+    })
+  }
 }

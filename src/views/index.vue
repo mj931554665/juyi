@@ -4,7 +4,7 @@
       <el-header height="100" style="padding: 0;">
         <NavbarVue />
       </el-header>
-      <el-main  style="background-color: #f6f6f6;height:calc(100% - 60px);">
+      <el-main  style="background-color: #f6f6f6;min-height:calc(100% - 70px);">
         <router-view />
       </el-main>
     </el-container>

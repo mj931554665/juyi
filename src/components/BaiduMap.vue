@@ -166,10 +166,16 @@
         </div>
       </div>
     </el-card>
+    <TableInfo
+      :onlineStatus="onlineStatus"
+      :deviceList="deviceList"
+    ></TableInfo>
   </div>
 </template>
 
 <script>
+// 引入右侧悬浮卡片组件
+import TableInfo from "@/components/TableInfo.vue";
 // 引入设备信息弹窗组件
 import Popups from "@/components/Popups.vue";
 // 引入聚合点组件（vue-baidu-map自带）
@@ -179,6 +185,7 @@ export default {
   components: {
     BmlMarkerClusterer,
     Popups,
+    TableInfo,
   },
   data() {
     return {
@@ -631,7 +638,7 @@ export default {
     .mapStyle {
       width: 100%;
       /* height: calc(100vh - 130px); */
-      height: calc(100vh - 60px);
+      height: calc(100vh - 70px);
       // 修改地图控件位置
       .anchorTL {
         inset: 44px auto auto 10px !important;

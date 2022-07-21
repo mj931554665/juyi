@@ -3,52 +3,46 @@
 </template>
 
 <script>
-import * as echarts from 'echarts'
+import * as echarts from "echarts";
 
 const idGen = () => {
-  let id = new Date().getTime() + "" + Math.random()*10000;
+  let id = new Date().getTime() + "" + Math.random() * 10000;
   return id;
-}
+};
 
 export default {
-
   props: {
-
     height: {
       type: String,
-      default: '100%'
+      default: "100%",
     },
     width: {
       type: String,
-      default: '100%'
+      default: "100%",
     },
 
     options: {
       type: Object,
-      default: null
-    }
-
+      default: null,
+    },
   },
 
   data() {
     return {
       uuid: null,
-      myChart: null
-    }
+      myChart: null,
+    };
   },
 
   watch: {
-
     width(a, b) {
-
-
       if (this.myChart) {
         setTimeout(() => {
           this.myChart.resize({
             animation: {
-              duration: 300
-            }
-          })
+              duration: 300,
+            },
+          });
         }, 0);
       }
     },
@@ -56,33 +50,34 @@ export default {
     options() {
       if (this.myChart) {
         this.myChart.setOption(this.options, {
-          notMerge: true
-        })
+          notMerge: true,
+        });
       }
-    }
+    },
   },
 
   computed: {
-
     style() {
       return {
         height: this.height,
-        width: this.width
-      }
-    }
-
+        width: this.width,
+      };
+    },
   },
 
   created() {
-    this.uuid = idGen()
+    this.uuid = idGen();
   },
 
   mounted() {
     // 准备实例
     this.myChart = echarts.init(document.getElementById(this.uuid));
+    window.addEventListener("onresize", function () {
+      this.myChart.resize();
+    });
 
     // 应用配置项
     this.myChart.setOption(this.options);
-  }
-}
+  },
+};
 </script>
