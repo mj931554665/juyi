@@ -125,12 +125,12 @@
               </div>
               <div class="datarow">
                 <div class="data">0</div>
+                <div class="data">8</div>
+                <div class="data">1</div>
+                <div class="data">7</div>
                 <div class="data">6</div>
                 <div class="data">5</div>
-                <div class="data">8</div>
-                <div class="data">8</div>
-                <div class="data">5</div>
-                <div class="data">1</div>
+                <div class="data">0</div>
               </div>
               <!-- <span>h</span> -->
             </div>

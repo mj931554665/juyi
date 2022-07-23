@@ -387,22 +387,22 @@
                 <div class="data">
                   <div class="item">
                     <div class="dot"></div>
-                    <div class="text">华东区：&nbsp;46%&nbsp;&nbsp;</div>
+                    <div class="text">华东区：&nbsp;43%&nbsp;&nbsp;</div>
                     <span>69</span>
                   </div>
                   <div class="item">
                     <div class="dot"></div>
-                    <div class="text">华南区：&nbsp;29%&nbsp;&nbsp;</div>
+                    <div class="text">华南区：&nbsp;27%&nbsp;&nbsp;</div>
                     <span>43</span>
                   </div>
                   <div class="item">
                     <div class="dot"></div>
-                    <div class="text">华中区：&nbsp;6%&nbsp;&nbsp;</div>
-                    <span>9</span>
+                    <div class="text">华中区：&nbsp;17%&nbsp;&nbsp;</div>
+                    <span>28</span>
                   </div>
                   <div class="item">
                     <div class="dot"></div>
-                    <div class="text">其他区：&nbsp;26%&nbsp;&nbsp;</div>
+                    <div class="text">其他区：&nbsp;10%&nbsp;&nbsp;</div>
                     <span>17</span>
                   </div>
                 </div>
@@ -641,7 +641,7 @@ export default {
               fontWeight: "bold",
               position: "center",
             },
-            data: [{ value: 156, name: "履带吊" }],
+            data: [{ value: 157, name: "履带吊" }],
           },
         ],
       };

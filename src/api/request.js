@@ -32,11 +32,11 @@ export default {
     return axios.get('/equipment/getOnlineEquipmentAmountByRiskLevel')
   },
   // 2.14——设备总数
-  getEquipmentAmountByType(){
+  getEquipmentAmountByType() {
     return axios.get('/equipment/getEquipmentAmountByType')
   },
   // 2.15——定位设备数量
-  getEquipmentAmountByLocated(){
+  getEquipmentAmountByLocated() {
     return axios.get('/equipment/getEquipmentAmountByLocated')
   },
   // 2.3-设备列表(有地图定位)
@@ -54,9 +54,9 @@ export default {
     return axios.post('/equipment/selectList', pageNum && pageSize ? formData : '')
   },
   // 获取大屏设备列表数据
-  getcustomerScreen(pageNum,pageSize){
+  getcustomerScreen(pageNum, pageSize) {
     let formData = new FormData();
-    formData.append('pageNum',pageNum);
+    formData.append('pageNum', pageNum);
     formData.append('pageSize', pageSize);
     return axios.post('/customerScreen/equipments', pageNum && pageSize ? formData : '')
   },
@@ -70,7 +70,7 @@ export default {
     })
   },
   // 2.18-设备工况信息
-  getDetailWithWorkConditionData(id){
+  getDetailWithWorkConditionData(id) {
     return axios.get(`/equipment/detailWithWorkConditionData/${id}`)
   },
   // 2.5-视频通道信息（新天眼）
@@ -83,19 +83,32 @@ export default {
   // 2.6-视频各通道状态（新天眼）
   getVideoChannelState(terminalId) {
     return axios.get('cranecloud/converge/getVideoChannelState', {
-      params:{
-        terminalId:terminalId
+      params: {
+        terminalId: terminalId
       }
     })
   },
   // 2.7-实时视频地址获取（新天眼）
-  getvideoPlay(vehicleCode){
-    return axios.get('/cranecloud/videoClient/videoPlay',{
-      params:{
-        vehicleCode:vehicleCode,
-        videoTerType:1
-
+  getvideoPlay(vehicleCode) {
+    return axios.get('/cranecloud/videoClient/videoPlay', {
+      params: {
+        // 整车编号
+        vehicleCode: vehicleCode,
+        // 终端类型 1上车 2下车
+        videoTerType: 1,
+        // 通道号
+        channel: 5,
+        // 视频地址类型0 rtmp 1http-flv
+        videoAddrType: 1,
+        // 视频清晰度 0高清 1流畅
+        streamType: 0
       }
     })
+  },
+  // 2.8-实时视频播放发送心跳请求（新天眼）
+  getflashHeartBeat(heartBeat) {
+    let formData = new FormData();
+    formData.append('streamingMediaUId', heartBeat);
+    return axios.post('/cranecloud/videoClient/flashHeartBeat', formData)
   }
 }

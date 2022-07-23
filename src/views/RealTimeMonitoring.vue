@@ -145,7 +145,7 @@ export default {
         localStorage.getItem("DeviceDetails_deviceDetails")
       ),
       // 传入的设备编号
-      vehicleCodes: "20CC03208224",
+      vehicleCodes: "CC0260CC0285",
       // 车辆视频通道信息，包括terminalId
       VideoCarByVehicleCode: {},
       // 通道状态【0，0，0，1，0，0，0，0】
