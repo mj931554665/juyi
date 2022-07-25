@@ -89,7 +89,7 @@ export default {
     })
   },
   // 2.7-实时视频地址获取（新天眼）
-  getvideoPlay(vehicleCode) {
+  getvideoPlay(vehicleCode,channel,clarity) {
     return axios.get('/cranecloud/videoClient/videoPlay', {
       params: {
         // 整车编号
@@ -97,11 +97,11 @@ export default {
         // 终端类型 1上车 2下车
         videoTerType: 1,
         // 通道号
-        channel: 5,
+        channel: channel,
         // 视频地址类型0 rtmp 1http-flv
         videoAddrType: 1,
         // 视频清晰度 0高清 1流畅
-        streamType: 0
+        streamType: clarity == undefined ? 1 : clarity
       }
     })
   },

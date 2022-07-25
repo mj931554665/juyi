@@ -1,50 +1,36 @@
-<template>
-  <div class="app2">
-    <CstorLivePlayer style="height: 100vh" :src="videosrc" />
-  </div>
-</template>
-<script>
-import CstorLivePlayer from "cstor-live-player";
-import "cstor-live-player/dist/cstor-live-player.css";
 export default {
-  components: { CstorLivePlayer },
-  data() {
-    return {
-      // 传入的设备编号
-      vehicleCodes: "CC0260CC0277",
-      // 通道数
-      channel: 1,
-      // 车辆视频通道信息，包括terminalId
-      VideoCarByVehicleCode: {},
-      // 通道状态【0，0，0，1，0，0，0，0】
-      VideoChannelState: [],
-      // 视频地址
-      videosrc: "",
-    };
-  },
   methods: {
-    initVideo() {
-      let vehicleCodes = this.vehicleCodes;
+    test(){
+      console.log('测试');
+    },
+    initVideo(vehicleCodes,channel) {
+      let videoInfo = {}
+      // 2.5-视频通道信息（新天眼）
       this.$api.getVehicleCode(vehicleCodes).then((val) => {
         let data = val.data.data[0];
         // 赋值获取到的数据
-        this.VideoCarByVehicleCode = data;
+        // this.VideoCarByVehicleCode = data;
         // console.log("VideoCarByVehicleCode", data);
+        // 2.6-视频各通道状态（新天眼）
         this.$api.getVideoChannelState(data.terminalId).then((val) => {
           // 把通道信息分割成数组
           let data = val.data.data[0].split(",").map(Number);
           // 通道信息赋值给data数据在页面显示状态
-          this.VideoChannelState = data;
+          // this.VideoChannelState = data;
+          videoInfo.ChannelState = data;
           // console.log('State',data);
         });
       });
-      this.$api.getvideoPlay(vehicleCodes, this.channel).then((val) => {
+      this.$api.getvideoPlay(vehicleCodes, channel).then((val) => {
         let data = val.data.data.split("|");
-        this.videosrc = data[1];
+        // this.videosrc[0] = data[1];
+        videoInfo.videosrc = data[1];
         this.setHeartBeat(data[2]);
-        console.log(data);
+        console.log('videosrc',data);
       });
+      return videoInfo;
     },
+    
     setHeartBeat(heartBeat) {
       let that = this;
       let t = null;
@@ -59,8 +45,4 @@ export default {
       }
     },
   },
-  created() {
-    this.initVideo();
-  },
-};
-</script>
+}

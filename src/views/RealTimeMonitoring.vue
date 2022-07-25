@@ -2,34 +2,64 @@
   <div class="RealTimeMonitoring">
     <div class="module1">
       <div class="controls">
-        <div>
-          <span class="iconfont al-icona-7Ayifenping"></span>
-          <span class="iconfont al-icona-7Dsifenping"></span>
-          <span class="iconfont al-icona-7Iyijiawufenping"></span>
-          <span class="iconfont al-icona-7Jyijiaqifenping"></span>
+        <div class="splitScreen">
+          <span
+            class="iconfont al-icona-7Ayifenping"
+            title="一分屏"
+            @click="splitScreen = 1"
+            :class="splitScreen==1?'active':''"
+          ></span>
+          <span
+            class="iconfont al-icona-7Dsifenping"
+            title="四分屏"
+            @click="splitScreen = 4"
+            :class="splitScreen==4?'active':''"
+          ></span>
+          <span
+            class="iconfont al-icona-7Iyijiawufenping"
+            title="六分屏"
+            @click="splitScreen = 6"
+            :class="splitScreen==6?'active':''"
+          ></span>
+          <span
+            class="iconfont al-icona-7Jyijiaqifenping"
+            title="八分屏"
+            @click="splitScreen = 8"
+            :class="splitScreen==8?'active':''"
+          ></span>
         </div>
         <p>
           <i class="el-icon-location-outline"></i>
           山东省青岛市黄岛区薛家岛街道连江路288号
         </p>
       </div>
-      <div class="video">
-        <video :src="videosrc"></video>
-      </div>
-      <div class="videoBottomBox">
-        <div style="float: left; padding-left: 1em">
-          通道1
-          <div class="el-dropdown" style="cursor: pointer">
-            <span>
-              <i title="选择像素" class="el-icon-setting"></i>
-            </span>
-          </div>
-          225Kbps
+      <div class="content">
+        <div class="oneScreen" v-show="splitScreen == 1">
+          <VideoArea></VideoArea>
         </div>
-        <div style="margin: 0 30px 0 0">
-          <i title="录像" class="el-icon-video-camera-solid"></i>
-          <i title="截图" class="el-icon-camera-solid"></i>
-          <i title="全屏" class="el-icon-full-screen"></i>
+        <div class="fourScreen" v-show="splitScreen == 4">
+          <VideoArea></VideoArea>
+          <VideoArea></VideoArea>
+          <VideoArea></VideoArea>
+          <VideoArea></VideoArea>
+        </div>
+        <div class="sixScreen" v-show="splitScreen == 6">
+          <VideoArea></VideoArea>
+          <VideoArea></VideoArea>
+          <VideoArea></VideoArea>
+          <VideoArea></VideoArea>
+          <VideoArea></VideoArea>
+          <VideoArea></VideoArea>
+        </div>
+        <div class="eightScreen" v-show="splitScreen == 8">
+          <VideoArea></VideoArea>
+          <VideoArea></VideoArea>
+          <VideoArea></VideoArea>
+          <VideoArea></VideoArea>
+          <VideoArea></VideoArea>
+          <VideoArea></VideoArea>
+          <VideoArea></VideoArea>
+          <VideoArea></VideoArea>
         </div>
       </div>
     </div>
@@ -45,13 +75,7 @@
                 : "--"
             }}
           </p>
-          <p>
-            设备编号：&nbsp;{{
-              vehicleCodes
-                ? vehicleCodes
-                : "--"
-            }}
-          </p>
+          <p>设备编号：&nbsp;{{ vehicleCodes ? vehicleCodes : "--" }}</p>
           <p>
             设备型号：&nbsp;{{
               deviceDetails.baseInfo.modelLabel
@@ -76,56 +100,16 @@
       <FloatCard :more="true">
         <span slot="header">视频通道</span>
         <div slot="content" class="block">
-          <div class="channel-content">
-            <div>
-              <div title="通道1" class="channel-item active">
-                <p :class="VideoChannelState[0] ? 'dot' : ''"></p>
-                <div>通道1</div>
-              </div>
-            </div>
-            <div>
-              <div title="通道2" class="channel-item active">
-                <p :class="VideoChannelState[1] ? 'dot' : ''"></p>
-                <div>通道2</div>
-              </div>
-            </div>
-            <div>
-              <div title="通道3" class="channel-item active">
-                <p :class="VideoChannelState[2] ? 'dot' : ''"></p>
-                <div>通道3</div>
-              </div>
-            </div>
-            <div>
-              <div title="通道4" class="channel-item active">
-                <p :class="VideoChannelState[3] ? 'dot' : ''"></p>
-                <div>通道4</div>
-              </div>
-            </div>
-            <div>
-              <div title="通道5" class="channel-item active">
-                <p :class="VideoChannelState[4] ? 'dot' : ''"></p>
-                <div>通道5</div>
-              </div>
-            </div>
-            <div>
-              <div title="通道6" class="channel-item active">
-                <p :class="VideoChannelState[5] ? 'dot' : ''"></p>
-                <div>通道6</div>
-              </div>
-            </div>
-            <div>
-              <div title="通道7" class="channel-item active">
-                <p :class="VideoChannelState[6] ? 'dot' : ''"></p>
-                <div>通道7</div>
-              </div>
-            </div>
-            <div>
-              <div title="通道8" class="channel-item active">
-                <p :class="VideoChannelState[7] ? 'dot' : ''"></p>
-                <div>通道8</div>
-              </div>
-            </div>
-          </div>
+          <el-checkbox-group v-model="channelInfo" class="channel-content">
+            <el-checkbox-button
+              v-for="(aisle,index) in VideoChannelState.slice(0, 8)"
+              :label="index+1"
+              :key="index"
+            >
+              <p class="dot" :style="'background:'+(aisle=='0'?'#13ca40':'#d8d8d8') "></p>
+              通道{{ index+1 }}
+            </el-checkbox-button>
+          </el-checkbox-group>
           <el-button plain>全部播放</el-button>
         </div>
       </FloatCard>
@@ -134,9 +118,13 @@
 </template>
 <script>
 import FloatCard from "@/components/FloatCard.vue";
+import VideoArea from "@/components/VideoArea.vue";
+import mixin from './mixin'
 export default {
+  mixins:[mixin],
   components: {
     FloatCard,
+    VideoArea,
   },
   data() {
     return {
@@ -151,17 +139,22 @@ export default {
       // 通道状态【0，0，0，1，0，0，0，0】
       VideoChannelState: [],
       // 视频地址
-      videosrc:''
+      videosrc: [],
+      // 分屏数据
+      splitScreen: 1,
+      channelInfo: [1],
     };
   },
   methods: {
     initVideo() {
       let vehicleCodes = this.vehicleCodes;
+      // 2.5-视频通道信息（新天眼）
       this.$api.getVehicleCode(vehicleCodes).then((val) => {
         let data = val.data.data[0];
         // 赋值获取到的数据
         this.VideoCarByVehicleCode = data;
         // console.log("VideoCarByVehicleCode", data);
+        // 2.6-视频各通道状态（新天眼）
         this.$api.getVideoChannelState(data.terminalId).then((val) => {
           // 把通道信息分割成数组
           let data = val.data.data[0].split(",").map(Number);
@@ -170,20 +163,21 @@ export default {
           // console.log('State',data);
         });
       });
-      this.$api.getvideoPlay(vehicleCodes).then((val)=>{
+      this.$api.getvideoPlay(vehicleCodes,2).then((val) => {
         let data = val.data.data.split("|");
-        this.videosrc = data[1]
+        this.videosrc[0] = data[1];
         console.log(data);
-      })
+      });
     },
   },
   created() {
     this.initVideo();
+    this.test()
   },
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 @import "@/assets/test/font/iconfont.css";
 
 .RealTimeMonitoring {
@@ -213,30 +207,54 @@ export default {
       justify-content: space-between;
       align-items: center;
       padding-bottom: 5px;
+      border-bottom: 1px gray dashed;
 
-      div {
+      .splitScreen {
         span {
           font-size: 24px;
           margin: 0 5px;
+          cursor: pointer;
+        }
+        .active{
+          color: #fbb134;
         }
       }
     }
-
-    .video {
-      height: 467px;
-      // background: url("@/assets/test/ssjk.png") no-repeat;
-      // background-size: contain;
-    }
-
-    .videoBottomBox {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 0px 10px 20px;
-      margin-right: 30px;
-      background: gainsboro;
-      i {
-        margin: 0 5px 0 0;
-        cursor: pointer;
+    .content {
+      height: calc(100% - 30px);
+      > div {
+        height: 100%;
+        .VideoArea {
+          outline: #13ca40 solid 1px;
+        }
+      }
+      .oneScreen {
+        display: grid;
+        grid-template-rows: 1fr;
+        grid-template-columns: 1fr;
+      }
+      .fourScreen {
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
+      }
+      .sixScreen {
+        display: grid;
+        grid-template-rows: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr;
+        .VideoArea:nth-child(1) {
+          grid-row-end: span 2;
+          grid-column-end: span 2;
+        }
+      }
+      .eightScreen {
+        display: grid;
+        grid-template-rows: 1fr 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        .VideoArea:nth-child(1) {
+          grid-row-end: span 3;
+          grid-column-end: span 3;
+        }
       }
     }
   }
@@ -266,58 +284,54 @@ export default {
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
+        .el-checkbox-button {
+          .el-checkbox-button__inner {
+            position: relative;
+            width: 76px;
+            height: 25px;
+            margin: 10px 10px;
+            line-height: 25.6px;
+            color: #999;
+            background: #fff;
+            border: 1px solid #d8d8d8;
+            border-radius: 3.2px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            box-shadow: none;
 
-        .channel-item {
-          position: relative;
-          width: 76px;
-          height: 25px;
-          margin: 10px 10px;
-          line-height: 25.6px;
-          color: #999;
-          background: #fff;
-          border: 1px solid #d8d8d8;
-          border-radius: 3.2px;
-          cursor: pointer;
-          font-size: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          >p{
-            position: absolute;
-            top: 8px;
-            left: 4px;
-            margin: 2.4px;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: #13ca40;
-          }
-          .dot {
-            background-color: #d8d8d8;
-          }
-
-          div {
-            margin-left: 8px;
-            margin-right: 5px;
-            text-overflow: ellipsis;
-            text-align: center;
-            line-height: normal;
+            .dot {
+              position: absolute;
+              top: 50%;
+              left: 8px;
+              transform: translateY(-55%);
+              width: 5px;
+              height: 5px;
+              border-radius: 50%;
+              background: #13ca40;
+            }
           }
         }
-        .channel-item:hover{
-          border-color: #f2ce91;
+        .is-checked {
+          .el-checkbox-button__inner {
+            background: rgba(242, 206, 145, 0.2);
+            color: #fbb134;
+          }
         }
       }
 
       .el-button {
         width: 100%;
       }
-      .el-button:hover{
+      .el-button:hover {
         border-color: #f2ce91;
         color: #f2ce91;
       }
-      .el-button:focus{
-        border-color:#f2ce91;
+      .el-button:focus {
+        border-color: #f2ce91;
         color: #f2ce91;
       }
     }

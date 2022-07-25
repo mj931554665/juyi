@@ -6,7 +6,7 @@
       class="mapStyle"
       :center="centerPoint"
       :zoom="5"
-      :mapStyle="mapStyle"
+      
       :scroll-wheel-zoom="true"
       
       @ready="handler"

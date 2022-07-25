@@ -153,7 +153,7 @@
       </div>
       <div class="column">
         <FloatCard>
-          <span slot="header">设备状态</span>
+          <span slot="header">设备实时工况</span>
           <div slot="content" class="module3">
             <div class="devicePic">
               <div class="ldd">
@@ -1091,34 +1091,37 @@ export default {
           }
           .mainHookRatedWeight {
             position: absolute;
-            top: 78px;
+            top: 79px;
             left: 22px;
             color: #818181;
             width: 33px;
           }
           .mainHookActualWeight {
             position: absolute;
-            top: 78px;
+            top: 79px;
             left: 60px;
             color: #818181;
             width: 33px;
           }
           .mainHookRadius {
             position: absolute;
+            width: 50px;
             top: 130px;
-            left: 49px;
+            left: 44px;
             color: #fff;
           }
           .enginSpeed {
             position: absolute;
+            width: 57px;
             top: 179px;
-            left: 49px;
+            left: 39px;
             color: #000;
           }
           .totalEnginWorkTim {
             position: absolute;
+            width: 57px;
             top: 204px;
-            left: 40px;
+            left: 39px;
             color: #000;
           }
           .torquePercent {
@@ -1159,28 +1162,30 @@ export default {
           }
           .slaveHookRatedWeight {
             position: absolute;
-            top: 78px;
+            top: 79px;
             right: 57px;
             color: #818181;
             width: 33px;
           }
           .slaveHookActualWeight {
             position: absolute;
-            top: 78px;
+            top: 79px;
             right: 19px;
             color: #818181;
             width: 33px;
           }
           .slaveHookRadius {
             position: absolute;
-            top: 129px;
-            right: 25px;
+            width: 50px;
+            top: 130px;
+            right: 18px;
             color: #fff;
           }
           .slaveHookAngle {
             position: absolute;
-            top: 167px;
-            right: 25px;
+            width: 50px;
+            top: 168px;
+            right: 18px;
             color: #fff;
           }
         }
@@ -1283,8 +1288,8 @@ export default {
         padding-bottom: 26px;
         .riskEvent {
           display: flex;
-          background-color: #e7cece;
-          border-radius: 10px;
+          background-color: #f3f3f3;
+          border-radius: 5px;
           margin-top: 15px;
           cursor: pointer;
           i {

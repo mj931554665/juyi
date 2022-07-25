@@ -92,66 +92,29 @@
               </div>
               <div class="splitLine"></div>
               <div class="video">
-                <div class="channel-content">
-                  <div>
-                    <div title="通道1" class="channel-item active">
-                      <div>通道1</div>
-                    </div>
-                  </div>
-                  <div>
-                    <div title="通道2" class="channel-item active">
-                      <div>通道2</div>
-                    </div>
-                  </div>
-                  <div>
-                    <div title="通道3" class="channel-item active">
-                      <div>通道3</div>
-                    </div>
-                  </div>
-                  <div>
-                    <div title="通道4" class="channel-item active">
-                      <div>通道4</div>
-                    </div>
-                  </div>
-                  <div>
-                    <div title="通道5" class="channel-item active">
-                      <div>通道5</div>
-                    </div>
-                  </div>
-                  <div>
-                    <div title="通道6" class="channel-item active">
-                      <div>通道6</div>
-                    </div>
-                  </div>
-                  <div>
-                    <div title="通道7" class="channel-item active">
-                      <div>通道7</div>
-                    </div>
-                  </div>
-                  <div>
-                    <div title="通道8" class="channel-item active">
-                      <div>通道8</div>
-                    </div>
-                  </div>
-                </div>
+                <el-radio-group v-model="channel" class="channel-content">
+                  <el-radio-button
+                    v-for="(aisle, index) in VideoChannelState.slice(0, 8)"
+                    :label="index + 1"
+                    :key="index"
+                    :class="aisle == '1' ? 'channel-disabled' : ''"
+                  >
+                    <p
+                      class="dot"
+                      :style="
+                        'background:' + (aisle == '0' ? '#13ca40' : '#d8d8d8')
+                      "
+                    ></p>
+                    通道{{ index + 1 }}
+                  </el-radio-button>
+                </el-radio-group>
                 <div class="videoBox">
-                  <div class="videoSize">
-                    <video src="@/assets/test/videotest.mp4"></video>
-                  </div>
-                  <div id="videoBottomBox0" class="videoBottomBox">
-                    <div style="float: left; padding-left: 1em">
-                      通道1
-                      <div class="el-dropdown" style="cursor: pointer">
-                        <span>
-                          <i title="选择像素" class="el-icon-setting"></i>
-                        </span>
-                      </div>
-                      0Kbps
-                    </div>
-                    <i title="录像" class="el-icon-video-camera-solid"></i>
-                    <i title="截图" class="el-icon-camera-solid"></i>
-                    <i title="全屏" class="el-icon-full-screen"></i>
-                  </div>
+                  <!-- <VideoArea>  -->
+                  <CstorLivePlayer
+                    slot="video"
+                    :src="videosrc"
+                  />
+                  <!-- </VideoArea> -->
                 </div>
               </div>
               <div class="location textFont14">
@@ -174,9 +137,13 @@
               <div class="equipmentInfo textFont14">
                 <div class="model">
                   <!-- <span class="textColor">车牌号：--</span> -->
+                  <span class="mark">{{ checkDevice.carStatusLabel }}</span>
                   <span class="mark">{{ checkDevice.onlineStatusLabel }}</span>
                   <span class="mark">{{ checkDevice.modelLabel }}</span>
                   <span class="mark">{{ checkDevice.typeLabel }}</span>
+                  <span class="mark">{{
+                    checkDevice.equipmentBrandLabel
+                  }}</span>
                 </div>
                 <div class="operator">
                   <span>项目名称：test </span>
@@ -194,8 +161,7 @@
                   <span class="textColor">实时工况</span>
                 </div>
                 <div class="splitLine"></div>
-                <div 
-                  class="workingCondition">
+                <div class="workingCondition">
                   <el-carousel
                     :interval="5000"
                     arrow="always"
@@ -570,7 +536,7 @@
                         ▶
                       </div>
                     </div>
-                    
+
                     <div class="expireTimeContent">
                       <div class="expireTimeItem">安管人员</div>
                       <div class="expireTimeCount">
@@ -578,7 +544,7 @@
                         ▶
                       </div>
                     </div>
-                    
+
                     <div class="expireTimeContent">
                       <div class="expireTimeItem">技术人员</div>
                       <div class="expireTimeCount">
@@ -601,14 +567,26 @@
 </template>
 
 <script>
+// 引入大屏地图
 import ScreenMap from "@/components/ScreenMap.vue";
+// 引入全屏按钮
 import FuncBtn from "@/components/FuncBtn.vue";
+// 引入图表组件
 import EchartsComp from "@/components/EchartsComponent.vue";
+// 引入实时监控组件
+import VideoArea from "@/components/VideoArea.vue";
+// 引入在线视频播放组件
+import CstorLivePlayer from "cstor-live-player";
+import "cstor-live-player/dist/cstor-live-player.css";
+import mixin from "./mixin";
 export default {
+  mixins: [mixin],
   components: {
     FuncBtn,
     ScreenMap,
     EchartsComp,
+    VideoArea,
+    CstorLivePlayer,
   },
   computed: {
     // 页面四个图表的配置数据
@@ -742,7 +720,18 @@ export default {
       dataY: [],
       // 设备列表
       deviceList: [],
+      // 获取到的实时监控通道信息
+      VideoChannelState: [],
+      //用户选中的通道
+      channel: 1,
+      // 实时监控视频链接
+      videosrc: "",
     };
+  },
+  watch:{
+    channel(a, b) {
+      this.initVideo();
+    },
   },
   methods: {
     // 判断数据是否获取成功，成功则存入，不成功则弹出错误，登录失效则返回登录页面
@@ -780,6 +769,7 @@ export default {
         // 赋值工况数据给图表
         this.chart1(detail.weekAnalysisData.details);
       });
+      this.initVideo();
     },
     // 近7日工况信息表
     chart1(value) {
@@ -934,14 +924,32 @@ export default {
       };
       this.chart1Data = option;
     },
+    // 获取视频并赋值函数
+    initVideo() {
+      // 获取实时监控视频通道数据
+        this.$api.getVehicleCode(this.checkDevice.equipmentNo).then((val) => {
+          let data = val.data.data[0];
+          this.$api.getVideoChannelState(data.terminalId).then((val) => {
+            let data = val.data.data[0].split(",").map(Number);
+            // 通道信息赋值给data数据在页面显示状态
+            this.VideoChannelState = data;
+          });
+        });
+      this.$api.getvideoPlay(this.checkDevice.equipmentNo, this.channel).then((val) => {
+        let data = val.data.data.split("|");
+        this.videosrc = data[1];
+        this.setHeartBeat(data[2]);
+      });
+    },
     initData() {
       this.$api.getselectList("0", "999").then((val) => {
         // 给设备列表赋值
         this.deviceList = val.data.data.rows;
         // 给设备数据赋值
-        this.checkDevice = val.data.data.rows[0];
+        let checkDevice = val.data.data.rows[0];
+        this.checkDevice = checkDevice;
         // 获取第一个设备的id
-        let id = val.data.data.rows[0].id;
+        let id = checkDevice.id;
         // 获取默认设备工况数据
         this.$api.getDetailWithWorkConditionData(id).then((val) => {
           // 赋值工况数据
@@ -950,6 +958,8 @@ export default {
           // 赋值工况数据给图表
           this.chart1(detail.weekAnalysisData.details);
         });
+        
+        this.initVideo();
       });
     },
   },
@@ -1202,7 +1212,8 @@ export default {
           background-size: 4.8%;
           box-sizing: border-box;
           .leftTopContent {
-            margin: 10.6px;
+            height: calc(100% - 10px);
+            margin: 10px;
             margin-bottom: 0;
             .operator {
               margin: 3px 0 0;
@@ -1240,63 +1251,59 @@ export default {
               height: 18px;
             }
             .video {
-              height: 61%;
-              .channel-content {
-                z-index: 50;
-                width: 100%;
+              height: 55%;
+              .el-radio-group {
+                height: 35px;
                 display: flex;
-                justify-content: space-between;
-                overflow-y: hidden;
-                overflow-x: auto;
+                overflow: auto;
+                flex-wrap: nowrap;
+                // justify-content: space-around;
+                .el-radio-button {
+                  .el-radio-button__inner {
+                    position: relative;
+                    width: 60px;
+                    height: 25px;
+                    margin: 0px 4px;
+                    line-height: 25.6px;
+                    // color: #999;
+                    background: rgba(0, 0, 2, 0.8);
+                    border: 1px solid rgba(0, 198, 255, 0.8);
+                    border-radius: 3.2px;
+                    cursor: pointer;
+                    font-size: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 0;
+                    box-shadow: none;
 
-                .channel-item {
-                  position: relative;
-                  width: 60px;
-                  height: 25px;
-                  margin: 0px 4px;
-                  line-height: 25.6px;
-                  // color: #999;
-                  background: rgba(0, 0, 2, 0.8);
-                  border: 1px solid rgba(0, 198, 255, 0.8);
-                  border-radius: 3.2px;
-                  cursor: pointer;
-                  font-size: 12px;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-
-                  &:before {
-                    position: absolute;
-                    top: 8px;
-                    left: 4px;
-                    display: block;
-                    margin: 2.4px;
-                    content: "";
-                    width: 4px;
-                    height: 4px;
-                    background: #13ca40;
-                    border-radius: 50%;
-                  }
-
-                  div {
-                    padding-left: 7.8px;
-                    margin-right: 4.8px;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    text-align: center;
-                    line-height: normal;
+                    .dot {
+                      position: absolute;
+                      top: 50%;
+                      left: 4px;
+                      transform: translateY(-55%);
+                      width: 4px;
+                      height: 4px;
+                      border-radius: 50%;
+                      background: #13ca40;
+                    }
                   }
                 }
-                .channel-item:hover {
-                  color: rgba(0, 198, 255, 0.8);
-                  background: rgba(0, 198, 255, 0.2);
-                  // border: 1px solid rgba(0, 198, 255, 0.8);
-                  cursor: pointer;
+                .channel-disabled span {
+                  color: rgba(0, 198, 255, 0.4);
+                  border: 1px solid rgba(0, 198, 255, 0.4);
+                }
+                .is-active {
+                  .el-radio-button__inner {
+                    color: #000002;
+                    background: rgba(0, 198, 255, 0.8);
+                  }
                 }
               }
 
               .videoBox {
                 position: relative;
+                height: calc(100% - 35px);
 
                 .videoBottomBox {
                   width: 100%;
@@ -1346,10 +1353,13 @@ export default {
               }
             }
             .equipmentInfo {
-              margin-top: 2.3px;
+              height: 18%;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-evenly;
               > div {
                 display: flex;
-                line-height: 18.5px;
+                line-height: 16px;
               }
               .equipmentInfoTitle,
               .equipmentInfoTitle span {
@@ -1368,7 +1378,7 @@ export default {
               }
               .model {
                 display: flex;
-                justify-content: space-evenly;
+                justify-content: space-around;
                 .mark {
                   margin: 0;
                   padding: 1.8px 1px;
@@ -1405,10 +1415,10 @@ export default {
               position: relative;
               font-size: 12px;
               height: calc(100% - 34px);
-              .el-carousel.el-carousel--horizontal{
+              .el-carousel.el-carousel--horizontal {
                 top: calc(50% - 60px);
               }
-              .el-carousel__indicator.el-carousel__indicator--horizontal{
+              .el-carousel__indicator.el-carousel__indicator--horizontal {
                 padding: 0 4px;
               }
               .dataArea {
@@ -1501,7 +1511,7 @@ export default {
               height: calc(100% - 28px);
               .chart {
                 width: 40%;
-                >div{
+                > div {
                   display: flex;
                   align-items: center;
                 }
