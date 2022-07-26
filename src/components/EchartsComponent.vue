@@ -71,9 +71,10 @@ export default {
 
   mounted() {
     // 准备实例
-    this.myChart = echarts.init(document.getElementById(this.uuid));
-    window.addEventListener("onresize", function () {
-      this.myChart.resize();
+    let echart= echarts.init(document.getElementById(this.uuid));
+    this.myChart = echart;
+    window.addEventListener("resize", function () {
+      echart.resize();
     });
 
     // 应用配置项

@@ -23,8 +23,8 @@
           <div class="leftTreeTop">
             <el-input
               placeholder="搜索设备"
-              suffix-icon="el-icon-search"
               clearable
+              suffix-icon="el-icon-search"
               v-model="searchInput"
             >
             </el-input>
@@ -110,10 +110,7 @@
                 </el-radio-group>
                 <div class="videoBox">
                   <!-- <VideoArea>  -->
-                  <CstorLivePlayer
-                    slot="video"
-                    :src="videosrc"
-                  />
+                  <!-- <CstorLivePlayer slot="video" :src="videosrc" /> -->
                   <!-- </VideoArea> -->
                 </div>
               </div>
@@ -728,7 +725,7 @@ export default {
       videosrc: "",
     };
   },
-  watch:{
+  watch: {
     channel(a, b) {
       this.initVideo();
     },
@@ -927,19 +924,21 @@ export default {
     // 获取视频并赋值函数
     initVideo() {
       // 获取实时监控视频通道数据
-        this.$api.getVehicleCode(this.checkDevice.equipmentNo).then((val) => {
-          let data = val.data.data[0];
-          this.$api.getVideoChannelState(data.terminalId).then((val) => {
-            let data = val.data.data[0].split(",").map(Number);
-            // 通道信息赋值给data数据在页面显示状态
-            this.VideoChannelState = data;
-          });
+      this.$api.getVehicleCode(this.checkDevice.equipmentNo).then((val) => {
+        let data = val.data.data[0];
+        this.$api.getVideoChannelState(data.terminalId).then((val) => {
+          let data = val.data.data[0].split(",").map(Number);
+          // 通道信息赋值给data数据在页面显示状态
+          this.VideoChannelState = data;
         });
-      this.$api.getvideoPlay(this.checkDevice.equipmentNo, this.channel).then((val) => {
-        let data = val.data.data.split("|");
-        this.videosrc = data[1];
-        this.setHeartBeat(data[2]);
       });
+      this.$api
+        .getvideoPlay(this.checkDevice.equipmentNo, this.channel)
+        .then((val) => {
+          let data = val.data.data.split("|");
+          this.videosrc = data[1];
+          this.setHeartBeat(data[2]);
+        });
     },
     initData() {
       this.$api.getselectList("0", "999").then((val) => {
@@ -958,7 +957,7 @@ export default {
           // 赋值工况数据给图表
           this.chart1(detail.weekAnalysisData.details);
         });
-        
+
         this.initVideo();
       });
     },
@@ -1288,6 +1287,9 @@ export default {
                       background: #13ca40;
                     }
                   }
+                  .el-radio-button__inner:hover {
+                    background: rgba(0, 198, 255, 0.2);
+                  }
                 }
                 .channel-disabled span {
                   color: rgba(0, 198, 255, 0.4);
@@ -1296,7 +1298,7 @@ export default {
                 .is-active {
                   .el-radio-button__inner {
                     color: #000002;
-                    background: rgba(0, 198, 255, 0.8);
+                    background: rgba(0, 198, 255, 0.8) !important;
                   }
                 }
               }
