@@ -26,6 +26,8 @@ export default {
       loginForm: {
         username: 'shuju',
         password: 'Shuju1234'
+        // username: 'moj1',
+        // password: 'lk8wmp3A'
       },
       errMsg: '',
       responseResult: []

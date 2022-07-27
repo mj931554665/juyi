@@ -12,8 +12,8 @@
         </div>
       </div>
       <div class="showTime" style="display: flex">
-        <span class="time">2022-2-2 22:22:22</span>
-        <FuncBtn :isScreen="true" id="fullScreen"></FuncBtn>
+        <span class="time" title="当前时间"></span>
+        <FuncBtn :isScreen="true" id="fullScreen" title="全屏/退出全屏"></FuncBtn>
       </div>
     </header>
     <!-- 页面主体部分 -->
@@ -92,7 +92,10 @@
               </div>
               <div class="splitLine"></div>
               <div class="video">
-                <el-radio-group v-model="channel" class="channel-content">
+                <el-radio-group 
+                v-model="channel" 
+                class="channel-content"
+                @change="initVideo()">
                   <el-radio-button
                     v-for="(aisle, index) in VideoChannelState.slice(0, 8)"
                     :label="index + 1"
@@ -586,114 +589,14 @@ export default {
     CstorLivePlayer,
   },
   computed: {
-    // 页面四个图表的配置数据
-    chart2() {
-      let option = {
-        tooltip: {
-          trigger: "item",
-        },
-        title: {
-          text: "设备总数",
-          textStyle: {
-            fontSize: 10,
-            color: "#78898f",
-          },
-          left: "center",
-          top: "58%",
-        },
-        series: [
-          {
-            name: "履带吊",
-            type: "pie",
-            radius: ["70%", "80%"],
-            avoidLabelOverlap: false,
-            color: "#75d059",
-            label: {
-              color: "#05afe0",
-              formatter: "{c}",
-              show: true,
-              fontSize: "16",
-              fontWeight: "bold",
-              position: "center",
-            },
-            data: [{ value: 157, name: "履带吊" }],
-          },
-        ],
-      };
-      return option;
+    chart2(){
+      return this.$EchartsData.Schart2();
     },
-    chart3() {
-      let option = {
-        tooltip: {
-          trigger: "item",
-        },
-        title: {
-          text: "风险总数",
-          textStyle: {
-            fontSize: 10,
-            color: "#78898f",
-          },
-          left: "center",
-          top: "58%",
-        },
-        series: [
-          {
-            color: ["#dd0000", "#ff8a00", "#ebce41"],
-            name: "风险事件",
-            type: "pie",
-            radius: ["70%", "80%"],
-            label: {
-              color: "#05afe0",
-              formatter: "{c}",
-              show: true,
-              fontSize: "16",
-              fontWeight: "bold",
-              position: "center",
-            },
-            data: [
-              { value: 0, name: "高风险" },
-              { value: 0, name: "中风险" },
-              { value: 0, name: "低风险" },
-            ],
-          },
-        ],
-      };
-      return option;
+    chart3(){
+      return this.$EchartsData.Schart3();
     },
-    chart4() {
-      let option = {
-        tooltip: {
-          trigger: "item",
-        },
-        title: {
-          text: "运输总数",
-          textStyle: {
-            fontSize: 10,
-            color: "#78898f",
-          },
-          left: "center",
-          top: "58%",
-        },
-        series: [
-          {
-            name: "履带吊",
-            type: "pie",
-            radius: ["70%", "80%"],
-            avoidLabelOverlap: false,
-            color: "#2144c9",
-            label: {
-              color: "#05afe0",
-              formatter: "{c}",
-              show: true,
-              fontSize: "15",
-              fontWeight: "bold",
-              position: "center",
-            },
-            data: [{ value: 7977, name: "年运输公里数" }],
-          },
-        ],
-      };
-      return option;
+    chart4(){
+      return this.$EchartsData.Schart4();
     },
   },
   data() {
@@ -725,11 +628,6 @@ export default {
       videosrc: "",
     };
   },
-  watch: {
-    channel(a, b) {
-      this.initVideo();
-    },
-  },
   methods: {
     // 切换设备
     checked(i) {
@@ -745,162 +643,10 @@ export default {
         this.workConditionData = detail.workConditionData;
         // 周工作数据
         // 赋值工况数据给图表
-        this.chart1(detail.weekAnalysisData.details);
+        this.chart1Data = this.$EchartsData.Schart1(detail.weekAnalysisData.details);
+        
       });
       this.initVideo();
-    },
-    // 近7日工况信息表
-    chart1(value) {
-      // 声明图表x轴初始变量
-      let dataX = [];
-      let dataY1 = [];
-      let dataY = [];
-      // 对数据进行遍历，提取日期数据并转换格式
-      value.forEach((item) => {
-        // 近七日耗油量
-        dataY1.push(item.oilCost);
-        // 近七日工作时间
-        dataY.push(item.workTime);
-        if (item.dataDate.slice(4, 8)[0] == 0) {
-          // 截取拼接字符
-          dataX.push(
-            item.dataDate.slice(5, 6) + "/" + item.dataDate.slice(6, 8)
-          );
-        } else {
-          dataX.push(
-            item.dataDate.slice(4, 6) + "月" + item.dataDate.slice(6, 8)
-          );
-        }
-      });
-      let option = {
-        // backgroundColor: "#0D2753",
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "none",
-          },
-          formatter: function (params) {
-            return (
-              dataX[params[0].dataIndex] +
-              "<br/>工作时长：" +
-              dataY[params[0].dataIndex] +
-              " h" +
-              "<br> 油耗：" +
-              dataY1[params[0].dataIndex] +
-              " L"
-            );
-          },
-        },
-        grid: {
-          top: "10%",
-          bottom: "0%",
-          left: "5%",
-          right: "5%",
-          containLabel: true,
-        },
-        legend: {
-          show: true,
-          data: ["油耗(L)", "工作时长(h)"],
-          left: "center",
-          top: "0",
-          textStyle: {
-            padding: [4, 0, 0, 0],
-            color: "#33FFFF",
-          },
-          itemWidth: 15,
-          itemHeight: 10,
-          itemGap: 25,
-        },
-        xAxis: {
-          type: "category",
-          data: dataX,
-          axisLine: {
-            lineStyle: {
-              color: "rgba(66, 192, 255, .3)",
-            },
-          },
-
-          axisLabel: {
-            rotate: -45,
-            color: "#33FFFF",
-          },
-        },
-
-        yAxis: [
-          {
-            type: "value",
-            splitLine: {
-              show: false,
-            },
-            axisLabel: {
-              color: "#5FBBEB",
-            },
-            axisLine: {
-              lineStyle: {
-                fontSize: 12,
-                color: "rgba(66, 192, 255, .3)",
-              },
-            },
-          },
-          {
-            type: "value",
-            name: "",
-            nameTextStyle: {
-              color: "#d2d2d2",
-            },
-            // max: "100",
-            min: "0",
-            scale: true,
-            position: "right",
-            axisLine: {
-              lineStyle: {
-                color: "rgba(66, 192, 255, .3)",
-              },
-            },
-            splitLine: {
-              show: false,
-            },
-            axisLabel: {
-              show: true,
-              formatter: "{value} ", //右侧Y轴文字显示
-              fontSize: 12,
-              color: "#42C0FF",
-            },
-          },
-        ],
-        series: [
-          {
-            name: "油耗(L)",
-            type: "bar",
-            barWidth: "12px",
-            itemStyle: {
-              color: "rgba(36,144,206,.2)",
-              borderColor: "#267ea9",
-            },
-            data: dataY1,
-          },
-          {
-            name: "工作时长(h)",
-            type: "line",
-            yAxisIndex: 1, //使用的 y 轴的 index，在单个图表实例中存在多个 y轴的时候有用
-            smooth: false, //平滑曲线显示
-
-            symbol: "circle", //标记的图形为实心圆
-            symbolSize: 8, //标记的大小
-            itemStyle: {
-              color: "rgb(117, 249, 185)",
-              borderColor: "rgba(117, 249, 185,0.8)", //圆点透明 边框
-              borderWidth: "1px",
-            },
-            lineStyle: {
-              color: "rgba(117, 249, 185,0.5)",
-            },
-
-            data: dataY,
-          },
-        ],
-      };
-      this.chart1Data = option;
     },
     // 获取视频并赋值函数
     initVideo() {
@@ -936,7 +682,7 @@ export default {
           let detail = val.data.data;
           this.workConditionData = detail.workConditionData;
           // 赋值工况数据给图表
-          this.chart1(detail.weekAnalysisData.details);
+          this.chart1Data = this.$EchartsData.Schart1(detail.weekAnalysisData.details);
         });
 
         this.initVideo();
@@ -963,7 +709,6 @@ export default {
     })();
     this.initData();
   },
-  mounted() {},
 };
 </script>
 

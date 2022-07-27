@@ -9,6 +9,9 @@ import './assets/css/restcss.css'
 import api from './api/request'
 Vue.prototype.$api = api
 
+import EchartsData from './utils/EchartsData'
+Vue.prototype.$EchartsData = EchartsData
+
 Vue.use(ElementUI);
 /* // import VueAMap from 'vue-amap'; //引入高德地图
 // // 高德地图

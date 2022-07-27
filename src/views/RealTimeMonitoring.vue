@@ -60,32 +60,36 @@
       <FloatCard :more="true">
         <span slot="header">设备信息</span>
         <div slot="content" class="detail">
-          <p>设备名称：&nbsp;{{ deviceDetails.baseInfo.name }}</p>
+          <p>
+            设备名称：&nbsp;{{
+              deviceDetails.length ? deviceDetails.baseInfo.name : "--"
+            }}
+          </p>
           <p>
             设备类型：&nbsp;{{
-              deviceDetails.baseInfo.typeLabel
-                ? deviceDetails.baseInfo.typeLabel
-                : "--"
+              deviceDetails.length ? deviceDetails.baseInfo.typeLabel : "--"
             }}
           </p>
           <p>设备编号：&nbsp;{{ vehicleCodes ? vehicleCodes : "--" }}</p>
           <p>
             设备型号：&nbsp;{{
-              deviceDetails.baseInfo.modelLabel
-                ? deviceDetails.baseInfo.modelLabel
-                : "--"
+              deviceDetails.length ? deviceDetails.baseInfo.modelLabel : "--"
             }}
           </p>
           <p>
             动力类型：&nbsp;{{
-              deviceDetails.baseInfo.powerTypeLable
+              deviceDetails.length
                 ? deviceDetails.baseInfo.powerTypeLable
                 : "--"
             }}
           </p>
           <p>
             定位状态：&nbsp;{{
-              deviceDetails.baseInfo.locationState ? "已定位" : "未定位"
+              deviceDetails.length
+                ? deviceDetails.baseInfo.locationState
+                  ? "已定位"
+                  : "未定位"
+                : "--"
             }}
           </p>
         </div>
@@ -127,14 +131,20 @@ export default {
     VideoArea,
     CstorLivePlayer,
   },
+  computed: {
+    // 传入的设备编号
+    vehicleCodes() {
+      return this.$route.params.equipmentNo
+        ? this.$route.params.equipmentNo
+        : "CC0400CC0007";
+    },
+  },
   data() {
     return {
       // 设备工况数据详情
-      deviceDetails: JSON.parse(
-        localStorage.getItem("DeviceDetails_deviceDetails")
-      ),
+      deviceDetails: {},
       // 传入的设备编号
-      vehicleCodes: "CC0260CC0203",
+      // vehicleCodes: "CC0400CC0007",
       // 车辆视频通道信息，包括terminalId
       VideoCarByVehicleCode: {},
       // 通道状态【0，0，0，1，0，0，0，0】
@@ -148,9 +158,9 @@ export default {
     };
   },
   methods: {
-    selectAll(){
+    selectAll() {
       this.splitScreen = 8;
-      this.channel = [1,2,3,4,5,6,7,8];
+      this.channel = [1, 2, 3, 4, 5, 6, 7, 8];
       this.initVideoSrc();
     },
     changeChannel() {
@@ -174,7 +184,7 @@ export default {
       });
     },
     initVideoSrc() {
-      let videoArr = []
+      let videoArr = [];
       if (this.splitScreen == 1 && this.channel.length !== 1) {
         this.channel.splice(0, this.channel.length - 1);
       }
@@ -208,12 +218,13 @@ export default {
           }
         });
       });
-      this.videoSrc= videoArr
+      this.videoSrc = videoArr;
     },
   },
   created() {
     this.initChannel();
     this.initVideoSrc();
+    console.log(this.deviceDetails.length ? "1" : "2");
   },
 };
 </script>

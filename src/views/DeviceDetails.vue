@@ -2,7 +2,7 @@
   <div class="DeviceDetails">
     <!-- <NavbarComponent :breadCrumbList="breadCrumbList"></NavbarComponent> -->
 
-    <div class="mainBox">
+    <div class="mainBox" v-if="isshow">
       <div class="column">
         <FloatCard :more="true">
           <span slot="header">实时视频</span>
@@ -17,7 +17,10 @@
           <div slot="content" class="module1">
             <div class="item-detail">
               <div class="detail-line">
-                <!-- <el-radio-group v-model="channel" class="channel-content">
+                <el-radio-group 
+                v-model="channel" 
+                class="channel-content"
+                @change="initVideo()">
                   <el-radio-button
                     v-for="(aisle, index) in VideoChannelState.slice(0, 8)"
                     :label="index + 1"
@@ -32,69 +35,15 @@
                     ></p>
                     通道{{ index + 1 }}
                   </el-radio-button>
-                </el-radio-group> -->
-                <div class="channel-content">
-                  <div>
-                    <div title="通道1" class="channel-item active">
-                      <div>通道1</div>
-                    </div>
-                  </div>
-                  <div>
-                    <div title="通道2" class="channel-item active">
-                      <div>通道2</div>
-                    </div>
-                  </div>
-                  <div>
-                    <div title="通道3" class="channel-item active">
-                      <div>通道3</div>
-                    </div>
-                  </div>
-                  <div>
-                    <div title="通道4" class="channel-item active">
-                      <div>通道4</div>
-                    </div>
-                  </div>
-                  <div>
-                    <div title="通道5" class="channel-item active">
-                      <div>通道5</div>
-                    </div>
-                  </div>
-                  <div>
-                    <div title="通道6" class="channel-item active">
-                      <div>通道6</div>
-                    </div>
-                  </div>
-                  <div>
-                    <div title="通道7" class="channel-item active">
-                      <div>通道7</div>
-                    </div>
-                  </div>
-                  <div>
-                    <div title="通道8" class="channel-item active">
-                      <div>通道8</div>
-                    </div>
-                  </div>
-                </div>
+                </el-radio-group>
               </div>
             </div>
 
             <div class="videoBox">
-              <div class="videoSize" style="height: 214px">
-                <video src="@/assets/test/videotest.mp4"></video>
-              </div>
-              <div id="videoBottomBox0" class="videoBottomBox">
-                <div style="float: left; padding-left: 1em">
-                  通道1
-                  <div class="el-dropdown" style="cursor: pointer">
-                    <span>
-                      <i title="选择像素" class="el-icon-setting"></i>
-                    </span>
-                  </div>
-                  0Kbps
-                </div>
-                <i title="录像" class="el-icon-video-camera-solid"></i>
-                <i title="截图" class="el-icon-camera-solid"></i>
-                <i title="全屏" class="el-icon-full-screen"></i>
+              <div
+                style="height: 100%; width: 100%; background-color: red"
+              >
+              <CstorLivePlayer :src="videosrc"></CstorLivePlayer>
               </div>
             </div>
           </div>
@@ -109,7 +58,8 @@
                   {{ deviceDetails.baseInfo.weekWorkTime }}&nbsp;h
                 </p>
                 <div class="content">
-                  <div class="chart loadCurve"></div>
+                  <EchartsComp :options="chart1"></EchartsComp>
+                  <!-- <div class="chart loadCurve"></div> -->
                 </div>
               </el-tab-pane>
               <el-tab-pane label="累计数据" name="second">
@@ -225,7 +175,9 @@
                   <span>°</span>
                 </div>
                 <div class="fuelMeter" title="燃油油量">
-                  <div class="oilPercentage"></div>
+                  <div class="oilPercentage">
+                    <EchartsComp :options="chart2"></EchartsComp>
+                  </div>
                   <span>油量</span>
                 </div>
               </div>
@@ -494,27 +446,42 @@
 </template>
 
 <script>
-// import NavbarComponent from "@/components/NavbarComponent";
 import FloatCard from "@/components/FloatCard.vue";
-import MyEcharts from "@/components/EchartsComponent.vue";
+// 引入图表组件
+import EchartsComp from "@/components/EchartsComponent.vue";
+// 引入在线视频播放组件
+import CstorLivePlayer from "cstor-live-player";
+import "cstor-live-player/dist/cstor-live-player.css";
 export default {
   components: {
-    // NavbarComponent,
     FloatCard,
-    MyEcharts,
+    EchartsComp,
+    CstorLivePlayer
   },
   data() {
     return {
+      // 整个页面是否显示（未获取到数据就暂时不显示
+      isshow: false,
+      //----工况信息部分--------------------------
       // 模块二tab页标识数据
       module2: "first",
       // 模块四tab页标识数据
       module4: "first",
       // 设备工况数据详情
-      deviceDetails: JSON.parse(
-        localStorage.getItem("DeviceDetails_deviceDetails")
-      ),
-      weekData: JSON.parse(localStorage.getItem("DeviceDetails_deviceDetails"))
-        .weekAnalysisData.details,
+      deviceDetails: {},
+      // 近七日设备工作时间和油耗图表配置数据
+      chart1: {},
+      // 设备实时油耗图表配置数据
+      chart2: {},
+      //----实时视频部分--------------------------
+      // 设备编号值
+      equipmentNo:'',
+      // 获取到的实时监控通道信息
+      VideoChannelState: [],
+      //用户选中的通道
+      channel: 1,
+      // 实时监控视频链接
+      videosrc: "",
     };
   },
   computed: {
@@ -524,341 +491,62 @@ export default {
         ? this.$route.params.id
         : "c1e221866ab84ae28aeb89f975a667c4";
     },
-    // 导航面包屑
-    breadCrumbList() {
-      this.$route.matched.shift();
-      return this.$route.matched;
-    },
-    // 七日工作时长和油耗图表数据
-    // 近七日日期
-    dataDate() {
-      // 声明图表x轴初始变量
-      let dataX = [];
-      // 对数据进行遍历，提取日期数据并转换格式
-      this.weekData.forEach((item) => {
-        if (item.dataDate.slice(4, 8)[0] == 0) {
-          // 截取拼接字符
-          dataX.push(
-            item.dataDate.slice(5, 6) + "/" + item.dataDate.slice(6, 8)
-          );
-        } else {
-          dataX.push(
-            item.dataDate.slice(4, 6) + "月" + item.dataDate.slice(6, 8)
-          );
-        }
-      });
-      return dataX;
-    },
-    // 近七日耗油量
-    dataOilCost() {
-      let dataY1 = [];
-      // 对数据进行遍历，提取耗油量数据
-      this.weekData.forEach((item) => {
-        dataY1.push(item.oilCost);
-      });
-      return dataY1;
-    },
-    // 近七日工作时间
-    dataWorkTime() {
-      let dataY = [];
-      // 对数据进行遍历，提取工作时间数据
-      this.weekData.forEach((item) => {
-        dataY.push(item.workTime);
-      });
-      return dataY;
-    },
   },
   methods: {
-    // 模块二工作时长图表
-    initLoadCurve() {
-      const chart = this.$echarts.init(document.querySelector(".loadCurve"));
-      // 近七日日期
-      let dataX = this.dataDate;
-      // 近七日油耗
-      let dataY1 = this.dataOilCost;
-      let dataY = this.dataWorkTime;
-      console.log(dataX, "--", dataY1, "--", dataY);
-      let option = {
-        // backgroundColor: "#0D2753",
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "none",
-          },
-          formatter: function (params) {
-            return (
-              dataX[params[0].dataIndex] +
-              "<br/>工作时长：" +
-              dataY[params[0].dataIndex] +
-              " h" +
-              "<br> 油耗：" +
-              dataY1[params[0].dataIndex] +
-              " L"
-            );
-          },
-        },
-        grid: {
-          top: "10%",
-          bottom: "0%",
-          left: "5%",
-          right: "5%",
-          containLabel: true,
-        },
-        legend: {
-          show: true,
-          data: ["油耗", "工作时长"],
-          left: "center",
-          top: "0",
-          textStyle: {
-            padding: [4, 0, 0, 0],
-            color: "33FFFF",
-          },
-          itemWidth: 15,
-          itemHeight: 10,
-          itemGap: 25,
-        },
-        xAxis: {
-          type: "category",
-          data: dataX,
-          axisLine: {
-            lineStyle: {
-              color: "rgba(66, 192, 255, .3)",
-            },
-          },
-
-          axisLabel: {
-            rotate: -45,
-            textStyle: {
-              color: "#000",
-            },
-          },
-        },
-
-        yAxis: [
-          {
-            type: "value",
-            splitLine: {
-              show: false,
-            },
-            axisLabel: {
-              textStyle: {
-                color: "#000",
-              },
-            },
-            axisLine: {
-              lineStyle: {
-                fontSize: 12,
-                color: "rgba(66, 192, 255, .3)",
-              },
-            },
-          },
-          {
-            type: "value",
-            name: "",
-            nameTextStyle: {
-              color: "#d2d2d2",
-            },
-            // max: "100",
-            min: "0",
-            scale: true,
-            position: "right",
-            axisLine: {
-              lineStyle: {
-                color: "rgba(66, 192, 255, .3)",
-              },
-            },
-            splitLine: {
-              show: false,
-            },
-            axisLabel: {
-              show: true,
-              formatter: "{value} ", //右侧Y轴文字显示
-              textStyle: {
-                fontSize: 12,
-                color: "#000",
-              },
-            },
-          },
-        ],
-        series: [
-          {
-            name: "油耗",
-            type: "bar",
-            barWidth: "12px",
-            itemStyle: {
-              normal: {
-                color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                  {
-                    offset: 0,
-                    color: "#205aff",
-                  },
-                  {
-                    offset: 1,
-                    color: "#4bdfff",
-                  },
-                ]),
-                barBorderRadius: 6,
-              },
-            },
-            data: dataY1,
-          },
-          {
-            name: "工作时长",
-            type: "line",
-            yAxisIndex: 1, //使用的 y 轴的 index，在单个图表实例中存在多个 y轴的时候有用
-            smooth: false, //平滑曲线显示
-
-            symbol: "circle", //标记的图形为实心圆
-            symbolSize: 8, //标记的大小
-            itemStyle: {
-              normal: {
-                color: "#ffa43a",
-                borderColor: "rgba(255, 234, 0, 0.5)", //圆点透明 边框
-                borderWidth: 5,
-              },
-            },
-            lineStyle: {
-              color: "#ffa43a",
-            },
-
-            data: dataY,
-          },
-        ],
-      };
-
-      // 3,把配置给实例对象
-      chart.setOption(option);
-      // 4,图表跟随屏幕自适应
-      window.addEventListener("resize", function () {
-        chart.resize();
+    
+    initChannel(vehicleCodes) {
+      // let vehicleCodes = this.vehicleCodes;
+      this.$api.getVehicleCode(vehicleCodes).then((val) => {
+        let data = val.data.data[0];
+        // 赋值获取到的数据
+        this.VideoCarByVehicleCode = data;
+        // console.log("VideoCarByVehicleCode", data);
+        this.$api.getVideoChannelState(data.terminalId).then((val) => {
+          // 把通道信息分割成数组
+          let data = val.data.data[0].split(",").map(Number);
+          // 通道信息赋值给data数据在页面显示状态
+          this.VideoChannelState = data;
+          // console.log('State',data);
+        });
       });
     },
-    // 模块三油量图表
-    initOilPercentage() {
-      const chart = this.$echarts.init(
-        document.querySelector(".oilPercentage")
-      );
-      let angle = 0; //角度，用来做简单的动画效果的
-      let value = this.deviceDetails.workConditionData.remainingOilPercent; //图上角度数据
-      let option = {
-        // backgroundColor: "#061740",
-        title: [
-          {
-            text: "{a|" + value + "}{c|%}",
-            x: "center",
-            y: "50%",
-            textStyle: {
-              rich: {
-                a: {
-                  // fontSize: 45,
-                  color: "#000",
-                  fontWeight: "bold",
-                },
-                c: {
-                  // fontSize: 45,
-                  color: "#000",
-                  fontWeight: "normal",
-                },
-              },
-            },
-          },
-        ],
-        series: [
-          //内环
-          {
-            name: "",
-            type: "custom",
-            coordinateSystem: "none",
-            renderItem: function (params, api) {
-              return {
-                type: "arc",
-                shape: {
-                  cx: api.getWidth() / 2,
-                  cy: api.getHeight() / 2,
-                  r: (Math.min(api.getWidth(), api.getHeight()) / 2.3) * 0.65,
-                  startAngle: ((0 + -angle) * Math.PI) / 180,
-                  endAngle: ((360 + -angle) * Math.PI) / 180,
-                },
-                style: {
-                  stroke: "#0CD3DB",
-                  fill: "transparent",
-                  lineWidth: 0.5,
-                },
-                silent: true,
-              };
-            },
-            data: [0],
-          },
-          //外环
-          {
-            name: "",
-            type: "pie",
-            radius: ["85%", "70%"],
-            silent: true,
-            clockwise: true,
-            startAngle: 90,
-            z: 0,
-            zlevel: 0,
-            label: {
-              position: "center",
-            },
-            data: [
-              {
-                value: value,
-                name: "",
-                itemStyle: {
-                  //外环发光
-                  borderWidth: 0.5,
-                  shadowBlur: 20,
-                  borderColor: "#4bf3f9",
-                  shadowColor: "#9bfeff",
-                  color: {
-                    // 圆环的颜色
-                    colorStops: [
-                      {
-                        offset: 0,
-                        color: "#205aff", // 0% 处的颜色
-                      },
-                      {
-                        offset: 1,
-                        color: "#4bf3f9", // 100% 处的颜色
-                      },
-                    ],
-                  },
-                },
-              },
-              {
-                value: 100 - value,
-                name: "",
-                label: {
-                  show: false,
-                },
-                itemStyle: {
-                  color: "#173164",
-                },
-              },
-            ],
-          },
-        ],
-      };
-
-      chart.setOption(option);
+    // 获取视频并赋值函数
+    initVideo(equipmentNo) {
+      let vehicleCodes = equipmentNo ? equipmentNo : this.equipmentNo;
+      this.$api.getvideoPlay(this.equipmentNo, this.channel).then((val) => {
+        let data = val.data.data.split("|");
+        this.videosrc = data[1];
+        // this.setHeartBeat(data[2]);
+      });
     },
+    // elementui切换tab页函数，勿删
     handleClick(tab, event) {},
-    async getDeviceDetails() {
-      let data = await this.$api.getDetailWithWorkConditionData(this.id);
-      console.log("1234", this.id);
-      this.$api.judgeResponse(data, "DeviceDetails_deviceDetails");
-      this.deviceDetails = JSON.parse(
-        localStorage.getItem("DeviceDetails_deviceDetails")
-      );
-      console.log("设备详情", this.deviceDetails);
+    // 获取设备详细工况信息
+    getDeviceDetails() {
+      this.$api.getDetailWithWorkConditionData(this.id).then((res) => {
+        let data = res.data.data;
+        // 赋值设备实时工况数据
+        this.deviceDetails = data;
+        console.log("data", data);
+        // 获取到数据之后显示页面
+        this.isshow = true;
+        // 为第一个图表（近7日数据）传入设备数据，把返回的图表配置信息赋值
+        this.chart1 = this.$EchartsData.Dchart1(data.weekAnalysisData.details);
+        // 为第二个图表（油量百分比）传入设备数据，把返回的图表配置信息赋值
+        this.chart2 = this.$EchartsData.Dchart2(
+          data.workConditionData.remainingOilPercent
+        );
+        this.equipmentNo = data.baseInfo.equipmentNo;
+        this.initChannel(data.baseInfo.equipmentNo);
+        this.initVideo(data.baseInfo.equipmentNo);
+      });
     },
+    // 切换路由
     routerChange(path) {
       this.$router.push({
         name: path,
         params: {
-          id: this.deviceDetails,
+          equipmentNo: this.equipmentNo,
         },
       });
     },
@@ -866,10 +554,6 @@ export default {
   created() {
     // 获取设备信息
     this.getDeviceDetails();
-  },
-  mounted() {
-    this.initLoadCurve();
-    this.initOilPercentage();
   },
 };
 </script>
@@ -883,9 +567,6 @@ export default {
   margin: 10px auto;
   padding: 10px 35px 0;
   .column {
-    .FloatCard-item-header {
-      // background-color: rgba(64, 158, 255, 0.54);
-    }
     .el-tabs__active-bar.is-top {
       background-color: #f2ce91;
     }
@@ -902,6 +583,7 @@ export default {
         position: relative;
         height: 100px;
         z-index: 9;
+
         .channel-content {
           z-index: 50;
           width: 100%;
@@ -910,11 +592,10 @@ export default {
           justify-content: space-between;
           height: 40px;
           overflow: hidden;
-          background-color: #fff;
-
-          .channel-item {
+          background-color: #fff0;
+          .el-radio-button__inner {
             position: relative;
-            width: 60px;
+            width: 80%;
             height: 25px;
             margin: 5px 10px;
             line-height: 25.6px;
@@ -927,8 +608,8 @@ export default {
             display: flex;
             align-items: center;
             justify-content: center;
-
-            &:before {
+            box-shadow: none;
+            .dot {
               position: absolute;
               top: 8px;
               left: 4px;
@@ -940,15 +621,16 @@ export default {
               background: #13ca40;
               border-radius: 50%;
             }
-
-            div {
-              padding-left: 7.8px;
-              margin-right: 4.8px;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              text-align: center;
-              line-height: normal;
-            }
+          }
+          .el-radio-button__inner:hover {
+            border-color: #f2ce91;
+            color: #f2ce91;
+          }
+        }
+        .is-active {
+          .el-radio-button__inner {
+            background: #fcf5e9;
+            color: #fbb134;
           }
         }
         .channel-content:hover {
@@ -958,40 +640,13 @@ export default {
       }
       .videoBox {
         position: relative;
-
-        .videoBottomBox {
-          position: absolute;
-          bottom: 0;
-          right: 0;
-          width: 100%;
-          height: 20px;
-          color: rgba(200, 229, 233, 0.7);
-          background: #000;
-          text-align: right;
-        }
-
-        i {
-          margin-right: 5px;
-          cursor: pointer;
-        }
-
-        .videoSize {
-          display: flex;
-          justify-content: center;
-
-          video {
-            position: relative;
-            top: -55px;
-            height: calc(120% - 0px);
-            display: inline-block;
-            text-align: center;
-          }
-        }
+        top: -60px;
+        height: calc(100% - 40px);
       }
     }
     .module2 {
       height: 270px;
-      .chart {
+      .content {
         height: 204px;
         width: 376px;
       }
