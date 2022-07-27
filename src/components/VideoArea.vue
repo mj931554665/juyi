@@ -1,8 +1,6 @@
 <template>
   <div class="VideoArea">
-    <div class="video">
-      <slot name="video"></slot>
-    </div>
+    <slot name="video"></slot>
     <div class="videoBottomBox" v-if="false">
       <div style="float: left; padding-left: 1em">
         通道1
@@ -26,14 +24,11 @@
 export default {};
 </script>
 
-<style lang="less" scoped>
-.videoArea {
-  .video {
+<style lang="less">
+.VideoArea {
+  .videoContent {
     height: 100%;
-    // background: url("@/assets/test/ssjk.png") no-repeat;
-    // background-size: contain;
   }
-
   .videoBottomBox {
     display: flex;
     justify-content: space-between;

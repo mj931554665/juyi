@@ -110,7 +110,7 @@
                 </el-radio-group>
                 <div class="videoBox">
                   <!-- <VideoArea>  -->
-                  <!-- <CstorLivePlayer slot="video" :src="videosrc" /> -->
+                  <CstorLivePlayer slot="video" :src="videosrc" />
                   <!-- </VideoArea> -->
                 </div>
               </div>
@@ -731,25 +731,6 @@ export default {
     },
   },
   methods: {
-    // 判断数据是否获取成功，成功则存入，不成功则弹出错误，登录失效则返回登录页面
-    judgeResponse(response, storageName) {
-      if (response.data.code === 200) {
-        localStorage.setItem(storageName, JSON.stringify(response.data.data));
-      } else if (response.data.code === 401) {
-        this.$notify.error({
-          title: response.data.code + " 错误",
-          message: response.data.message,
-        });
-        // this.$router.replace({ path: "/login" });
-      } else {
-        this.$notify({
-          title: response.data.code + " 警告",
-          message: response.data.message,
-          type: "warning",
-          duration: 0,
-        });
-      }
-    },
     // 切换设备
     checked(i) {
       // 选中项样式
@@ -817,19 +798,19 @@ export default {
           right: "5%",
           containLabel: true,
         },
-        /* legend: {
+        legend: {
           show: true,
-          data: ["油耗", "工作时长"],
+          data: ["油耗(L)", "工作时长(h)"],
           left: "center",
           top: "0",
           textStyle: {
             padding: [4, 0, 0, 0],
-            color: "33FFFF",
+            color: "#33FFFF",
           },
           itemWidth: 15,
           itemHeight: 10,
           itemGap: 25,
-        }, */
+        },
         xAxis: {
           type: "category",
           data: dataX,
@@ -889,17 +870,17 @@ export default {
         ],
         series: [
           {
-            name: "油耗",
+            name: "油耗(L)",
             type: "bar",
             barWidth: "12px",
             itemStyle: {
-              color: "#11384e",
+              color: "rgba(36,144,206,.2)",
               borderColor: "#267ea9",
             },
             data: dataY1,
           },
           {
-            name: "工作时长",
+            name: "工作时长(h)",
             type: "line",
             yAxisIndex: 1, //使用的 y 轴的 index，在单个图表实例中存在多个 y轴的时候有用
             smooth: false, //平滑曲线显示

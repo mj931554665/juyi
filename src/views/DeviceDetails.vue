@@ -17,6 +17,22 @@
           <div slot="content" class="module1">
             <div class="item-detail">
               <div class="detail-line">
+                <!-- <el-radio-group v-model="channel" class="channel-content">
+                  <el-radio-button
+                    v-for="(aisle, index) in VideoChannelState.slice(0, 8)"
+                    :label="index + 1"
+                    :key="index"
+                    :class="aisle == '1' ? 'channel-disabled' : ''"
+                  >
+                    <p
+                      class="dot"
+                      :style="
+                        'background:' + (aisle == '0' ? '#13ca40' : '#d8d8d8')
+                      "
+                    ></p>
+                    通道{{ index + 1 }}
+                  </el-radio-button>
+                </el-radio-group> -->
                 <div class="channel-content">
                   <div>
                     <div title="通道1" class="channel-item active">

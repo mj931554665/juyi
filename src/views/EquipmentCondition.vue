@@ -210,7 +210,7 @@ export default {
         deviceOwnership: '深圳钜亿',
         lastLocation: '山东省青岛市黄岛区薛家岛街道连江路294号',
         lastPositioningTime: '2022-06-28 15:50:52',
-        operate: '详情 七日工况分析',
+        operate: ' 七日工况分析',
       }, {
         numberPlate: '',
         deviceId: '20CC01500023',
@@ -223,7 +223,7 @@ export default {
         deviceOwnership: '深圳钜亿',
         lastLocation: '山东省青岛市黄岛区薛家岛街道连江路294号',
         lastPositioningTime: '2022-06-28 15:50:52',
-        operate: '详情 七日工况分析',
+        operate: ' 七日工况分析',
       }, {
         numberPlate: '',
         deviceId: '20CC01500023',
@@ -236,7 +236,7 @@ export default {
         deviceOwnership: '深圳钜亿',
         lastLocation: '山东省青岛市黄岛区薛家岛街道连江路294号',
         lastPositioningTime: '2022-06-28 15:50:52',
-        operate: '详情 七日工况分析',
+        operate: ' 七日工况分析',
       }, {
         numberPlate: '',
         deviceId: '20CC01500023',
@@ -249,7 +249,7 @@ export default {
         deviceOwnership: '深圳钜亿',
         lastLocation: '山东省青岛市黄岛区薛家岛街道连江路294号',
         lastPositioningTime: '2022-06-28 15:50:52',
-        operate: '详情 七日工况分析',
+        operate: ' 七日工况分析',
       }, {
         numberPlate: '',
         deviceId: '20CC01500023',
@@ -262,7 +262,7 @@ export default {
         deviceOwnership: '深圳钜亿',
         lastLocation: '山东省青岛市黄岛区薛家岛街道连江路294号',
         lastPositioningTime: '2022-06-28 15:50:52',
-        operate: '详情 七日工况分析',
+        operate: ' 七日工况分析',
       }, {
         numberPlate: '',
         deviceId: '20CC01500023',
@@ -275,7 +275,7 @@ export default {
         deviceOwnership: '深圳钜亿',
         lastLocation: '山东省青岛市黄岛区薛家岛街道连江路294号',
         lastPositioningTime: '2022-06-28 15:50:52',
-        operate: '详情 七日工况分析',
+        operate: ' 七日工况分析',
       }, {
         numberPlate: '',
         deviceId: '20CC01500023',
@@ -288,7 +288,7 @@ export default {
         deviceOwnership: '深圳钜亿',
         lastLocation: '山东省青岛市黄岛区薛家岛街道连江路294号',
         lastPositioningTime: '2022-06-28 15:50:52',
-        operate: '详情 七日工况分析',
+        operate: ' 七日工况分析',
       }, {
         numberPlate: '',
         deviceId: '20CC01500023',
@@ -301,7 +301,7 @@ export default {
         deviceOwnership: '深圳钜亿',
         lastLocation: '山东省青岛市黄岛区薛家岛街道连江路294号',
         lastPositioningTime: '2022-06-28 15:50:52',
-        operate: '详情 七日工况分析',
+        operate: ' 七日工况分析',
       }, {
         numberPlate: '',
         deviceId: '20CC01500023',
@@ -314,7 +314,7 @@ export default {
         deviceOwnership: '深圳钜亿',
         lastLocation: '山东省青岛市黄岛区薛家岛街道连江路294号',
         lastPositioningTime: '2022-06-28 15:50:52',
-        operate: '详情 七日工况分析',
+        operate: ' 七日工况分析',
       }, {
         numberPlate: '',
         deviceId: '20CC01500023',
@@ -327,7 +327,7 @@ export default {
         deviceOwnership: '深圳钜亿',
         lastLocation: '山东省青岛市黄岛区薛家岛街道连江路294号',
         lastPositioningTime: '2022-06-28 15:50:52',
-        operate: '详情 七日工况分析',
+        operate: ' 七日工况分析',
       }, {
         numberPlate: '',
         deviceId: '20CC01500023',
@@ -340,7 +340,7 @@ export default {
         deviceOwnership: '深圳钜亿',
         lastLocation: '山东省青岛市黄岛区薛家岛街道连江路294号',
         lastPositioningTime: '2022-06-28 15:50:52',
-        operate: '详情 七日工况分析',
+        operate: ' 七日工况分析',
       }
       ],
       currentRow: null

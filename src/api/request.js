@@ -27,6 +27,7 @@ export default {
     formData.append('password', password)
     return axios.post('/login', formData)
   },
+  // 保持登录状态接口 
   // 2.12——获取设备在线状态接口
   getonlineStatus() {
     return axios.get('/equipment/getOnlineEquipmentAmountByRiskLevel')
@@ -101,7 +102,7 @@ export default {
         // 视频地址类型0 rtmp 1http-flv
         videoAddrType: 1,
         // 视频清晰度 0高清 1流畅
-        streamType: clarity == undefined ? 1 : clarity
+        streamType: clarity === undefined ? 1 : clarity
       }
     })
   },
