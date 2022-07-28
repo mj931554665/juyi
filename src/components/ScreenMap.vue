@@ -6,6 +6,7 @@
       class="mapStyle"
       :center="centerPoint"
       :zoom="5"
+      :mapStyle="mapStyle"
       :scroll-wheel-zoom="true"
       @ready="handler"
     >
@@ -53,9 +54,9 @@ export default {
     deviceList: {
       type: Array,
     },
-    device:{
-      type:Object,
-    }
+    device: {
+      type: Object,
+    },
   },
   watch: {
     // 初始化延迟渲染地图设备列表
@@ -63,20 +64,24 @@ export default {
       this.renderMap();
     },
     // 点击某一台设备进行地图中心点的移动
-    device(a){
+    device(a) {
+      // 把经纬度转换成数组2类型
       let lng = Number(a.lng);
       let lat = Number(a.lat);
+      // 判断是否是初始化，并且经纬度不能为再移动地图
+      if (this.Map !== null && lng !== 0 && lng !== 0) {
       // 调用百度地图的中心点方法,把点击的设备点设为地图中心
-      // this.Map.panTo(new BMap.Point(lng, lat));
-    }
+        this.Map.panTo(new BMap.Point(lng, lat));
+      }
+    },
   },
   data() {
     return {
       //----地图数据--------------------
       // 百度地图类
-      BMap: "",
+      BMap: null,
       // 地图对象
-      Map: "",
+      Map: null,
       //中心轴坐标
       centerPoint: {
         lng: 106,

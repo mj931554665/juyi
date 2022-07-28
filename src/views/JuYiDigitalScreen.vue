@@ -30,6 +30,7 @@
               clearable
               suffix-icon="el-icon-search"
               v-model="searchInput"
+              :class="searchInput === '' ? '' : 'hasContent'"
             >
             </el-input>
           </div>
@@ -38,6 +39,7 @@
               class="equipmentItem textFont14"
               v-for="(item, index) in deviceList"
               :key="index"
+              v-show="item.name.indexOf(searchInput) > -1"
             >
               <div
                 class="itemContent"
@@ -119,7 +121,7 @@
                 </el-radio-group>
                 <div class="videoBox">
                   <!-- <VideoArea>  -->
-                  <!-- <CstorLivePlayer slot="video" :src="videosrc" /> -->
+                  <CstorLivePlayer slot="video" :src="videosrc" />
                   <!-- </VideoArea> -->
                 </div>
               </div>
@@ -399,7 +401,7 @@
               <div class="splitLine"></div>
               <div class="area chart2">
                 <div class="chart">
-                  <EchartsComp :options="chart3"></EchartsComp>
+                  <EchartsComp :options="chart3_option"></EchartsComp>
                 </div>
                 <div class="data">
                   <div class="item">
@@ -443,7 +445,7 @@
               <div class="splitLine"></div>
               <div class="area chart3">
                 <div class="chart">
-                  <EchartsComp :options="chart4"></EchartsComp>
+                  <EchartsComp :options="chart4_option"></EchartsComp>
                 </div>
                 <div class="data">
                   <div class="item">
@@ -470,7 +472,12 @@
           </div>
           <div class="rightBottom borderImg">
             <div class="content">
-              <el-carousel :interval="3000" arrow="always" height="150px">
+              <el-carousel
+                :autoplay="false"
+                :interval="3000"
+                arrow="always"
+                height="150px"
+              >
                 <el-carousel-item>
                   <div class="title textFont16">
                     <i class="el-icon-s-tools"></i>
@@ -609,30 +616,33 @@ export default {
     CstorLivePlayer,
   },
   computed: {
-    chart3() {
+    chart3_option() {
       return this.$EchartsData.Schart3();
     },
-    chart4() {
+    chart4_option() {
       return this.$EchartsData.Schart4();
     },
   },
   data() {
     return {
-      // 是否隐藏左侧图表
-      hideLeftTree: false,
-      // 搜索框数据
-      searchInput: "",
-      // 搜索列表选中项
-      checkedIndex: 0,
-      // 设备数据
-      checkDevice: {},
-      // 实时工况数据
-      workConditionData: {},
       /* 图表数据 */
       // 第一个图表的数据
       chart1_option: {},
       // 第二个图表的数据
       chart2_option: {},
+
+      /* 搜索设备列表数据 */
+      // 是否隐藏左侧列表
+      hideLeftTree: false,
+      // 搜索框数据
+      searchInput: "",
+      // 搜索列表选中项
+      checkedIndex: 0,
+
+      // 设备数据
+      checkDevice: {},
+      // 实时工况数据
+      workConditionData: {},
       // 设备列表
       deviceList: [],
       // 设备列表左侧可搜索
@@ -646,7 +656,7 @@ export default {
     };
   },
   methods: {
-    // 点击地图切换设备传入的值为 id,index
+    // 点击地图切换设备传入的值为 id,index（子传父
     getdeviceData(data) {
       this.checked(data[1]);
       this.getDeviceData(data[0]);
@@ -661,18 +671,15 @@ export default {
       this.getDeviceData(id);
       this.initVideo();
     },
+    // 获取设备详细工况数据
     getDeviceData(id) {
       // 获取实时工况数据
       this.$api.getDetailWithWorkConditionData(id).then((val) => {
         // 赋值工况数据
         let detail = val.data.data;
-        console.log("detail", detail);
         if (detail.workConditionData === null) {
           this.workConditionData = {};
-          this.chart1_option = this.$EchartsData.Schart1(
-            null
-          );
-          console.log("我是空的诶！！！！！");
+          this.chart1_option = this.$EchartsData.Schart1(null);
         } else {
           this.workConditionData = detail.workConditionData;
           // 周工作数据
@@ -730,7 +737,6 @@ export default {
           this.chart2_option = this.$EchartsData.Schart2(
             this.deviceList.length
           );
-          console.log("this.chart2_option", this.chart2_option);
         });
 
         this.initVideo();
@@ -742,8 +748,8 @@ export default {
     (function () {
       let t = null;
       t = setTimeout(time, 1000); //開始运行
+      // clearTimeout(t); //清除定时器
       function time() {
-        // clearTimeout(t); //清除定时器
         let dt = new Date();
         let y = dt.getFullYear();
         let mt = dt.getMonth() + 1;
@@ -753,7 +759,6 @@ export default {
         let s = dt.getSeconds(); //获取秒
         document.querySelector(".time").innerHTML =
           y + "-" + mt + "-" + day + " -" + h + ":" + m + ":" + s;
-        // t = setTimeout(time, 1000); //设定定时器，循环运行
       }
     })();
     this.initData();
@@ -914,17 +919,22 @@ export default {
         margin: 10px;
         .el-input {
           display: block;
+          .el-input__inner {
+            height: 28px;
+            color: rgba(173, 200, 205, 0.4);
+            background: rgba(0, 0, 2, 0.8);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: 14px;
+            padding: 0 30px 0 12px;
+          }
+          .el-input__icon {
+            line-height: normal;
+          }
         }
-        .el-input__inner {
-          height: 28px;
-          color: rgba(173, 200, 205, 0.4);
-          background: rgba(0, 0, 2, 0.8);
-          border: 1px solid rgba(0, 198, 255, 0.3);
-          border-radius: 14px;
-          padding: 0 30px 0 12px;
-        }
-        .el-input__icon {
-          line-height: normal;
+        .hasContent {
+          .el-icon-search {
+            display: none;
+          }
         }
       }
       .leftTreeBottom {
@@ -1192,8 +1202,6 @@ export default {
                   margin: 0;
                   padding: 1.8px 1px;
                   color: rgba(0, 198, 255, 0.8);
-                  // background-color: #000002;
-                  // border: 1px solid rgba(0, 198, 255, 0.5);
                   border-radius: 6.12px;
                   font-size: 12px;
                   white-space: nowrap;
@@ -1453,7 +1461,7 @@ export default {
                   height: 20px;
                   background-position: 0 50%;
                   background-size: 100%;
-                  background-image: url("@/assets/images/kzuqi/baoxian.png");
+                  background-image: url("@/assets/images/kzuqi/icon1.png");
                 }
                 .expireTimeCount {
                   margin-right: 20px;
@@ -1462,6 +1470,22 @@ export default {
                   .linkLine {
                     text-decoration: underline;
                   }
+                }
+              }
+
+              .expireTimeContent:nth-child(2) {
+                .expireTimeItem::before {
+                  background-image: url("@/assets/images/kzuqi/icon2.png");
+                }
+              }
+              .expireTimeContent:nth-child(3) {
+                .expireTimeItem::before {
+                  background-image: url("@/assets/images/kzuqi/icon3.png");
+                }
+              }
+              .expireTimeContent:nth-child(4) {
+                .expireTimeItem::before {
+                  background-image: url("@/assets/images/kzuqi/icon4.png");
                 }
               }
             }

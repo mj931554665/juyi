@@ -6,25 +6,25 @@
           <span
             class="iconfont al-icona-7Ayifenping"
             title="一分屏"
-            @click="splitScreen = 1"
+            @click="splitScreenChange(1)"
             :class="splitScreen === 1 ? 'active' : ''"
           ></span>
           <span
             class="iconfont al-icona-7Dsifenping"
             title="四分屏"
-            @click="splitScreen = 4"
+            @click="splitScreenChange(4)"
             :class="splitScreen === 4 ? 'active' : ''"
           ></span>
           <span
             class="iconfont al-icona-7Iyijiawufenping"
             title="六分屏"
-            @click="splitScreen = 6"
+            @click="splitScreenChange(6)"
             :class="splitScreen === 6 ? 'active' : ''"
           ></span>
           <span
             class="iconfont al-icona-7Jyijiaqifenping"
             title="八分屏"
-            @click="splitScreen = 8"
+            @click="splitScreenChange(8)"
             :class="splitScreen === 8 ? 'active' : ''"
           ></span>
         </div>
@@ -36,26 +36,31 @@
         </p>
       </div>
       <div class="content">
-        <div class="oneScreen" v-if="splitScreen === 1">
-          <VideoArea>
-            <CstorLivePlayer slot="video" :src="videoSrc[0]" />
-          </VideoArea>
-        </div>
-        <div class="fourScreen" v-if="splitScreen === 4">
-          <VideoArea v-for="(item, index) in 4" :key="item">
-            <CstorLivePlayer slot="video" :src="videoSrc[index]" />
-          </VideoArea>
-        </div>
-        <div class="sixScreen" v-if="splitScreen === 6">
-          <VideoArea v-for="(item, index) in 6" :key="item">
-            <CstorLivePlayer slot="video" :src="videoSrc[index]" />
-          </VideoArea>
-        </div>
-        <div class="eightScreen" v-if="splitScreen === 8">
+        <div :class="screenClass">
           <VideoArea v-for="(item, index) in 8" :key="item">
-            <CstorLivePlayer slot="video" :src="videoSrc[index]" />
+            <CstorLivePlayer :ref="'screen'+index" slot="video"/>
           </VideoArea>
         </div>
+        <!--<div class="oneScreen" v-if="splitScreen===1">
+          <VideoArea v-for="(item, index) in 1" :key="item">
+            <CstorLivePlayer :ref="'screen'+index" slot="video"/>
+          </VideoArea>
+        </div>
+        <div class="fourScreen" v-if="splitScreen===4">
+          <VideoArea v-for="(item, index) in 4" :key="item">
+            <CstorLivePlayer :ref="'screen'+index" slot="video"/>
+          </VideoArea>
+        </div>
+        <div class="sixScreen" v-if="splitScreen===6">
+          <VideoArea v-for="(item, index) in 6" :key="item">
+            <CstorLivePlayer :ref="'screen'+index" slot="video"/>
+          </VideoArea>
+        </div>
+        <div class="eightScreen" v-if="splitScreen===8">
+          <VideoArea v-for="(item, index) in 8" :key="item">
+            <CstorLivePlayer :ref="'screen'+index" slot="video"/>
+          </VideoArea>
+        </div>-->
       </div>
     </div>
     <div class="module2">
@@ -101,14 +106,14 @@
         <div slot="content" class="block">
           <el-checkbox-group v-model="channel" class="channel-content">
             <el-checkbox-button
-              @change="changeChannel(index)"
+              @change="changeChannel($event,index+1)"
               v-for="(aisle, index) in VideoChannelState.slice(0, 8)"
               :label="index + 1"
               :key="index"
             >
               <p
                 class="dot"
-                :style="'background:' + (aisle == '0' ? '#13ca40' : '#d8d8d8')"
+                :style="'background:' + (aisle === '0' ? '#13ca40' : '#d8d8d8')"
               ></p>
               通道{{ index + 1 }}
             </el-checkbox-button>
@@ -120,13 +125,14 @@
   </div>
 </template>
 <script>
-import FloatCard from "@/components/FloatCard.vue";
-import VideoArea from "@/components/VideoArea.vue";
-// 引入在线视频播放组件
-import CstorLivePlayer from "cstor-live-player";
-import "cstor-live-player/dist/cstor-live-player.css";
-import mixin from "./mixin";
-export default {
+  import FloatCard from "@/components/FloatCard.vue";
+  import VideoArea from "@/components/VideoArea.vue";
+  // 引入在线视频播放组件
+  import CstorLivePlayer from "cstor-live-player";
+  import "cstor-live-player/dist/cstor-live-player.css";
+  import mixin from "./mixin";
+
+  export default {
   mixins: [mixin],
   components: {
     FloatCard,
@@ -138,7 +144,7 @@ export default {
     vehicleCodes() {
       return this.$route.params.equipmentNo
         ? this.$route.params.equipmentNo
-        : "CC0400CC0007";
+        : "CC0260CB5362";
     },
       // 设备工况数据详情
     deviceDetails(){
@@ -159,75 +165,104 @@ export default {
       channel: [1],
       // 视频地址数组
       videoSrc: [],
+      screenClass:'oneScreen'
     };
   },
+    watch:{
+      splitScreen(v){
+        if(v===1){
+          this.screenClass='oneScreen'
+        }else if(v===4){
+          this.screenClass='fourScreen'
+        }else if(v===6){
+          this.screenClass='sixScreen'
+        }else if(v===8){
+          this.screenClass='eightScreen'
+        }
+      }
+    },
+  destroyed(){ //页面关闭
+    for(let index of this.channel){
+      this.stopHeartBeat(index)
+      --index
+      let refInfo=this.$refs['screen'+index]
+      alert(index)
+        if(refInfo[0]){
+          alert(index)
+          refInfo[0].stop() //视频终止
+        }
+    }
+  },
   methods: {
+    splitScreenChange(index){
+      this.splitScreen=index
+      let length=this.channel.length
+      if(length>index){
+        let k=this.channel.splice(index,length)
+        for(let i of k){
+          this.stopHeartBeat(i)
+        }
+      }
+    },
     selectAll() {
       this.splitScreen = 8;
       this.channel = [1, 2, 3, 4, 5, 6, 7, 8];
       this.initVideoSrc();
     },
-    changeChannel() {
-      // this.videoSrc=[]
-      this.initVideoSrc();
+    changeChannel(v,index) {
+     let maxChannel= Math.max.apply(null, this.channel)
+      if(maxChannel<=1){
+        this.splitScreen=1
+      }else if(maxChannel>1&&maxChannel<5){
+        this.splitScreen=4
+      }else if(maxChannel>=5&&maxChannel<7){
+        this.splitScreen=6
+      }else{
+        this.splitScreen=8
+      }
+      if(v){ //选中的
+        this.initVideoSrc(index)
+      }else{
+        this.stopHeartBeat(index)
+
+        --index
+        let refInfo=this.$refs['screen'+index]
+        if(refInfo[0]){
+          refInfo[0].stop() //视频终止
+        }
+      }
     },
     initChannel() {
       let vehicleCodes = this.vehicleCodes;
-      this.$api.getVehicleCode(vehicleCodes).then(val => {
+      this.$api.getVehicleCode(vehicleCodes).then((val) => {
         let data = val.data.data[0];
         // 赋值获取到的数据
         this.VideoCarByVehicleCode = data;
-        // console.log("VideoCarByVehicleCode", data);
-        this.$api.getVideoChannelState(data.terminalId).then(val => {
+
+        this.$api.getVideoChannelState(data.terminalId).then((val) => {
           // 把通道信息分割成数组
-          let data = val.data.data[0].split(",").map(Number);
           // 通道信息赋值给data数据在页面显示状态
-          this.VideoChannelState = data;
+          this.VideoChannelState = val.data.data[0].split(",").map(Number);
           // console.log('State',data);
         });
       });
     },
-    initVideoSrc() {
-      // let videoArr = [];
-      if (this.splitScreen === 1 && this.channel.length !== 1) {
-        this.channel.splice(0, this.channel.length - 1);
-      }
-      this.channel.forEach(val => {
-        this.$api.getvideoPlay(this.vehicleCodes, val, 0).then(val => {
-          let data = val.data.data.split("|");
-          if (this.videoSrc.indexOf(data[1]) > -1) {
-          } else {
-            switch (this.splitScreen) {
-              case 1:
-                this.videoSrc.push(data[1]);
-                this.videoSrc = this.videoSrc.slice(0, 1);
-                break;
-              case 4:
-                this.videoSrc.push(data[1]);
-                this.videoSrc = this.videoSrc.slice(0, 4);
-                break;
-              case 6:
-                this.videoSrc.push(data[1]);
-                this.videoSrc = this.videoSrc.slice(0, 6);
-                break;
-              case 8:
-                this.videoSrc.push(data[1]);
-                this.videoSrc = this.videoSrc.slice(0, 8);
-                break;
+    initVideoSrc(index) {
+      this.$api.getvideoPlay(this.vehicleCodes, index, 0).then((val) => {
+        let data = val.data.data.split("|");
+        this.setHeartBeat(data[2],index);
 
-              default:
-                this.videoSrc.push(data[1]);
-                break;
-            }
-          }
-        });
+        --index
+        let refInfo=this.$refs['screen'+index]
+        if(refInfo[0]){
+          refInfo[0].play(data[1]) //视频启动开始
+        }
       });
-      // this.videoSrc = videoArr;
     },
   },
   created() {
     this.initChannel();
-    this.initVideoSrc();
+    this.initVideoSrc(1);
     console.log(Object.keys(this.deviceDetails).length ? "1" : "2");
   },
 };
