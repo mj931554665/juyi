@@ -13,7 +13,11 @@
       </div>
       <div class="showTime" style="display: flex">
         <span class="time" title="当前时间"></span>
-        <FuncBtn :isScreen="true" id="fullScreen" title="全屏/退出全屏"></FuncBtn>
+        <FuncBtn
+          :isScreen="true"
+          id="fullScreen"
+          title="全屏/退出全屏"
+        ></FuncBtn>
       </div>
     </header>
     <!-- 页面主体部分 -->
@@ -92,10 +96,11 @@
               </div>
               <div class="splitLine"></div>
               <div class="video">
-                <el-radio-group 
-                v-model="channel" 
-                class="channel-content"
-                @change="initVideo()">
+                <el-radio-group
+                  v-model="channel"
+                  class="channel-content"
+                  @change="initVideo()"
+                >
                   <el-radio-button
                     v-for="(aisle, index) in VideoChannelState.slice(0, 8)"
                     :label="index + 1"
@@ -113,7 +118,7 @@
                 </el-radio-group>
                 <div class="videoBox">
                   <!-- <VideoArea>  -->
-                  <CstorLivePlayer slot="video" :src="videosrc" />
+                  <!-- <CstorLivePlayer slot="video" :src="videosrc" /> -->
                   <!-- </VideoArea> -->
                 </div>
               </div>
@@ -560,7 +565,11 @@
         </div>
       </div>
       <div class="map">
-        <ScreenMap></ScreenMap>
+        <ScreenMap 
+        @deviceData="getdeviceData(arguments)" 
+        :deviceList="deviceList"
+        :device="checkDevice"
+        ></ScreenMap>
       </div>
     </div>
   </div>
@@ -589,13 +598,13 @@ export default {
     CstorLivePlayer,
   },
   computed: {
-    chart2(){
+    chart2() {
       return this.$EchartsData.Schart2();
     },
-    chart3(){
+    chart3() {
       return this.$EchartsData.Schart3();
     },
-    chart4(){
+    chart4() {
       return this.$EchartsData.Schart4();
     },
   },
@@ -629,6 +638,11 @@ export default {
     };
   },
   methods: {
+    // 点击地图切换设备传入的值为 id,index
+    getdeviceData(data){
+      this.checked(data[1]);
+      this.getDeviceData(data[0]);
+    },
     // 切换设备
     checked(i) {
       // 选中项样式
@@ -636,24 +650,28 @@ export default {
       // 已有列表数据赋值
       this.checkDevice = this.deviceList[i];
       let id = this.deviceList[i].id;
+      this.getDeviceData(id);
+      this.initVideo();
+    },
+    getDeviceData(id){
       // 获取实时工况数据
-      this.$api.getDetailWithWorkConditionData(id).then((val) => {
+      this.$api.getDetailWithWorkConditionData(id).then(val => {
         // 赋值工况数据
         let detail = val.data.data;
         this.workConditionData = detail.workConditionData;
         // 周工作数据
         // 赋值工况数据给图表
-        this.chart1Data = this.$EchartsData.Schart1(detail.weekAnalysisData.details);
-        
+        this.chart1Data = this.$EchartsData.Schart1(
+          detail.weekAnalysisData.details
+        );
       });
-      this.initVideo();
     },
     // 获取视频并赋值函数
     initVideo() {
       // 获取实时监控视频通道数据
-      this.$api.getVehicleCode(this.checkDevice.equipmentNo).then((val) => {
+      this.$api.getVehicleCode(this.checkDevice.equipmentNo).then(val => {
         let data = val.data.data[0];
-        this.$api.getVideoChannelState(data.terminalId).then((val) => {
+        this.$api.getVideoChannelState(data.terminalId).then(val => {
           let data = val.data.data[0].split(",").map(Number);
           // 通道信息赋值给data数据在页面显示状态
           this.VideoChannelState = data;
@@ -661,28 +679,31 @@ export default {
       });
       this.$api
         .getvideoPlay(this.checkDevice.equipmentNo, this.channel)
-        .then((val) => {
+        .then(val => {
           let data = val.data.data.split("|");
           this.videosrc = data[1];
-          this.setHeartBeat(data[2]);
+          // this.setHeartBeat(data[2]);
         });
     },
     initData() {
-      this.$api.getselectList("0", "999").then((val) => {
+      this.$api.getcustomerScreen("1", "9999").then(val => {
         // 给设备列表赋值
-        this.deviceList = val.data.data.rows;
+        this.deviceList = val.data.data;
         // 给设备数据赋值
-        let checkDevice = val.data.data.rows[0];
+        console.log('val.data.data',val.data.data);
+        let checkDevice = this.deviceList[0];
         this.checkDevice = checkDevice;
         // 获取第一个设备的id
         let id = checkDevice.id;
         // 获取默认设备工况数据
-        this.$api.getDetailWithWorkConditionData(id).then((val) => {
+        this.$api.getDetailWithWorkConditionData(id).then(val => {
           // 赋值工况数据
           let detail = val.data.data;
           this.workConditionData = detail.workConditionData;
           // 赋值工况数据给图表
-          this.chart1Data = this.$EchartsData.Schart1(detail.weekAnalysisData.details);
+          this.chart1Data = this.$EchartsData.Schart1(
+            detail.weekAnalysisData.details
+          );
         });
 
         this.initVideo();
@@ -690,6 +711,7 @@ export default {
     },
   },
   created() {
+    document.title = '钜亿安全监控大屏';
     (function () {
       let t = null;
       t = setTimeout(time, 1000); //開始运行
@@ -1107,12 +1129,15 @@ export default {
               .model {
                 display: flex;
                 justify-content: space-around;
+                border: 1px solid rgba(0, 198, 255, 0.5);
+                border-radius: 6.12px;
+                background-color: #000002;
                 .mark {
                   margin: 0;
                   padding: 1.8px 1px;
                   color: rgba(0, 198, 255, 0.8);
-                  background-color: #000002;
-                  border: 1px solid rgba(0, 198, 255, 0.5);
+                  // background-color: #000002;
+                  // border: 1px solid rgba(0, 198, 255, 0.5);
                   border-radius: 6.12px;
                   font-size: 12px;
                   white-space: nowrap;

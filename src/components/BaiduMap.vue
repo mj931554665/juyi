@@ -537,7 +537,6 @@ export default {
       console.log(item);
       // 设置点击标签置顶的id判断值
       this.markerTop = item.id;
-      // 窗口位置稍微下移一点,增加经度
       let lng = Number(item.lng);
       let lat = Number(item.lat);
       // 调用百度地图的中心点方法,把点击的设备点设为地图中心

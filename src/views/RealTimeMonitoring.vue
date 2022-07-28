@@ -30,7 +30,9 @@
         </div>
         <p>
           <i class="el-icon-location-outline"></i>
-          山东省青岛市黄岛区薛家岛街道连江路288号
+          {{
+              Object.keys(this.deviceDetails).length ? deviceDetails.baseInfo.address : "--"
+            }}
         </p>
       </div>
       <div class="content">
@@ -62,30 +64,30 @@
         <div slot="content" class="detail">
           <p>
             设备名称：&nbsp;{{
-              deviceDetails.length ? deviceDetails.baseInfo.name : "--"
+              Object.keys(this.deviceDetails).length ? deviceDetails.baseInfo.name : "--"
             }}
           </p>
           <p>
             设备类型：&nbsp;{{
-              deviceDetails.length ? deviceDetails.baseInfo.typeLabel : "--"
+              Object.keys(this.deviceDetails).length ? deviceDetails.baseInfo.typeLabel : "--"
             }}
           </p>
           <p>设备编号：&nbsp;{{ vehicleCodes ? vehicleCodes : "--" }}</p>
           <p>
             设备型号：&nbsp;{{
-              deviceDetails.length ? deviceDetails.baseInfo.modelLabel : "--"
+              Object.keys(this.deviceDetails).length ? deviceDetails.baseInfo.modelLabel : "--"
             }}
           </p>
           <p>
             动力类型：&nbsp;{{
-              deviceDetails.length
+              Object.keys(this.deviceDetails).length
                 ? deviceDetails.baseInfo.powerTypeLable
                 : "--"
             }}
           </p>
           <p>
             定位状态：&nbsp;{{
-              deviceDetails.length
+              Object.keys(this.deviceDetails).length
                 ? deviceDetails.baseInfo.locationState
                   ? "已定位"
                   : "未定位"
@@ -138,13 +140,15 @@ export default {
         ? this.$route.params.equipmentNo
         : "CC0400CC0007";
     },
+      // 设备工况数据详情
+    deviceDetails(){
+      return this.$route.params.deviceDetails
+        ? this.$route.params.deviceDetails
+        : {};
+    }
   },
   data() {
     return {
-      // 设备工况数据详情
-      deviceDetails: {},
-      // 传入的设备编号
-      // vehicleCodes: "CC0400CC0007",
       // 车辆视频通道信息，包括terminalId
       VideoCarByVehicleCode: {},
       // 通道状态【0，0，0，1，0，0，0，0】
@@ -184,47 +188,47 @@ export default {
       });
     },
     initVideoSrc() {
-      let videoArr = [];
+      // let videoArr = [];
       if (this.splitScreen == 1 && this.channel.length !== 1) {
         this.channel.splice(0, this.channel.length - 1);
       }
       this.channel.forEach((val) => {
         this.$api.getvideoPlay(this.vehicleCodes, val, 0).then((val) => {
           let data = val.data.data.split("|");
-          if (videoArr.indexOf(data[1]) > -1) {
+          if (this.videoSrc.indexOf(data[1]) > -1) {
           } else {
             switch (this.splitScreen) {
               case 1:
-                videoArr.push(data[1]);
-                videoArr = videoArr.slice(0, 1);
+                this.videoSrc.push(data[1]);
+                this.videoSrc = this.videoSrc.slice(0, 1);
                 break;
               case 4:
-                videoArr.push(data[1]);
-                videoArr = videoArr.slice(0, 4);
+                this.videoSrc.push(data[1]);
+                this.videoSrc = this.videoSrc.slice(0, 4);
                 break;
               case 6:
-                videoArr.push(data[1]);
-                videoArr = videoArr.slice(0, 6);
+                this.videoSrc.push(data[1]);
+                this.videoSrc = this.videoSrc.slice(0, 6);
                 break;
               case 8:
-                videoArr.push(data[1]);
-                videoArr = videoArr.slice(0, 8);
+                this.videoSrc.push(data[1]);
+                this.videoSrc = this.videoSrc.slice(0, 8);
                 break;
 
               default:
-                videoArr.push(data[1]);
+                this.videoSrc.push(data[1]);
                 break;
             }
           }
         });
       });
-      this.videoSrc = videoArr;
+      // this.videoSrc = videoArr;
     },
   },
   created() {
     this.initChannel();
     this.initVideoSrc();
-    console.log(this.deviceDetails.length ? "1" : "2");
+    console.log(Object.keys(this.deviceDetails).length ? "1" : "2");
   },
 };
 </script>

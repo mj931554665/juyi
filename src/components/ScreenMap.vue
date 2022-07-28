@@ -6,20 +6,18 @@
       class="mapStyle"
       :center="centerPoint"
       :zoom="5"
-      
       :scroll-wheel-zoom="true"
-      
       @ready="handler"
     >
       <!-- 聚合点组件（需引入）:mapStyle="mapStyle" -->
       <bml-marker-clusterer :averageCenter="false">
         <bm-marker
-          v-for="marker in markerArr"
+          v-for="(marker, index) in markerArr"
           :key="marker.id"
           :position="marker"
           :icon="icon"
           :top="marker.id == markerTop ? true : false"
-          @click="lookDetail(marker)"
+          @click="lookDetail(marker, index)"
         >
           <bm-label
             :content="marker.name"
@@ -34,7 +32,7 @@
               borderRadius: '8px',
               zIndex: '1',
             }"
-            :offset="{ width: 6, height: -25 }"
+            :offset="{ width: -3, height: -25 }"
           />
         </bm-marker>
       </bml-marker-clusterer>
@@ -49,6 +47,28 @@ import bmapStyle from "@/utils/bmapStyle.json";
 export default {
   components: {
     BmlMarkerClusterer,
+  },
+  props: {
+    // 在线设备列表数据
+    deviceList: {
+      type: Array,
+    },
+    device:{
+      type:Object,
+    }
+  },
+  watch: {
+    // 初始化延迟渲染地图设备列表
+    deviceList(a, b) {
+      this.renderMap();
+    },
+    // 点击某一台设备进行地图中心点的移动
+    device(a){
+      let lng = Number(a.lng);
+      let lat = Number(a.lat);
+      // 调用百度地图的中心点方法,把点击的设备点设为地图中心
+      this.Map.panTo(new BMap.Point(lng, lat));
+    }
   },
   data() {
     return {
@@ -84,8 +104,6 @@ export default {
           },
         },
       },
-      // 在线设备列表数据
-      deviceList: JSON.parse(localStorage.getItem("Screen_deviceOnlineList")),
       // 设备标签的置顶效果
       markerTop: "",
       // 设备标签样式，等数据
@@ -103,47 +121,17 @@ export default {
     };
   },
   methods: {
-    // 判断数据是否获取成功，成功则存入，不成功则弹出错误，登录失效则返回登录页面
-    judgeResponse(response, storageName) {
-      if (response.data.code === 200) {
-        localStorage.setItem(storageName, JSON.stringify(response.data.data));
-      } else if (response.data.code === 401) {
-        this.$notify.error({
-          title: response.data.code + " 错误",
-          message: response.data.message,
-        });
-        // this.$router.replace({ path: "/login" });
-      } else {
-        this.$notify({
-          title: response.data.code + " 警告",
-          message: response.data.message,
-          type: "warning",
-          duration: 0,
-        });
-      }
-    },
-    // 获取设备列表数据（有地图定位的
-    async getqueryEquipmentsByPage() {
-      // 获取已定位的设备总数显示在地图上
-      let amount = 999;
-      // 传入在线设备数据获取定位设备列表
-      let deviceList = await this.$api.getqueryEquipmentsByPage("0", amount);
-      // 传入判断响应是否成功的函数进行判断
-      this.judgeResponse(deviceList, "Screen_deviceOnlineList");
-      this.renderMap();
-    },
     // 完成一次组件卸载 / 重新加载的方法，重新渲染
-    handler({ BMap, Map }) {
+    async handler({ BMap, map }) {
       // 保存百度地图类
       this.BMap = BMap;
       // 保存地图对象
-      this.Map = Map;
+      this.Map = map;
     },
     // 渲染地图上面的数据
     renderMap() {
       // 获取到设备列表数据
-      console.log(this.deviceList);
-      let deviceList = this.deviceList.rows;
+      let deviceList = this.deviceList;
       // 数据进行foreach循环
       deviceList.forEach((item, key) => {
         // 定义一个容器来装筛选后的数据
@@ -158,15 +146,22 @@ export default {
         }
       });
     },
+    lookDetail(deviceInfo, index) {
+      let lng = Number(deviceInfo.lng);
+      let lat = Number(deviceInfo.lat);
+      // 调用百度地图的中心点方法,把点击的设备点设为地图中心
+      this.Map.panTo(new BMap.Point(lng, lat));
+      this.$emit("deviceData", deviceInfo.id, index);
+    },
   },
   created() {
-    this.getqueryEquipmentsByPage();
+    this.renderMap();
   },
 };
 </script>
 
 <style scoped>
-#bmap{
+#bmap {
   position: absolute;
   top: 0;
   left: 0;

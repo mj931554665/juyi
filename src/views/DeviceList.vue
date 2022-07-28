@@ -1,31 +1,5 @@
 <template>
   <div class="deviceList">
-    <div class="navbar">
-
-      <el-breadcrumb separator=">">
-        <el-breadcrumb-item>设备管理</el-breadcrumb-item>
-        <el-breadcrumb-item active>设备列表</el-breadcrumb-item>
-      </el-breadcrumb>
-
-      <div class="operate">
-        <div class="fullScreen">
-          <div class="btn">
-            <i class="el-icon-full-screen"></i>
-          </div>
-        </div>
-
-        <div class="userMenu">
-          <div class="btn">
-            <!-- <img src="../assets/images/admin.png" alt=""> -->
-            <div style="margin-left: 5px;" class="username">userName</div>
-            <i style="margin-left: 10px;" class="el-icon-arrow-down"></i>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-
     <div class="content">
       <div class="module">
         <div class="header">
@@ -79,87 +53,6 @@
               </el-table>
 
 
-
-            </el-tab-pane>
-            <el-tab-pane label="汽车起重机">
-              
-<el-table :data="tableData2" style="width: 100%" stripe>
-                <el-table-column type="selection" width="55">
-                </el-table-column>
-
-                <el-table-column prop="num" label="序号" width="50">
-                </el-table-column>
-                <el-table-column prop="name" label="设备名称" width="120">
-                </el-table-column>
-                <el-table-column prop="plateNo" label="车牌号" width="120">
-                </el-table-column>
-                <el-table-column prop="typeLabel" label="设备类型">
-                </el-table-column>
-                <el-table-column prop="modelLabel" label="设备型号">
-                </el-table-column>
-                <el-table-column prop="carStatusLabel" label="设备状态">
-                </el-table-column>
-                <el-table-column prop="leaseStatusLabel" label="经营状态">
-                </el-table-column>
-                <el-table-column prop="address" label="设备位置">
-                </el-table-column>
-                <el-table-column prop="operate" label="操作">
-                </el-table-column>
-              </el-table>
-
-            </el-tab-pane>
-            <el-tab-pane label="履带起重机">
-              
-<el-table :data="tableData3" style="width: 100%" stripe>
-                <el-table-column type="selection" width="55">
-                </el-table-column>
-
-                <el-table-column prop="num" label="序号" width="50">
-                </el-table-column>
-                <el-table-column prop="name" label="设备名称" width="120">
-                </el-table-column>
-                <el-table-column prop="plateNo" label="车牌号" width="120">
-                </el-table-column>
-                <el-table-column prop="typeLabel" label="设备类型">
-                </el-table-column>
-                <el-table-column prop="modelLabel" label="设备型号">
-                </el-table-column>
-                <el-table-column prop="carStatusLabel" label="设备状态">
-                </el-table-column>
-                <el-table-column prop="leaseStatusLabel" label="经营状态">
-                </el-table-column>
-                <el-table-column prop="address" label="设备位置">
-                </el-table-column>
-                <el-table-column prop="operate" label="操作">
-                </el-table-column>
-              </el-table>
-
-            </el-tab-pane>
-            <el-tab-pane label="其它设备">
-              
-<el-table :data="tableData4" style="width: 100%" stripe>
-                <el-table-column type="selection" width="55">
-                </el-table-column>
-
-                <el-table-column prop="num" label="序号" width="50">
-                </el-table-column>
-                <el-table-column prop="name" label="设备名称" width="120">
-                </el-table-column>
-                <el-table-column prop="plateNo" label="车牌号" width="120">
-                </el-table-column>
-                <el-table-column prop="typeLabel" label="设备类型">
-                </el-table-column>
-                <el-table-column prop="modelLabel" label="设备型号">
-                </el-table-column>
-                <el-table-column prop="carStatusLabel" label="设备状态">
-                </el-table-column>
-                <el-table-column prop="leaseStatusLabel" label="经营状态">
-                </el-table-column>
-                <el-table-column prop="address" label="设备位置">
-                </el-table-column>
-                <el-table-column prop="operate" label="操作">
-                </el-table-column>
-              </el-table>
 
             </el-tab-pane>
             <el-pagination background layout="prev, pager, next" :total="1000">

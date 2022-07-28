@@ -452,7 +452,9 @@ import EchartsComp from "@/components/EchartsComponent.vue";
 // 引入在线视频播放组件
 import CstorLivePlayer from "cstor-live-player";
 import "cstor-live-player/dist/cstor-live-player.css";
+import mixin from "./mixin";
 export default {
+  mixins: [mixin],
   components: {
     FloatCard,
     EchartsComp,
@@ -462,6 +464,8 @@ export default {
     return {
       // 整个页面是否显示（未获取到数据就暂时不显示
       isshow: false,
+      // 设备实时工况数据
+      deviceDetails:{},
       //----工况信息部分--------------------------
       // 模块二tab页标识数据
       module2: "first",
@@ -516,7 +520,7 @@ export default {
       this.$api.getvideoPlay(this.equipmentNo, this.channel).then((val) => {
         let data = val.data.data.split("|");
         this.videosrc = data[1];
-        // this.setHeartBeat(data[2]);
+        this.setHeartBeat(data[2]);
       });
     },
     // elementui切换tab页函数，勿删
@@ -547,6 +551,7 @@ export default {
         name: path,
         params: {
           equipmentNo: this.equipmentNo,
+          deviceDetails:this.deviceDetails
         },
       });
     },
