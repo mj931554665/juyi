@@ -500,12 +500,12 @@ export default {
     
     initChannel(vehicleCodes) {
       // let vehicleCodes = this.vehicleCodes;
-      this.$api.getVehicleCode(vehicleCodes).then((val) => {
+      this.$api.getVehicleCode(vehicleCodes).then(val => {
         let data = val.data.data[0];
         // 赋值获取到的数据
         this.VideoCarByVehicleCode = data;
         // console.log("VideoCarByVehicleCode", data);
-        this.$api.getVideoChannelState(data.terminalId).then((val) => {
+        this.$api.getVideoChannelState(data.terminalId).then(val => {
           // 把通道信息分割成数组
           let data = val.data.data[0].split(",").map(Number);
           // 通道信息赋值给data数据在页面显示状态
@@ -517,7 +517,7 @@ export default {
     // 获取视频并赋值函数
     initVideo(equipmentNo) {
       let vehicleCodes = equipmentNo ? equipmentNo : this.equipmentNo;
-      this.$api.getvideoPlay(this.equipmentNo, this.channel).then((val) => {
+      this.$api.getvideoPlay(this.equipmentNo, this.channel).then(val => {
         let data = val.data.data.split("|");
         this.videosrc = data[1];
         this.setHeartBeat(data[2]);

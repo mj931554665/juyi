@@ -67,7 +67,7 @@ export default {
       let lng = Number(a.lng);
       let lat = Number(a.lat);
       // 调用百度地图的中心点方法,把点击的设备点设为地图中心
-      this.Map.panTo(new BMap.Point(lng, lat));
+      // this.Map.panTo(new BMap.Point(lng, lat));
     }
   },
   data() {

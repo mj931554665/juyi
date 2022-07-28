@@ -56,9 +56,7 @@
               <span slot="powerTypeLable">{{ deviceInfo.powerTypeLable }}</span>
               <span slot="carStatusLabel">{{ deviceInfo.carStatusLabel }}</span>
               <!-- 设置盒子类型，取消换行 -->
-              <span slot="modelLabel" >{{
-                deviceInfo.modelLabel
-              }}</span>
+              <span slot="modelLabel">{{ deviceInfo.modelLabel }}</span>
             </Popups>
           </div>
         </bm-info-window>
@@ -496,6 +494,11 @@ export default {
         if (id && lng && lat) {
           // 筛选判断
           // 设备在线状态判断渲染
+          let count = 0;
+          if (item.hasVideo == 1) {
+            count++;
+          }
+          console.log("count", count);
           this.C_onlineStatus.forEach((onlineStatus) => {
             // 和筛选的值进行比对，满足条件的才渲染出来
             if (item.onlineStatusLabel == onlineStatus) {

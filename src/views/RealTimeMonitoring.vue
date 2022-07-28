@@ -7,25 +7,25 @@
             class="iconfont al-icona-7Ayifenping"
             title="一分屏"
             @click="splitScreen = 1"
-            :class="splitScreen == 1 ? 'active' : ''"
+            :class="splitScreen === 1 ? 'active' : ''"
           ></span>
           <span
             class="iconfont al-icona-7Dsifenping"
             title="四分屏"
             @click="splitScreen = 4"
-            :class="splitScreen == 4 ? 'active' : ''"
+            :class="splitScreen === 4 ? 'active' : ''"
           ></span>
           <span
             class="iconfont al-icona-7Iyijiawufenping"
             title="六分屏"
             @click="splitScreen = 6"
-            :class="splitScreen == 6 ? 'active' : ''"
+            :class="splitScreen === 6 ? 'active' : ''"
           ></span>
           <span
             class="iconfont al-icona-7Jyijiaqifenping"
             title="八分屏"
             @click="splitScreen = 8"
-            :class="splitScreen == 8 ? 'active' : ''"
+            :class="splitScreen === 8 ? 'active' : ''"
           ></span>
         </div>
         <p>
@@ -36,22 +36,22 @@
         </p>
       </div>
       <div class="content">
-        <div class="oneScreen" v-if="splitScreen == 1">
+        <div class="oneScreen" v-if="splitScreen === 1">
           <VideoArea>
             <CstorLivePlayer slot="video" :src="videoSrc[0]" />
           </VideoArea>
         </div>
-        <div class="fourScreen" v-if="splitScreen == 4">
+        <div class="fourScreen" v-if="splitScreen === 4">
           <VideoArea v-for="(item, index) in 4" :key="item">
             <CstorLivePlayer slot="video" :src="videoSrc[index]" />
           </VideoArea>
         </div>
-        <div class="sixScreen" v-if="splitScreen == 6">
+        <div class="sixScreen" v-if="splitScreen === 6">
           <VideoArea v-for="(item, index) in 6" :key="item">
             <CstorLivePlayer slot="video" :src="videoSrc[index]" />
           </VideoArea>
         </div>
-        <div class="eightScreen" v-if="splitScreen == 8">
+        <div class="eightScreen" v-if="splitScreen === 8">
           <VideoArea v-for="(item, index) in 8" :key="item">
             <CstorLivePlayer slot="video" :src="videoSrc[index]" />
           </VideoArea>
@@ -173,12 +173,12 @@ export default {
     },
     initChannel() {
       let vehicleCodes = this.vehicleCodes;
-      this.$api.getVehicleCode(vehicleCodes).then((val) => {
+      this.$api.getVehicleCode(vehicleCodes).then(val => {
         let data = val.data.data[0];
         // 赋值获取到的数据
         this.VideoCarByVehicleCode = data;
         // console.log("VideoCarByVehicleCode", data);
-        this.$api.getVideoChannelState(data.terminalId).then((val) => {
+        this.$api.getVideoChannelState(data.terminalId).then(val => {
           // 把通道信息分割成数组
           let data = val.data.data[0].split(",").map(Number);
           // 通道信息赋值给data数据在页面显示状态
@@ -189,11 +189,11 @@ export default {
     },
     initVideoSrc() {
       // let videoArr = [];
-      if (this.splitScreen == 1 && this.channel.length !== 1) {
+      if (this.splitScreen === 1 && this.channel.length !== 1) {
         this.channel.splice(0, this.channel.length - 1);
       }
-      this.channel.forEach((val) => {
-        this.$api.getvideoPlay(this.vehicleCodes, val, 0).then((val) => {
+      this.channel.forEach(val => {
+        this.$api.getvideoPlay(this.vehicleCodes, val, 0).then(val => {
           let data = val.data.data.split("|");
           if (this.videoSrc.indexOf(data[1]) > -1) {
           } else {

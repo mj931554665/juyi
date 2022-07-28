@@ -53,7 +53,8 @@
                 <div>
                   <span>{{ item.name }}</span>
                   <i
-                    v-show="item.videoStatus"
+                    v-if="item.hasVideo"
+                    :style="item.videoStatus == 0 ? 'color:#5e5e5f;' : ''"
                     class="el-icon-video-camera-solid videoOnlineClass"
                   ></i>
                 </div>
@@ -95,7 +96,7 @@
                 </div>
               </div>
               <div class="splitLine"></div>
-              <div class="video">
+              <div class="video" v-if="checkDevice.videoStatus">
                 <el-radio-group
                   v-model="channel"
                   class="channel-content"
@@ -120,6 +121,16 @@
                   <!-- <VideoArea>  -->
                   <!-- <CstorLivePlayer slot="video" :src="videosrc" /> -->
                   <!-- </VideoArea> -->
+                </div>
+              </div>
+              <div class="noVideo" v-else>
+                <div v-if="checkDevice.hasVideo">
+                  <div class="videoStatus"></div>
+                  <p>视频终端不在线</p>
+                </div>
+                <div v-else>
+                  <div class="hasVideo"></div>
+                  <p>未检测到天眼硬件，请联系项目组安装</p>
                 </div>
               </div>
               <div class="location textFont14">
@@ -319,7 +330,7 @@
                 </div>
                 <div class="splitLine"></div>
                 <div class="weekAnalysisData">
-                  <EchartsComp :options="chart1Data"></EchartsComp>
+                  <EchartsComp :options="chart1_option"></EchartsComp>
                 </div>
               </div>
             </div>
@@ -353,7 +364,7 @@
               <div class="splitLine"></div>
               <div class="area chart1">
                 <div class="chart">
-                  <EchartsComp :options="chart2"></EchartsComp>
+                  <EchartsComp :options="chart2_option"></EchartsComp>
                 </div>
                 <div class="data">
                   <div class="item">
@@ -565,10 +576,10 @@
         </div>
       </div>
       <div class="map">
-        <ScreenMap 
-        @deviceData="getdeviceData(arguments)" 
-        :deviceList="deviceList"
-        :device="checkDevice"
+        <ScreenMap
+          @deviceData="getdeviceData(arguments)"
+          :deviceList="deviceList"
+          :device="checkDevice"
         ></ScreenMap>
       </div>
     </div>
@@ -598,9 +609,6 @@ export default {
     CstorLivePlayer,
   },
   computed: {
-    chart2() {
-      return this.$EchartsData.Schart2();
-    },
     chart3() {
       return this.$EchartsData.Schart3();
     },
@@ -620,15 +628,15 @@ export default {
       checkDevice: {},
       // 实时工况数据
       workConditionData: {},
-      // 周数据统计（油耗，工作时长
-      weekAnalysisData: {},
+      /* 图表数据 */
       // 第一个图表的数据
-      chart1Data: {},
-      dataX: [],
-      dataY1: [],
-      dataY: [],
+      chart1_option: {},
+      // 第二个图表的数据
+      chart2_option: {},
       // 设备列表
       deviceList: [],
+      // 设备列表左侧可搜索
+      deviceListFilter: [],
       // 获取到的实时监控通道信息
       VideoChannelState: [],
       //用户选中的通道
@@ -639,7 +647,7 @@ export default {
   },
   methods: {
     // 点击地图切换设备传入的值为 id,index
-    getdeviceData(data){
+    getdeviceData(data) {
       this.checked(data[1]);
       this.getDeviceData(data[0]);
     },
@@ -653,57 +661,76 @@ export default {
       this.getDeviceData(id);
       this.initVideo();
     },
-    getDeviceData(id){
+    getDeviceData(id) {
       // 获取实时工况数据
-      this.$api.getDetailWithWorkConditionData(id).then(val => {
+      this.$api.getDetailWithWorkConditionData(id).then((val) => {
         // 赋值工况数据
         let detail = val.data.data;
-        this.workConditionData = detail.workConditionData;
-        // 周工作数据
-        // 赋值工况数据给图表
-        this.chart1Data = this.$EchartsData.Schart1(
-          detail.weekAnalysisData.details
-        );
+        console.log("detail", detail);
+        if (detail.workConditionData === null) {
+          this.workConditionData = {};
+          this.chart1_option = this.$EchartsData.Schart1(
+            null
+          );
+          console.log("我是空的诶！！！！！");
+        } else {
+          this.workConditionData = detail.workConditionData;
+          // 周工作数据
+          // 赋值工况数据给图表
+          this.chart1_option = this.$EchartsData.Schart1(
+            detail.weekAnalysisData.details
+          );
+        }
       });
     },
     // 获取视频并赋值函数
     initVideo() {
-      // 获取实时监控视频通道数据
-      this.$api.getVehicleCode(this.checkDevice.equipmentNo).then(val => {
-        let data = val.data.data[0];
-        this.$api.getVideoChannelState(data.terminalId).then(val => {
-          let data = val.data.data[0].split(",").map(Number);
-          // 通道信息赋值给data数据在页面显示状态
-          this.VideoChannelState = data;
+      // 判断是否实时视频是否在线
+      if (this.checkDevice.videoStatus) {
+        // 获取实时监控视频通道数据
+        this.$api.getVehicleCode(this.checkDevice.equipmentNo).then((val) => {
+          console.log(val.data.data.length == 0, val.data.data);
+
+          let data = val.data.data[0];
+          this.$api.getVideoChannelState(data.terminalId).then((val) => {
+            let data = val.data.data[0].split(",").map(Number);
+            // 通道信息赋值给data数据在页面显示状态
+            this.VideoChannelState = data;
+          });
+
+          this.$api
+            .getvideoPlay(this.checkDevice.equipmentNo, this.channel)
+            .then((val) => {
+              let data = val.data.data.split("|");
+              this.videosrc = data[1];
+              // this.setHeartBeat(data[2]);
+            });
         });
-      });
-      this.$api
-        .getvideoPlay(this.checkDevice.equipmentNo, this.channel)
-        .then(val => {
-          let data = val.data.data.split("|");
-          this.videosrc = data[1];
-          // this.setHeartBeat(data[2]);
-        });
+      }
     },
     initData() {
-      this.$api.getcustomerScreen("1", "9999").then(val => {
+      this.$api.getcustomerScreen("1", "9999").then((val) => {
         // 给设备列表赋值
         this.deviceList = val.data.data;
         // 给设备数据赋值
-        console.log('val.data.data',val.data.data);
         let checkDevice = this.deviceList[0];
         this.checkDevice = checkDevice;
         // 获取第一个设备的id
         let id = checkDevice.id;
         // 获取默认设备工况数据
-        this.$api.getDetailWithWorkConditionData(id).then(val => {
+        this.$api.getDetailWithWorkConditionData(id).then((val) => {
           // 赋值工况数据
           let detail = val.data.data;
           this.workConditionData = detail.workConditionData;
           // 赋值工况数据给图表
-          this.chart1Data = this.$EchartsData.Schart1(
+          this.chart1_option = this.$EchartsData.Schart1(
             detail.weekAnalysisData.details
           );
+          // 赋值设备总数给图表二
+          this.chart2_option = this.$EchartsData.Schart2(
+            this.deviceList.length
+          );
+          console.log("this.chart2_option", this.chart2_option);
         });
 
         this.initVideo();
@@ -711,12 +738,12 @@ export default {
     },
   },
   created() {
-    document.title = '钜亿安全监控大屏';
+    document.title = "钜亿安全监控大屏";
     (function () {
       let t = null;
       t = setTimeout(time, 1000); //開始运行
       function time() {
-        clearTimeout(t); //清除定时器
+        // clearTimeout(t); //清除定时器
         let dt = new Date();
         let y = dt.getFullYear();
         let mt = dt.getMonth() + 1;
@@ -726,7 +753,7 @@ export default {
         let s = dt.getSeconds(); //获取秒
         document.querySelector(".time").innerHTML =
           y + "-" + mt + "-" + day + " -" + h + ":" + m + ":" + s;
-        t = setTimeout(time, 1000); //设定定时器，循环运行
+        // t = setTimeout(time, 1000); //设定定时器，循环运行
       }
     })();
     this.initData();
@@ -1076,6 +1103,35 @@ export default {
                     height: 124px;
                   }
                 }
+              }
+            }
+            .noVideo {
+              height: 55%;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              .videoStatus,
+              .hasVideo {
+                margin: 0 auto;
+                width: 170px;
+                height: 90px;
+                background-size: 100%;
+                background-repeat: no-repeat;
+              }
+              .videoStatus {
+                background-image: url("@/assets/images/kzuqi/noVideoOnline.png");
+              }
+              .hasVideo {
+                width: 150px;
+                height: 100px;
+                margin-bottom: 20px;
+                background-image: url("@/assets/images/kzuqi/noVideo.png");
+              }
+              p {
+                text-align: center;
+                color: rgba(173, 200, 205, 0.6);
+                font-size: 12px;
               }
             }
             .location {
