@@ -318,7 +318,7 @@
                 </div>
                 <div class="splitLine"></div>
                 <div class="weekAnalysisData">
-                  <EchartsComp :options="chart1_option"></EchartsComp>
+                  <EchartsComp :options="chart1_option" :width="'298px'" :minHeight="'146px'"></EchartsComp>
                 </div>
               </div>
             </div>
@@ -352,7 +352,7 @@
               <div class="splitLine"></div>
               <div class="area chart1">
                 <div class="chart">
-                  <EchartsComp :options="chart2_option"></EchartsComp>
+                  <EchartsComp :options="chart2_option" :width="'112px'" :minHeight="'121px'"></EchartsComp>
                 </div>
                 <div class="data">
                   <div class="item">
@@ -387,7 +387,7 @@
               <div class="splitLine"></div>
               <div class="area chart2">
                 <div class="chart">
-                  <EchartsComp :options="chart3_option"></EchartsComp>
+                  <EchartsComp :options="chart3_option" :width="'112px'" :minHeight="'121px'"></EchartsComp>
                 </div>
                 <div class="data">
                   <div class="item">
@@ -431,7 +431,7 @@
               <div class="splitLine"></div>
               <div class="area chart3">
                 <div class="chart">
-                  <EchartsComp :options="chart4_option"></EchartsComp>
+                  <EchartsComp :options="chart4_option" :width="'112px'" :minHeight="'121px'"></EchartsComp>
                 </div>
                 <div class="data">
                   <div class="item">
@@ -1289,7 +1289,7 @@ export default {
             .workingCondition {
               position: relative;
               font-size: 12px;
-              height: calc(100% - 34px);
+              height: calc(100% - 38px);
 
               .el-carousel.el-carousel--horizontal {
                 top: calc(50% - 60px);

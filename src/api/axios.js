@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const test = axios.create({
-  baseURL:' /api',
+  baseURL:' /cp_api',
   withCredentials: true,  // 允许请求携带 cookie
 })
 

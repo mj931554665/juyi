@@ -20,7 +20,14 @@ export default {
       type: String,
       default: "100%",
     },
-
+    minHeight:{
+      type: String,
+      default: "auto",
+    },
+    minWidth:{
+      type: String,
+      default: "auto",
+    },
     options: {
       type: Object,
       default: null,
@@ -61,6 +68,8 @@ export default {
       return {
         height: this.height,
         width: this.width,
+        'min-height': this.minHeight,
+        'min-width': this.minWidth,
       };
     },
   },

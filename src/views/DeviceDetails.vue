@@ -28,6 +28,7 @@
                     :class="aisle === '1' ? 'channel-disabled' : ''"
                   >
                     <p
+                      v-if="false"
                       class="dot"
                       :style="
                         'background:' + (aisle === '0' ? '#13ca40' : '#d8d8d8')
@@ -345,9 +346,9 @@
         </FloatCard>
       </div>
       <div class="column">
-        <FloatCard :more="true">
+        <FloatCard :more="false">
           <span slot="header">设备信息</span>
-          <span slot="more" class="moreContent">
+          <span v-if="false" slot="more" class="moreContent">
             更多
             <i class="el-icon-arrow-right"></i>
           </span>
@@ -499,7 +500,6 @@ export default {
     this.stopHeartBeat(this.oldChannel)
   },
   methods: {
-    
     initChannel(vehicleCodes) {
       this.$api.getVehicleCode(vehicleCodes).then((val) => {
         let data = val.data.data[0];
@@ -511,6 +511,7 @@ export default {
           let data = val.data.data[0].split(",").map(Number);
           // 通道信息赋值给data数据在页面显示状态
           this.VideoChannelState = data;
+          console.log('this.VideoChannelState',this.VideoChannelState)
         });
       });
     },
