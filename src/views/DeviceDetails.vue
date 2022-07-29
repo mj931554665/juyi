@@ -18,19 +18,19 @@
             <div class="item-detail">
               <div class="detail-line">
                 <el-radio-group 
-                v-model="channel" 
-                class="channel-content"
-                @change="initVideo()">
+                v-model="channel"
+                @change="initVideo(equipmentNo)"
+                class="channel-content">
                   <el-radio-button
                     v-for="(aisle, index) in VideoChannelState.slice(0, 8)"
                     :label="index + 1"
                     :key="index"
-                    :class="aisle == '1' ? 'channel-disabled' : ''"
+                    :class="aisle === '1' ? 'channel-disabled' : ''"
                   >
                     <p
                       class="dot"
                       :style="
-                        'background:' + (aisle == '0' ? '#13ca40' : '#d8d8d8')
+                        'background:' + (aisle === '0' ? '#13ca40' : '#d8d8d8')
                       "
                     ></p>
                     通道{{ index + 1 }}
@@ -452,7 +452,9 @@ import EchartsComp from "@/components/EchartsComponent.vue";
 // 引入在线视频播放组件
 import CstorLivePlayer from "cstor-live-player";
 import "cstor-live-player/dist/cstor-live-player.css";
+import mixin from "./mixin";
 export default {
+  mixins: [mixin],
   components: {
     FloatCard,
     EchartsComp,
@@ -462,13 +464,13 @@ export default {
     return {
       // 整个页面是否显示（未获取到数据就暂时不显示
       isshow: false,
+      // 设备实时工况数据
+      deviceDetails:{},
       //----工况信息部分--------------------------
       // 模块二tab页标识数据
       module2: "first",
       // 模块四tab页标识数据
       module4: "first",
-      // 设备工况数据详情
-      deviceDetails: {},
       // 近七日设备工作时间和油耗图表配置数据
       chart1: {},
       // 设备实时油耗图表配置数据
@@ -480,6 +482,7 @@ export default {
       VideoChannelState: [],
       //用户选中的通道
       channel: 1,
+      oldChannel: 0,
       // 实时监控视频链接
       videosrc: "",
     };
@@ -492,10 +495,12 @@ export default {
         : "c1e221866ab84ae28aeb89f975a667c4";
     },
   },
+  destroyed(){
+    this.stopHeartBeat(this.oldChannel)
+  },
   methods: {
     
     initChannel(vehicleCodes) {
-      // let vehicleCodes = this.vehicleCodes;
       this.$api.getVehicleCode(vehicleCodes).then((val) => {
         let data = val.data.data[0];
         // 赋值获取到的数据
@@ -506,17 +511,17 @@ export default {
           let data = val.data.data[0].split(",").map(Number);
           // 通道信息赋值给data数据在页面显示状态
           this.VideoChannelState = data;
-          // console.log('State',data);
         });
       });
     },
     // 获取视频并赋值函数
     initVideo(equipmentNo) {
-      let vehicleCodes = equipmentNo ? equipmentNo : this.equipmentNo;
-      this.$api.getvideoPlay(this.equipmentNo, this.channel).then((val) => {
+      this.$api.getvideoPlay(equipmentNo, this.channel).then(val => {
+        this.stopHeartBeat(this.oldChannel) //停止上一个视频的心跳
         let data = val.data.data.split("|");
         this.videosrc = data[1];
-        // this.setHeartBeat(data[2]);
+        this.setHeartBeat(data[2],this.channel);
+        this.oldChannel=this.channel //记录这一次的视频通道
       });
     },
     // elementui切换tab页函数，勿删
@@ -536,17 +541,20 @@ export default {
         this.chart2 = this.$EchartsData.Dchart2(
           data.workConditionData.remainingOilPercent
         );
-        this.equipmentNo = data.baseInfo.equipmentNo;
-        this.initChannel(data.baseInfo.equipmentNo);
-        this.initVideo(data.baseInfo.equipmentNo);
+        // this.equipmentNo = data.baseInfo.equipmentNo;
+        this.equipmentNo='CC0260CB5362'
+        this.initChannel(this.equipmentNo);
+        this.initVideo(this.equipmentNo);
       });
     },
     // 切换路由
     routerChange(path) {
+      this.stopHeartBeat(this.oldChannel)
       this.$router.push({
         name: path,
         params: {
           equipmentNo: this.equipmentNo,
+          deviceDetails:this.deviceDetails
         },
       });
     },

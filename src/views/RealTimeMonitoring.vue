@@ -3,57 +3,48 @@
     <div class="module1">
       <div class="controls">
         <div class="splitScreen">
-          <span
-            class="iconfont al-icona-7Ayifenping"
-            title="一分屏"
-            @click="splitScreen = 1"
-            :class="splitScreen == 1 ? 'active' : ''"
-          ></span>
-          <span
-            class="iconfont al-icona-7Dsifenping"
-            title="四分屏"
-            @click="splitScreen = 4"
-            :class="splitScreen == 4 ? 'active' : ''"
-          ></span>
-          <span
-            class="iconfont al-icona-7Iyijiawufenping"
-            title="六分屏"
-            @click="splitScreen = 6"
-            :class="splitScreen == 6 ? 'active' : ''"
-          ></span>
-          <span
-            class="iconfont al-icona-7Jyijiaqifenping"
-            title="八分屏"
-            @click="splitScreen = 8"
-            :class="splitScreen == 8 ? 'active' : ''"
-          ></span>
+          <span class="iconfont al-icona-7Ayifenping" title="一分屏" @click="splitScreenChange(1)"
+            :class="splitScreen === 1 ? 'active' : ''"></span>
+          <span class="iconfont al-icona-7Dsifenping" title="四分屏" @click="splitScreenChange(4)"
+            :class="splitScreen === 4 ? 'active' : ''"></span>
+          <span class="iconfont al-icona-7Iyijiawufenping" title="六分屏" @click="splitScreenChange(6)"
+            :class="splitScreen === 6 ? 'active' : ''"></span>
+          <span class="iconfont al-icona-7Jyijiaqifenping" title="八分屏" @click="splitScreenChange(8)"
+            :class="splitScreen === 8 ? 'active' : ''"></span>
         </div>
         <p>
           <i class="el-icon-location-outline"></i>
-          山东省青岛市黄岛区薛家岛街道连江路288号
+          {{
+              Object.keys(this.deviceDetails).length ? deviceDetails.baseInfo.address : "--"
+          }}
         </p>
       </div>
       <div class="content">
-        <div class="oneScreen" v-if="splitScreen == 1">
-          <VideoArea>
-            <CstorLivePlayer slot="video" :src="videoSrc[0]" />
-          </VideoArea>
-        </div>
-        <div class="fourScreen" v-if="splitScreen == 4">
-          <VideoArea v-for="(item, index) in 4" :key="item">
-            <CstorLivePlayer slot="video" :src="videoSrc[index]" />
-          </VideoArea>
-        </div>
-        <div class="sixScreen" v-if="splitScreen == 6">
-          <VideoArea v-for="(item, index) in 6" :key="item">
-            <CstorLivePlayer slot="video" :src="videoSrc[index]" />
-          </VideoArea>
-        </div>
-        <div class="eightScreen" v-if="splitScreen == 8">
+        <div :class="screenClass">
           <VideoArea v-for="(item, index) in 8" :key="item">
-            <CstorLivePlayer slot="video" :src="videoSrc[index]" />
+            <CstorLivePlayer :ref="'screen' + index" slot="video" />
           </VideoArea>
         </div>
+        <!--<div class="oneScreen" v-if="splitScreen===1">
+          <VideoArea v-for="(item, index) in 1" :key="item">
+            <CstorLivePlayer :ref="'screen'+index" slot="video"/>
+          </VideoArea>
+        </div>
+        <div class="fourScreen" v-if="splitScreen===4">
+          <VideoArea v-for="(item, index) in 4" :key="item">
+            <CstorLivePlayer :ref="'screen'+index" slot="video"/>
+          </VideoArea>
+        </div>
+        <div class="sixScreen" v-if="splitScreen===6">
+          <VideoArea v-for="(item, index) in 6" :key="item">
+            <CstorLivePlayer :ref="'screen'+index" slot="video"/>
+          </VideoArea>
+        </div>
+        <div class="eightScreen" v-if="splitScreen===8">
+          <VideoArea v-for="(item, index) in 8" :key="item">
+            <CstorLivePlayer :ref="'screen'+index" slot="video"/>
+          </VideoArea>
+        </div>-->
       </div>
     </div>
     <div class="module2">
@@ -62,34 +53,34 @@
         <div slot="content" class="detail">
           <p>
             设备名称：&nbsp;{{
-              deviceDetails.length ? deviceDetails.baseInfo.name : "--"
+                Object.keys(this.deviceDetails).length ? deviceDetails.baseInfo.name : "--"
             }}
           </p>
           <p>
             设备类型：&nbsp;{{
-              deviceDetails.length ? deviceDetails.baseInfo.typeLabel : "--"
+                Object.keys(this.deviceDetails).length ? deviceDetails.baseInfo.typeLabel : "--"
             }}
           </p>
           <p>设备编号：&nbsp;{{ vehicleCodes ? vehicleCodes : "--" }}</p>
           <p>
             设备型号：&nbsp;{{
-              deviceDetails.length ? deviceDetails.baseInfo.modelLabel : "--"
+                Object.keys(this.deviceDetails).length ? deviceDetails.baseInfo.modelLabel : "--"
             }}
           </p>
           <p>
             动力类型：&nbsp;{{
-              deviceDetails.length
-                ? deviceDetails.baseInfo.powerTypeLable
-                : "--"
+                Object.keys(this.deviceDetails).length
+                  ? deviceDetails.baseInfo.powerTypeLable
+                  : "--"
             }}
           </p>
           <p>
             定位状态：&nbsp;{{
-              deviceDetails.length
-                ? deviceDetails.baseInfo.locationState
-                  ? "已定位"
-                  : "未定位"
-                : "--"
+                Object.keys(this.deviceDetails).length
+                  ? deviceDetails.baseInfo.locationState
+                    ? "已定位"
+                    : "未定位"
+                  : "--"
             }}
           </p>
         </div>
@@ -98,16 +89,9 @@
         <span slot="header">视频通道</span>
         <div slot="content" class="block">
           <el-checkbox-group v-model="channel" class="channel-content">
-            <el-checkbox-button
-              @change="changeChannel(index)"
-              v-for="(aisle, index) in VideoChannelState.slice(0, 8)"
-              :label="index + 1"
-              :key="index"
-            >
-              <p
-                class="dot"
-                :style="'background:' + (aisle == '0' ? '#13ca40' : '#d8d8d8')"
-              ></p>
+            <el-checkbox-button @change="changeChannel($event, index + 1)"
+              v-for="(aisle, index) in VideoChannelState.slice(0, 8)" :label="index + 1" :key="index">
+              <p class="dot" :style="'background:' + (aisle === '0' ? '#13ca40' : '#d8d8d8')"></p>
               通道{{ index + 1 }}
             </el-checkbox-button>
           </el-checkbox-group>
@@ -124,6 +108,7 @@ import VideoArea from "@/components/VideoArea.vue";
 import CstorLivePlayer from "cstor-live-player";
 import "cstor-live-player/dist/cstor-live-player.css";
 import mixin from "./mixin";
+
 export default {
   mixins: [mixin],
   components: {
@@ -136,15 +121,17 @@ export default {
     vehicleCodes() {
       return this.$route.params.equipmentNo
         ? this.$route.params.equipmentNo
-        : "CC0400CC0007";
+        : "CC0260CB5362";
     },
+    // 设备工况数据详情
+    deviceDetails() {
+      return this.$route.params.deviceDetails
+        ? this.$route.params.deviceDetails
+        : {};
+    }
   },
   data() {
     return {
-      // 设备工况数据详情
-      deviceDetails: {},
-      // 传入的设备编号
-      // vehicleCodes: "CC0400CC0007",
       // 车辆视频通道信息，包括terminalId
       VideoCarByVehicleCode: {},
       // 通道状态【0，0，0，1，0，0，0，0】
@@ -155,17 +142,65 @@ export default {
       channel: [1],
       // 视频地址数组
       videoSrc: [],
+      screenClass: 'oneScreen'
     };
   },
+  watch: {
+    splitScreen(v) {
+      if (v === 1) {
+        this.screenClass = 'oneScreen'
+      } else if (v === 4) {
+        this.screenClass = 'fourScreen'
+      } else if (v === 6) {
+        this.screenClass = 'sixScreen'
+      } else if (v === 8) {
+        this.screenClass = 'eightScreen'
+      }
+    }
+  },
+  destroyed() { //页面关闭
+    for (let index of this.channel) {
+      this.stopHeartBeat(index)
+    }
+  },
   methods: {
+    splitScreenChange(index) {
+      this.splitScreen = index
+      let length = this.channel.length
+      if (length > index) {
+        let k = this.channel.splice(index, length)
+        for (let i of k) {
+          this.stopHeartBeat(i)
+        }
+      }
+    },
     selectAll() {
       this.splitScreen = 8;
       this.channel = [1, 2, 3, 4, 5, 6, 7, 8];
       this.initVideoSrc();
     },
-    changeChannel() {
-      // this.videoSrc=[]
-      this.initVideoSrc();
+    changeChannel(v, index) {
+      let maxChannel = Math.max.apply(null, this.channel)
+      if (maxChannel <= 1) {
+        this.splitScreen = 1
+      } else if (maxChannel > 1 && maxChannel < 5) {
+        this.splitScreen = 4
+      } else if (maxChannel >= 5 && maxChannel < 7) {
+        this.splitScreen = 6
+      } else {
+        this.splitScreen = 8
+      }
+      if (v) { //选中的
+        this.initVideoSrc(index)
+      } else {
+        this.stopHeartBeat(index)
+
+        --index
+        let refInfo = this.$refs['screen' + index]
+        if (refInfo[0]) {
+          refInfo[0].stop() //视频终止
+        }
+      }
     },
     initChannel() {
       let vehicleCodes = this.vehicleCodes;
@@ -173,58 +208,32 @@ export default {
         let data = val.data.data[0];
         // 赋值获取到的数据
         this.VideoCarByVehicleCode = data;
-        // console.log("VideoCarByVehicleCode", data);
+
         this.$api.getVideoChannelState(data.terminalId).then((val) => {
           // 把通道信息分割成数组
-          let data = val.data.data[0].split(",").map(Number);
           // 通道信息赋值给data数据在页面显示状态
-          this.VideoChannelState = data;
+          this.VideoChannelState = val.data.data[0].split(",").map(Number);
           // console.log('State',data);
         });
       });
     },
-    initVideoSrc() {
-      let videoArr = [];
-      if (this.splitScreen == 1 && this.channel.length !== 1) {
-        this.channel.splice(0, this.channel.length - 1);
-      }
-      this.channel.forEach((val) => {
-        this.$api.getvideoPlay(this.vehicleCodes, val, 0).then((val) => {
-          let data = val.data.data.split("|");
-          if (videoArr.indexOf(data[1]) > -1) {
-          } else {
-            switch (this.splitScreen) {
-              case 1:
-                videoArr.push(data[1]);
-                videoArr = videoArr.slice(0, 1);
-                break;
-              case 4:
-                videoArr.push(data[1]);
-                videoArr = videoArr.slice(0, 4);
-                break;
-              case 6:
-                videoArr.push(data[1]);
-                videoArr = videoArr.slice(0, 6);
-                break;
-              case 8:
-                videoArr.push(data[1]);
-                videoArr = videoArr.slice(0, 8);
-                break;
+    initVideoSrc(index) {
+      this.$api.getvideoPlay(this.vehicleCodes, index, 0).then((val) => {
+        let data = val.data.data.split("|");
+        this.setHeartBeat(data[2], index);
 
-              default:
-                videoArr.push(data[1]);
-                break;
-            }
-          }
-        });
+        --index
+        let refInfo = this.$refs['screen' + index]
+        if (refInfo[0]) {
+          refInfo[0].play(data[1]) //视频启动开始
+        }
       });
-      this.videoSrc = videoArr;
     },
   },
   created() {
     this.initChannel();
-    this.initVideoSrc();
-    console.log(this.deviceDetails.length ? "1" : "2");
+    this.initVideoSrc(1);
+    console.log(Object.keys(this.deviceDetails).length ? "1" : "2");
   },
 };
 </script>
@@ -237,7 +246,8 @@ export default {
   min-height: calc(100vh - 70px);
   display: flex;
   padding: 40px;
-  .FloatCard-item-header > span:before {
+
+  .FloatCard-item-header>span:before {
     content: "";
     display: inline-block;
     width: 6px;
@@ -267,45 +277,56 @@ export default {
           margin: 0 5px;
           cursor: pointer;
         }
+
         .active {
           color: #fbb134;
         }
       }
     }
+
     .content {
       height: calc(100% - 30px);
-      > div {
+
+      >div {
         height: 100%;
+
         .VideoArea {
           outline: #13ca40 solid 1px;
+
           .panel.idle {
             background-size: contain;
           }
         }
       }
+
       .oneScreen {
         display: grid;
         grid-template-rows: 1fr;
         grid-template-columns: 1fr;
       }
+
       .fourScreen {
         display: grid;
         grid-template-rows: 1fr 1fr;
         grid-template-columns: 1fr 1fr;
       }
+
       .sixScreen {
         display: grid;
         grid-template-rows: 1fr 1fr 1fr;
         grid-template-columns: 1fr 1fr 1fr;
+
         .VideoArea:nth-child(1) {
           grid-row-end: span 2;
           grid-column-end: span 2;
         }
       }
+
       .eightScreen {
         display: grid;
         grid-template-rows: 1fr 1fr 1fr 1fr;
         grid-template-columns: 1fr 1fr 1fr 1fr;
+
         .VideoArea:nth-child(1) {
           grid-row-end: span 3;
           grid-column-end: span 3;
@@ -316,9 +337,11 @@ export default {
 
   .module2 {
     flex: 3;
+
     .FloatCard-module {
       height: calc(50% - 5px);
     }
+
     .detail {
       height: 100%;
       padding: 0 0 0 15px;
@@ -339,6 +362,7 @@ export default {
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
+
         .el-checkbox-button {
           .el-checkbox-button__inner {
             position: relative;
@@ -370,6 +394,7 @@ export default {
             }
           }
         }
+
         .is-checked {
           .el-checkbox-button__inner {
             background: rgba(242, 206, 145, 0.2);
@@ -381,10 +406,12 @@ export default {
       .el-button {
         width: 100%;
       }
+
       .el-button:hover {
         border-color: #f2ce91;
         color: #f2ce91;
       }
+
       .el-button:focus {
         border-color: #f2ce91;
         color: #f2ce91;

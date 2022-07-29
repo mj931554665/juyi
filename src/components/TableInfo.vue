@@ -50,12 +50,21 @@
         <FloatCard>
           <span slot="header">设备在线统计</span>
           <div slot="content" class="onlineStatus">
-            <div>
+            <div style="display: flex;justify-content: space-between;">
+              <div>
               <i class="el-icon-success" style="color: #00d893"></i>
               <span
                 >在线设备：<span>{{ onlineStatus[1].amount }}</span></span
               >
             </div>
+            <div>
+              <i class="el-icon-remove" style="color: gray"></i>
+              <span
+                >离线设备：<span>{{ onlineStatus[0].amount }}</span></span
+              >
+            </div>
+            </div>
+            <br />
             <br />
             <div class="warning">
               <div>
@@ -80,14 +89,6 @@
                 >
               </div>
             </div>
-            <br />
-            <div>
-              <i class="el-icon-remove" style="color: gray"></i>
-              <span
-                >离线设备：<span>{{ onlineStatus[0].amount }}</span></span
-              >
-            </div>
-            <br />
           </div>
         </FloatCard>
         <FloatCard>

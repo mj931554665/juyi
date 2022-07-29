@@ -42,6 +42,14 @@ import * as echarts from "echarts";
 Vue.prototype.$echarts = echarts
 
 
+// 修改网页标题
+router.beforeEach((to,from,next)=>{
+  if(to.meta.title){
+    document.title = to.meta.title
+  }
+  next();
+})
+
 new Vue({
   router,
   store,

@@ -8,22 +8,26 @@ export default {
     let dataY1 = [];
     let dataY = [];
     // 对数据进行遍历，提取日期数据并转换格式
-    value.forEach((item) => {
-      // 近七日耗油量
-      dataY1.push(item.oilCost);
-      // 近七日工作时间
-      dataY.push(item.workTime);
-      if (item.dataDate.slice(4, 8)[0] == 0) {
-        // 截取拼接字符
-        dataX.push(
-          item.dataDate.slice(5, 6) + "/" + item.dataDate.slice(6, 8)
-        );
-      } else {
-        dataX.push(
-          item.dataDate.slice(4, 6) + "月" + item.dataDate.slice(6, 8)
-        );
-      }
-    });
+    if (value === null) {
+      dataX = dataY1 = dataY =[0,0,0,0,0,0,0];
+    } else {
+      value.forEach((item) => {
+        // 近七日耗油量
+        dataY1.push(item.oilCost);
+        // 近七日工作时间
+        dataY.push(item.workTime);
+        if (item.dataDate.slice(4, 8)[0] == 0) {
+          // 截取拼接字符
+          dataX.push(
+            item.dataDate.slice(5, 6) + "/" + item.dataDate.slice(6, 8)
+          );
+        } else {
+          dataX.push(
+            item.dataDate.slice(4, 6) + "月" + item.dataDate.slice(6, 8)
+          );
+        }
+      });
+    }
     let option = {
       // backgroundColor: "#0D2753",
       tooltip: {
@@ -44,8 +48,8 @@ export default {
         },
       },
       grid: {
-        top: "10%",
-        bottom: "0%",
+        top: "12%",
+        bottom: "2%",
         left: "5%",
         right: "5%",
         containLabel: true,
@@ -155,7 +159,7 @@ export default {
     return option;
   },
   // 页面四个圆形图表的配置数据
-  Schart2() {
+  Schart2(value) {
     let option = {
       tooltip: {
         trigger: "item",
@@ -184,7 +188,7 @@ export default {
             fontWeight: "bold",
             position: "center",
           },
-          data: [{ value: 157, name: "履带吊" }],
+          data: [{ value: value, name: "履带吊" }],
         },
       ],
     };

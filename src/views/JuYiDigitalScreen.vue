@@ -1,11 +1,8 @@
 <template>
   <div class="DigitalScreen">
     <header>
-      <div
-        class="headerLeftShow"
-        @click="hideLeftTree = !hideLeftTree"
-        :class="hideLeftTree ? '' : 'leftTreehide'"
-      ></div>
+      <div class="headerLeftShow" @click="hideLeftTree = !hideLeftTree" :class="hideLeftTree ? '' : 'leftTreehide'">
+      </div>
       <div class="headerTitle">
         <div>
           <div class="title">钜亿安全监控大屏</div>
@@ -21,37 +18,21 @@
       <div class="leftTree" v-show="hideLeftTree">
         <div class="leftTreeContent borderImg">
           <div class="leftTreeTop">
-            <el-input
-              placeholder="搜索设备"
-              clearable
-              suffix-icon="el-icon-search"
-              v-model="searchInput"
-            >
+            <el-input placeholder="搜索设备" clearable suffix-icon="el-icon-search" v-model="searchInput"
+              :class="searchInput === '' ? '' : 'hasContent'">
             </el-input>
           </div>
           <div class="leftTreeBottom">
-            <div
-              class="equipmentItem textFont14"
-              v-for="(item, index) in deviceList"
-              :key="index"
-            >
-              <div
-                class="itemContent"
-                @click="checked(index)"
-                :class="checkedIndex == index ? 'checked' : ''"
-              >
-                <div
-                  :style="
-                    item.onlineStatus == '1' ? '' : 'background: #5e5e5f;'
-                  "
-                  class="prevIconOnline"
-                ></div>
+            <div class="equipmentItem textFont14" v-for="(item, index) in deviceList" :key="index"
+              v-show="item.name.indexOf(searchInput) > -1">
+              <div class="itemContent" @click="checked(index)" :class="checkedIndex == index ? 'checked' : ''">
+                <div :style="
+                  item.onlineStatus == '1' ? '' : 'background: #5e5e5f;'
+                " class="prevIconOnline"></div>
                 <div>
                   <span>{{ item.name }}</span>
-                  <i
-                    v-show="item.videoStatus"
-                    class="el-icon-video-camera-solid videoOnlineClass"
-                  ></i>
+                  <i v-if="item.hasVideo" :style="item.videoStatus == 0 ? 'color:#5e5e5f;' : ''"
+                    class="el-icon-video-camera-solid videoOnlineClass"></i>
                 </div>
               </div>
             </div>
@@ -62,10 +43,7 @@
         <div class="leftScreen">
           <div class="leftTop borderImg">
             <div class="leftTopContent">
-              <div
-                class="equipmentName textFont16"
-                style="display: flex; align-items: center"
-              >
+              <div class="equipmentName textFont16" style="display: flex; align-items: center">
                 <i class="el-icon-s-tools"></i>
                 <span>{{ checkDevice.name }}</span>
                 <!-- <i class="el-icon-microphone"></i> -->
@@ -91,23 +69,13 @@
                 </div>
               </div>
               <div class="splitLine"></div>
-              <div class="video">
-                <el-radio-group 
-                v-model="channel" 
-                class="channel-content"
-                @change="initVideo()">
-                  <el-radio-button
-                    v-for="(aisle, index) in VideoChannelState.slice(0, 8)"
-                    :label="index + 1"
-                    :key="index"
-                    :class="aisle == '1' ? 'channel-disabled' : ''"
-                  >
-                    <p
-                      class="dot"
-                      :style="
-                        'background:' + (aisle == '0' ? '#13ca40' : '#d8d8d8')
-                      "
-                    ></p>
+              <div class="video" v-if="checkDevice.videoStatus">
+                <el-radio-group v-model="channel" class="channel-content" @change="initVideo()">
+                  <el-radio-button v-for="(aisle, index) in VideoChannelState.slice(0, 8)" :label="index + 1"
+                    :key="index" :class="aisle == '1' ? 'channel-disabled' : ''">
+                    <p class="dot" :style="
+                      'background:' + (aisle == '0' ? '#13ca40' : '#d8d8d8')
+                    "></p>
                     通道{{ index + 1 }}
                   </el-radio-button>
                 </el-radio-group>
@@ -115,6 +83,16 @@
                   <!-- <VideoArea>  -->
                   <CstorLivePlayer slot="video" :src="videosrc" />
                   <!-- </VideoArea> -->
+                </div>
+              </div>
+              <div class="noVideo" v-else>
+                <div v-if="checkDevice.hasVideo">
+                  <div class="videoStatus"></div>
+                  <p>视频终端不在线</p>
+                </div>
+                <div v-else>
+                  <div class="hasVideo"></div>
+                  <p>未检测到天眼硬件，请联系项目组安装</p>
                 </div>
               </div>
               <div class="location textFont14">
@@ -126,10 +104,7 @@
                 </div>
                 <div>
                   <div class="addressIcon"></div>
-                  <div
-                    :title="checkDevice.address"
-                    class="address nowrapText textColor textNowarp"
-                  >
+                  <div :title="checkDevice.address" class="address nowrapText textColor textNowarp">
                     {{ checkDevice.address }}
                   </div>
                 </div>
@@ -142,7 +117,7 @@
                   <span class="mark">{{ checkDevice.modelLabel }}</span>
                   <span class="mark">{{ checkDevice.typeLabel }}</span>
                   <span class="mark">{{
-                    checkDevice.equipmentBrandLabel
+                      checkDevice.equipmentBrandLabel
                   }}</span>
                 </div>
                 <div class="operator">
@@ -162,12 +137,7 @@
                 </div>
                 <div class="splitLine"></div>
                 <div class="workingCondition">
-                  <el-carousel
-                    :interval="5000"
-                    arrow="always"
-                    indicator-position="outside"
-                    height="100px"
-                  >
+                  <el-carousel :interval="5000" arrow="always" indicator-position="outside" height="100px">
                     <el-carousel-item>
                       <div class="dataArea">
                         <div class="panel">
@@ -184,7 +154,7 @@
                             <p><span>主钩实重</span></p>
                             <h6>
                               {{
-                                workConditionData.mainHookActualWeight
+                                  workConditionData.mainHookActualWeight
                               }}&nbsp;t
                             </h6>
                           </div>
@@ -209,7 +179,7 @@
                             <p><span>副钩额重</span></p>
                             <h6>
                               {{
-                                workConditionData.slaveHookRatedWeight
+                                  workConditionData.slaveHookRatedWeight
                               }}&nbsp;t
                             </h6>
                           </div>
@@ -220,7 +190,7 @@
                             <p><span>副钩实重</span></p>
                             <h6>
                               {{
-                                workConditionData.slaveHookActualWeight
+                                  workConditionData.slaveHookActualWeight
                               }}&nbsp;t
                             </h6>
                           </div>
@@ -258,7 +228,7 @@
                             <p><span>力矩百分比</span></p>
                             <h6>
                               {{
-                                workConditionData.torquePercent
+                                  workConditionData.torquePercent
                               }}%&nbsp;(负载率)
                             </h6>
                           </div>
@@ -314,7 +284,7 @@
                 </div>
                 <div class="splitLine"></div>
                 <div class="weekAnalysisData">
-                  <EchartsComp :options="chart1Data"></EchartsComp>
+                  <EchartsComp :options="chart1_option"></EchartsComp>
                 </div>
               </div>
             </div>
@@ -348,7 +318,7 @@
               <div class="splitLine"></div>
               <div class="area chart1">
                 <div class="chart">
-                  <EchartsComp :options="chart2"></EchartsComp>
+                  <EchartsComp :options="chart2_option"></EchartsComp>
                 </div>
                 <div class="data">
                   <div class="item">
@@ -383,7 +353,7 @@
               <div class="splitLine"></div>
               <div class="area chart2">
                 <div class="chart">
-                  <EchartsComp :options="chart3"></EchartsComp>
+                  <EchartsComp :options="chart3_option"></EchartsComp>
                 </div>
                 <div class="data">
                   <div class="item">
@@ -427,7 +397,7 @@
               <div class="splitLine"></div>
               <div class="area chart3">
                 <div class="chart">
-                  <EchartsComp :options="chart4"></EchartsComp>
+                  <EchartsComp :options="chart4_option"></EchartsComp>
                 </div>
                 <div class="data">
                   <div class="item">
@@ -454,7 +424,7 @@
           </div>
           <div class="rightBottom borderImg">
             <div class="content">
-              <el-carousel :interval="3000" arrow="always" height="150px">
+              <el-carousel :autoplay="false" :interval="3000" arrow="always" height="150px">
                 <el-carousel-item>
                   <div class="title textFont16">
                     <i class="el-icon-s-tools"></i>
@@ -560,7 +530,7 @@
         </div>
       </div>
       <div class="map">
-        <ScreenMap></ScreenMap>
+        <ScreenMap @deviceData="getdeviceData(arguments)" :deviceList="deviceList" :device="checkDevice"></ScreenMap>
       </div>
     </div>
   </div>
@@ -589,46 +559,55 @@ export default {
     CstorLivePlayer,
   },
   computed: {
-    chart2(){
-      return this.$EchartsData.Schart2();
-    },
-    chart3(){
+    chart3_option() {
       return this.$EchartsData.Schart3();
     },
-    chart4(){
+    chart4_option() {
       return this.$EchartsData.Schart4();
     },
   },
   data() {
     return {
-      // 是否隐藏左侧图表
+      /* 图表数据 */
+      // 第一个图表的数据
+      chart1_option: {},
+      // 第二个图表的数据
+      chart2_option: {},
+
+      /* 搜索设备列表数据 */
+      // 是否隐藏左侧列表
       hideLeftTree: false,
       // 搜索框数据
       searchInput: "",
       // 搜索列表选中项
       checkedIndex: 0,
+
       // 设备数据
       checkDevice: {},
       // 实时工况数据
       workConditionData: {},
-      // 周数据统计（油耗，工作时长
-      weekAnalysisData: {},
-      // 第一个图表的数据
-      chart1Data: {},
-      dataX: [],
-      dataY1: [],
-      dataY: [],
       // 设备列表
       deviceList: [],
+      // 设备列表左侧可搜索
+      deviceListFilter: [],
       // 获取到的实时监控通道信息
       VideoChannelState: [],
       //用户选中的通道
       channel: 1,
+      oldChannel: 0,
       // 实时监控视频链接
       videosrc: "",
     };
   },
+  destroyed() {
+    this.stopHeartBeat(this.oldChannel)
+  },
   methods: {
+    // 点击地图切换设备传入的值为 id,index（子传父
+    getdeviceData(data) {
+      this.checked(data[1]);
+      this.getDeviceData(data[0]);
+    },
     // 切换设备
     checked(i) {
       // 选中项样式
@@ -636,43 +615,61 @@ export default {
       // 已有列表数据赋值
       this.checkDevice = this.deviceList[i];
       let id = this.deviceList[i].id;
+      this.getDeviceData(id);
+      this.initVideo();
+    },
+    // 获取设备详细工况数据
+    getDeviceData(id) {
       // 获取实时工况数据
       this.$api.getDetailWithWorkConditionData(id).then((val) => {
         // 赋值工况数据
         let detail = val.data.data;
-        this.workConditionData = detail.workConditionData;
-        // 周工作数据
-        // 赋值工况数据给图表
-        this.chart1Data = this.$EchartsData.Schart1(detail.weekAnalysisData.details);
-        
+        if (detail.workConditionData === null) {
+          this.workConditionData = {};
+          this.chart1_option = this.$EchartsData.Schart1(null);
+        } else {
+          this.workConditionData = detail.workConditionData;
+          // 周工作数据
+          // 赋值工况数据给图表
+          this.chart1_option = this.$EchartsData.Schart1(
+            detail.weekAnalysisData.details
+          );
+        }
       });
-      this.initVideo();
     },
     // 获取视频并赋值函数
     initVideo() {
-      // 获取实时监控视频通道数据
-      this.$api.getVehicleCode(this.checkDevice.equipmentNo).then((val) => {
-        let data = val.data.data[0];
-        this.$api.getVideoChannelState(data.terminalId).then((val) => {
-          let data = val.data.data[0].split(",").map(Number);
-          // 通道信息赋值给data数据在页面显示状态
-          this.VideoChannelState = data;
+      // 判断是否实时视频是否在线
+      if (this.checkDevice.videoStatus) {
+        // 获取实时监控视频通道数据
+        this.$api.getVehicleCode(this.checkDevice.equipmentNo).then((val) => {
+          console.log(val.data.data.length == 0, val.data.data);
+
+          let data = val.data.data[0];
+          this.$api.getVideoChannelState(data.terminalId).then((val) => {
+            let data = val.data.data[0].split(",").map(Number);
+            // 通道信息赋值给data数据在页面显示状态
+            this.VideoChannelState = data;
+          });
+
+          this.$api
+            .getvideoPlay(this.checkDevice.equipmentNo, this.channel)
+            .then((val) => {
+              this.stopHeartBeat(this.oldChannel) //停止上一个视频的心跳
+              let data = val.data.data.split("|");
+              this.videosrc = data[1];
+              this.setHeartBeat(data[2], this.channel);
+              this.oldChannel = this.channel //记录这一次的视频通道
+            });
         });
-      });
-      this.$api
-        .getvideoPlay(this.checkDevice.equipmentNo, this.channel)
-        .then((val) => {
-          let data = val.data.data.split("|");
-          this.videosrc = data[1];
-          this.setHeartBeat(data[2]);
-        });
+      }
     },
     initData() {
-      this.$api.getselectList("0", "999").then((val) => {
+      this.$api.getcustomerScreen("1", "9999").then((val) => {
         // 给设备列表赋值
-        this.deviceList = val.data.data.rows;
+        this.deviceList = val.data.data;
         // 给设备数据赋值
-        let checkDevice = val.data.data.rows[0];
+        let checkDevice = this.deviceList[0];
         this.checkDevice = checkDevice;
         // 获取第一个设备的id
         let id = checkDevice.id;
@@ -682,7 +679,13 @@ export default {
           let detail = val.data.data;
           this.workConditionData = detail.workConditionData;
           // 赋值工况数据给图表
-          this.chart1Data = this.$EchartsData.Schart1(detail.weekAnalysisData.details);
+          this.chart1_option = this.$EchartsData.Schart1(
+            detail.weekAnalysisData.details
+          );
+          // 赋值设备总数给图表二
+          this.chart2_option = this.$EchartsData.Schart2(
+            this.deviceList.length
+          );
         });
 
         this.initVideo();
@@ -690,11 +693,12 @@ export default {
     },
   },
   created() {
+    document.title = "钜亿安全监控大屏";
     (function () {
       let t = null;
       t = setTimeout(time, 1000); //開始运行
+      // clearTimeout(t); //清除定时器
       function time() {
-        clearTimeout(t); //清除定时器
         let dt = new Date();
         let y = dt.getFullYear();
         let mt = dt.getMonth() + 1;
@@ -704,7 +708,6 @@ export default {
         let s = dt.getSeconds(); //获取秒
         document.querySelector(".time").innerHTML =
           y + "-" + mt + "-" + day + " -" + h + ":" + m + ":" + s;
-        t = setTimeout(time, 1000); //设定定时器，循环运行
       }
     })();
     this.initData();
@@ -723,24 +726,30 @@ export default {
   height: 100vh;
   min-width: 1440px;
   letter-spacing: 1px;
+
   // 去除百度logo
-  .anchorBL > a > img {
+  .anchorBL>a>img {
     display: none;
   }
+
   .BMap_cpyCtrl.BMap_noprint.anchorBL {
     display: none;
   }
+
   .checked {
     background: rgba(0, 198, 255, 0.15);
+
     span {
       color: #00c6ff !important;
     }
   }
+
   .textNowarp {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
+
   #fullScreen {
     border: none;
     color: #50666e;
@@ -749,22 +758,27 @@ export default {
     margin-left: 10px;
     font-size: 24px;
   }
+
   ::-webkit-scrollbar {
     width: 5px;
     height: 5px;
     /**/
   }
+
   ::-webkit-scrollbar-track {
     background-color: transparent !important;
     border-radius: 2px;
   }
+
   ::-webkit-scrollbar-thumb {
     background-color: rgba(0, 168, 255, 0.25);
     border-radius: 4px;
   }
+
   ::-webkit-scrollbar-thumb:hover {
     background-color: rgba(0, 168, 255, 0.3);
   }
+
   ::-webkit-scrollbar-corner {
     background: #179a16;
   }
@@ -775,7 +789,9 @@ export default {
     height: 53px;
     background: #000002;
     border-bottom: 1px solid rgba(0, 198, 255, 0.2);
+
     .headerLeftShow {
+      z-index: 1;
       height: 12px;
       width: 18.5px;
       background: url("@/assets/images/kzuqi/show.png");
@@ -784,9 +800,11 @@ export default {
       margin: 20px 0 0 25px;
       cursor: pointer;
     }
+
     .leftTreehide {
       background-image: url("@/assets/images/kzuqi/hide.png");
     }
+
     .headerTitle {
       position: absolute;
       left: 50%;
@@ -797,7 +815,8 @@ export default {
       background-image: url("@/assets/images/kzuqi/biaoti.png");
       background-repeat: no-repeat;
       background-size: 100% 100%;
-      > div {
+
+      >div {
         position: absolute;
         left: 50%;
         -webkit-transform: translate(-50%);
@@ -806,22 +825,26 @@ export default {
         width: 450px;
         text-align: center;
         color: #01c5fe;
+
         .title {
           font-size: 30px;
         }
       }
     }
+
     .showTime {
       height: 53px;
       display: flex;
       align-items: center;
     }
   }
+
   .main {
     position: relative;
     width: 100%;
     height: calc(100% - 54px);
     display: flex;
+
     // height: 100%;
     .borderImg {
       border: 1px solid #006381;
@@ -832,13 +855,16 @@ export default {
       background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
       background-position: top left 0, 100% 0, bottom left 0, 100% 100%;
     }
+
     .prevOnline {
       color: #00c6ff;
     }
+
     .textFont14,
     .textFont16 {
       font-size: 12px;
     }
+
     .splitLine {
       margin: 8px 0;
       height: 2px;
@@ -846,13 +872,16 @@ export default {
       background-repeat: no-repeat;
       background-size: 100% 100%;
     }
+
     .title {
       display: flex;
       align-items: center;
     }
-    .title > i {
+
+    .title>i {
       font-size: 16px;
     }
+
     .leftTree {
       position: relative;
       padding: 8px 0 12px 14px;
@@ -860,35 +889,49 @@ export default {
       height: calc(100% - 20px);
       z-index: 230;
       background: rgba(0, 0, 2, 0.8);
+
       .leftTreeTop {
         position: relative;
         margin: 10px;
+
         .el-input {
           display: block;
+
+          .el-input__inner {
+            height: 28px;
+            color: rgba(173, 200, 205, 0.4);
+            background: rgba(0, 0, 2, 0.8);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: 14px;
+            padding: 0 30px 0 12px;
+          }
+
+          .el-input__icon {
+            line-height: normal;
+          }
         }
-        .el-input__inner {
-          height: 28px;
-          color: rgba(173, 200, 205, 0.4);
-          background: rgba(0, 0, 2, 0.8);
-          border: 1px solid rgba(0, 198, 255, 0.3);
-          border-radius: 14px;
-          padding: 0 30px 0 12px;
-        }
-        .el-input__icon {
-          line-height: normal;
+
+        .hasContent {
+          .el-icon-search {
+            display: none;
+          }
         }
       }
+
       .leftTreeBottom {
         letter-spacing: 0;
         overflow-y: auto;
         // height: 620.8px;
         height: calc(100% - 80px);
+
         .equipmentItem {
           min-height: 26.5px;
+
           .itemContent {
             display: flex;
             line-height: 16.6px;
             padding: 4px 0;
+
             .prevIconOffline,
             .prevIconOnline {
               margin: 5px 5.2px 0 10.5px;
@@ -896,31 +939,37 @@ export default {
               height: 5.275px;
               border-radius: 50%;
             }
+
             .prevIconOnline {
               background: #00c6ff;
             }
+
             span {
               color: #adc8cd;
               margin-right: 3px;
             }
           }
         }
+
         .equipmentItem:hover {
           background: rgba(0, 198, 255, 0.15);
           cursor: pointer;
         }
       }
+
       .leftTreeContent {
         // width: 100%;
         height: 100%;
         background-size: 9% !important;
       }
     }
+
     .mainContent {
       width: 100%;
       height: 100%;
       display: flex;
       justify-content: space-between;
+
       .leftScreen {
         position: relative;
         float: left;
@@ -930,27 +979,33 @@ export default {
         height: calc(100% - 20px);
         background: rgba(0, 0, 2, 0.8);
         z-index: 231;
+
         .leftBottom,
         .leftTop {
           width: 100%;
           height: calc(50% - 5px);
           background-size: 4.8%;
           box-sizing: border-box;
+
           .leftTopContent {
             height: calc(100% - 10px);
             margin: 10px;
             margin-bottom: 0;
+
             .operator {
               margin: 3px 0 0;
               font-size: 12px;
             }
+
             .textColor {
               color: #adc8cd;
             }
+
             span {
               color: #adc8cd;
               margin: 0 3px;
             }
+
             .detailBtn {
               float: right;
               display: flex;
@@ -964,6 +1019,7 @@ export default {
               color: #000002;
               border-radius: 2.65px;
               cursor: pointer;
+
               i {
                 position: relative;
                 margin: 0;
@@ -972,16 +1028,20 @@ export default {
                 font-weight: 700;
               }
             }
+
             .equipmentName {
               height: 18px;
             }
+
             .video {
               height: 55%;
+
               .el-radio-group {
                 height: 35px;
                 display: flex;
                 overflow: auto;
                 flex-wrap: nowrap;
+
                 // justify-content: space-around;
                 .el-radio-button {
                   .el-radio-button__inner {
@@ -1013,14 +1073,17 @@ export default {
                       background: #13ca40;
                     }
                   }
+
                   .el-radio-button__inner:hover {
                     background: rgba(0, 198, 255, 0.2);
                   }
                 }
+
                 .channel-disabled span {
                   color: rgba(0, 198, 255, 0.4);
                   border: 1px solid rgba(0, 198, 255, 0.4);
                 }
+
                 .is-active {
                   .el-radio-button__inner {
                     color: #000002;
@@ -1056,14 +1119,51 @@ export default {
                 }
               }
             }
+
+            .noVideo {
+              height: 55%;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+
+              .videoStatus,
+              .hasVideo {
+                margin: 0 auto;
+                width: 170px;
+                height: 90px;
+                background-size: 100%;
+                background-repeat: no-repeat;
+              }
+
+              .videoStatus {
+                background-image: url("@/assets/images/kzuqi/noVideoOnline.png");
+              }
+
+              .hasVideo {
+                width: 150px;
+                height: 100px;
+                margin-bottom: 20px;
+                background-image: url("@/assets/images/kzuqi/noVideo.png");
+              }
+
+              p {
+                text-align: center;
+                color: rgba(173, 200, 205, 0.6);
+                font-size: 12px;
+              }
+            }
+
             .location {
               margin-top: 2.2px;
               padding-bottom: 2.3px;
               border-bottom: 0.8px solid rgba(0, 198, 255, 0.3);
-              > div {
+
+              >div {
                 display: flex;
                 line-height: 18.5px;
               }
+
               .addressIcon,
               .locationTimeIcon {
                 margin-right: 4.6px;
@@ -1073,25 +1173,31 @@ export default {
                 background-position: 100% 100%;
                 background-size: 100%;
               }
+
               .locationTimeIcon {
                 background-image: url("@/assets/images/kzuqi/shijian.png");
               }
+
               .addressIcon {
                 background-image: url("@/assets/images/kzuqi/dingwei.png");
               }
             }
+
             .equipmentInfo {
               height: 18%;
               display: flex;
               flex-direction: column;
               justify-content: space-evenly;
-              > div {
+
+              >div {
                 display: flex;
                 line-height: 16px;
               }
+
               .equipmentInfoTitle,
               .equipmentInfoTitle span {
                 display: flex;
+
                 .prevOnline div {
                   margin: 5.4px 5.2px 0 5px;
                   width: 0.57em;
@@ -1100,19 +1206,23 @@ export default {
                   border-radius: 50%;
                 }
               }
+
               .equipmentInfoTitle {
                 display: flex;
                 align-items: center;
               }
+
               .model {
                 display: flex;
                 justify-content: space-around;
+                border: 1px solid rgba(0, 198, 255, 0.5);
+                border-radius: 6.12px;
+                background-color: #000002;
+
                 .mark {
                   margin: 0;
                   padding: 1.8px 1px;
                   color: rgba(0, 198, 255, 0.8);
-                  background-color: #000002;
-                  border: 1px solid rgba(0, 198, 255, 0.5);
                   border-radius: 6.12px;
                   font-size: 12px;
                   white-space: nowrap;
@@ -1121,55 +1231,68 @@ export default {
             }
           }
         }
+
         .leftBottom {
           margin-top: 10px;
+
           .leftBottomContent,
           .leftTopContent,
           .rightBottomContent,
           .rightTopContent {
             height: 100%;
             margin: 10px;
-            > div {
+
+            >div {
               height: calc(50% - 20px);
             }
+
             span {
               margin: 0 3px;
               color: #adc8cd;
             }
+
             .weekAnalysisData {
               height: 100%;
             }
+
             .workingCondition {
               position: relative;
               font-size: 12px;
               height: calc(100% - 34px);
+
               .el-carousel.el-carousel--horizontal {
                 top: calc(50% - 60px);
               }
+
               .el-carousel__indicator.el-carousel__indicator--horizontal {
                 padding: 0 4px;
               }
+
               .dataArea {
                 height: 100%;
                 padding: 2.5px 0;
                 display: flex;
                 flex-wrap: wrap;
+
                 .panel {
                   width: calc(25% - 0px);
                   display: flex;
                   text-align: center;
                   justify-content: center;
                   flex-wrap: wrap;
+
                   .panel-item {
                     width: calc(100% - 2px);
                     height: 36px;
                     display: flex;
                     justify-content: space-between;
                     flex-direction: column;
-                    > p {
+
+                    >p {
                       margin-bottom: 5px;
                     }
                   }
+
                   .columnLine[data-v-8ffcbcbe] {
                     float: right;
                     width: 1px;
@@ -1179,9 +1302,11 @@ export default {
                   }
                 }
               }
+
               .el-carousel__arrow--left {
                 left: -12px;
               }
+
               .el-carousel__arrow--right {
                 right: -6px;
               }
@@ -1189,6 +1314,7 @@ export default {
           }
         }
       }
+
       .centerTopScreen {
         position: relative;
         float: left;
@@ -1198,14 +1324,17 @@ export default {
         width: 100%;
         min-width: 340px;
         background: rgba(0, 0, 2, 0.8);
+
         .centerTop {
           height: 100%;
           background-size: 16px;
+
           .bigNumber {
             height: 100%;
             display: flex;
             justify-content: space-evenly;
             align-items: center;
+
             div {
               h2 {
                 font-size: 21px;
@@ -1213,6 +1342,7 @@ export default {
                 margin: 0 0 12px 0;
                 text-align: center;
               }
+
               p {
                 text-align: center;
               }
@@ -1220,6 +1350,7 @@ export default {
           }
         }
       }
+
       .rightScreen {
         position: relative;
         float: right;
@@ -1227,38 +1358,47 @@ export default {
         height: calc(100% - 20px);
         background: rgba(0, 0, 2, 0.8);
         z-index: 230;
+
         .rightTop {
           width: 304px;
           height: calc(75% - 10px);
           background-size: 4.8%;
+
           .content {
             height: 30%;
             margin: 10px 12px 0;
+
             .area {
               display: flex;
               height: calc(100% - 28px);
+
               .chart {
                 width: 40%;
-                > div {
+
+                >div {
                   display: flex;
                   align-items: center;
                 }
               }
+
               .data {
                 width: 60%;
                 margin: 16px 0;
                 font-size: 12px;
               }
             }
+
             .chart1 {
               .data {
                 color: #adc8cd;
                 display: flex;
                 flex-direction: column;
                 justify-content: space-around;
+
                 .item {
                   display: flex;
                   align-items: center;
+
                   .dot {
                     margin: 2px 12px 0px;
                     width: 5px;
@@ -1266,28 +1406,34 @@ export default {
                     border-radius: 50%;
                     background: rgb(5, 87, 173);
                   }
+
                   .text {
                     width: 100px;
                   }
+
                   span {
                     color: #00c6ff;
                   }
                 }
               }
             }
+
             .chart2 {
               .data {
                 display: flex;
                 flex-direction: column;
                 justify-content: space-evenly;
                 color: #adc8cd;
+
                 .item {
                   width: 100%;
                   display: flex;
                   justify-content: space-between;
+
                   .left {
                     display: flex;
                     align-items: center;
+
                     .dot {
                       margin: 0px 12px;
                       width: 5px;
@@ -1296,19 +1442,23 @@ export default {
                       background: #ff0000;
                     }
                   }
+
                   .right {
                     color: #fc6501;
                     cursor: pointer;
+
                     span {
                       text-decoration: underline;
                     }
                   }
                 }
+
                 .item:nth-child(2) {
                   .dot {
                     background-color: #ff8a00;
                   }
                 }
+
                 .item:nth-child(3) {
                   .dot {
                     background-color: #ebce41;
@@ -1316,15 +1466,18 @@ export default {
                 }
               }
             }
+
             .chart3 {
               .data {
                 display: flex;
                 flex-direction: column;
                 justify-content: space-evenly;
                 color: #adc8cd;
+
                 .item {
                   .left {
                     display: flex;
+
                     .dot {
                       margin: 2px 12px 0px;
                       width: 5px;
@@ -1338,30 +1491,36 @@ export default {
             }
           }
         }
+
         .rightBottom {
           margin-top: 10px;
           width: 304px;
           height: calc(25% - 10px);
           background-size: 4.8%;
+
           .content {
             margin: 10px 12px 0;
             height: 100%;
+
             .data {
               height: calc(100% - 46px);
               display: flex;
               flex-direction: column;
               font-size: 12px;
               justify-content: space-evenly;
+
               .expireTimeContent {
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
                 margin: 0 10px;
+
                 .expireTimeItem {
                   display: flex;
                   align-items: center;
                   color: #adc8cd;
                 }
+
                 .expireTimeItem::before {
                   content: "";
                   display: block;
@@ -1372,21 +1531,43 @@ export default {
                   height: 20px;
                   background-position: 0 50%;
                   background-size: 100%;
-                  background-image: url("@/assets/images/kzuqi/baoxian.png");
+                  background-image: url("@/assets/images/kzuqi/icon1.png");
                 }
+
                 .expireTimeCount {
                   margin-right: 20px;
                   color: #fc6501;
                   cursor: pointer;
+
                   .linkLine {
                     text-decoration: underline;
                   }
                 }
               }
+
+              .expireTimeContent:nth-child(2) {
+                .expireTimeItem::before {
+                  background-image: url("@/assets/images/kzuqi/icon2.png");
+                }
+              }
+
+              .expireTimeContent:nth-child(3) {
+                .expireTimeItem::before {
+                  background-image: url("@/assets/images/kzuqi/icon3.png");
+                }
+              }
+
+              .expireTimeContent:nth-child(4) {
+                .expireTimeItem::before {
+                  background-image: url("@/assets/images/kzuqi/icon4.png");
+                }
+              }
             }
+
             .el-carousel__arrow--left {
               left: -14px;
             }
+
             .el-carousel__arrow--right {
               right: -6px;
             }
@@ -1394,6 +1575,7 @@ export default {
         }
       }
     }
+
     .map {
       position: absolute;
       left: 0;
