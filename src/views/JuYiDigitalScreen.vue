@@ -10,7 +10,11 @@
       </div>
       <div class="showTime" style="display: flex">
         <span class="time" title="当前时间"></span>
-        <FuncBtn :isScreen="true" id="fullScreen" title="全屏/退出全屏"></FuncBtn>
+        <FuncBtn
+          :isScreen="true"
+          id="fullScreen"
+          title="全屏/退出全屏"
+        ></FuncBtn>
       </div>
     </header>
     <!-- 页面主体部分 -->
@@ -18,21 +22,40 @@
       <div class="leftTree" v-show="hideLeftTree">
         <div class="leftTreeContent borderImg">
           <div class="leftTreeTop">
-            <el-input placeholder="搜索设备" clearable suffix-icon="el-icon-search" v-model="searchInput"
-              :class="searchInput === '' ? '' : 'hasContent'">
+            <el-input
+              placeholder="搜索设备"
+              clearable
+              suffix-icon="el-icon-search"
+              v-model="searchInput"
+              :class="searchInput === '' ? '' : 'hasContent'"
+            >
             </el-input>
           </div>
           <div class="leftTreeBottom">
-            <div class="equipmentItem textFont14" v-for="(item, index) in deviceList" :key="index"
-              v-show="item.name.indexOf(searchInput) > -1">
-              <div class="itemContent" @click="checked(index)" :class="checkedIndex == index ? 'checked' : ''">
-                <div :style="
-                  item.onlineStatus == '1' ? '' : 'background: #5e5e5f;'
-                " class="prevIconOnline"></div>
+            <div
+              class="equipmentItem textFont14"
+              v-for="(item, index) in deviceList"
+              :key="index"
+              v-show="item.name.indexOf(searchInput) > -1"
+            >
+              <div
+                class="itemContent"
+                @click="checked(index)"
+                :class="checkedIndex == index ? 'checked' : ''"
+              >
+                <div
+                  :style="
+                    item.onlineStatus == '1' ? '' : 'background: #5e5e5f;'
+                  "
+                  class="prevIconOnline"
+                ></div>
                 <div>
                   <span>{{ item.name }}</span>
-                  <i v-if="item.hasVideo" :style="item.videoStatus == 0 ? 'color:#5e5e5f;' : ''"
-                    class="el-icon-video-camera-solid videoOnlineClass"></i>
+                  <i
+                    v-if="item.hasVideo"
+                    :style="item.videoStatus == 0 ? 'color:#5e5e5f;' : ''"
+                    class="el-icon-video-camera-solid videoOnlineClass"
+                  ></i>
                 </div>
               </div>
             </div>
@@ -70,12 +93,23 @@
               </div>
               <div class="splitLine"></div>
               <div class="video" v-if="checkDevice.videoStatus">
-                <el-radio-group v-model="channel" class="channel-content" @change="initVideo()">
-                  <el-radio-button v-for="(aisle, index) in VideoChannelState.slice(0, 8)" :label="index + 1"
-                    :key="index" :class="aisle == '1' ? 'channel-disabled' : ''">
-                    <p class="dot" :style="
-                      'background:' + (aisle == '0' ? '#13ca40' : '#d8d8d8')
-                    "></p>
+                <el-radio-group
+                  v-model="channel"
+                  class="channel-content"
+                  @change="initVideo()"
+                >
+                  <el-radio-button
+                    v-for="(aisle, index) in VideoChannelState.slice(0, 8)"
+                    :label="index + 1"
+                    :key="index"
+                    :class="aisle == '1' ? 'channel-disabled' : ''"
+                  >
+                    <p
+                      class="dot"
+                      :style="
+                        'background:' + (aisle == '0' ? '#13ca40' : '#d8d8d8')
+                      "
+                    ></p>
                     通道{{ index + 1 }}
                   </el-radio-button>
                 </el-radio-group>
@@ -424,7 +458,12 @@
           </div>
           <div class="rightBottom borderImg">
             <div class="content">
-              <el-carousel :autoplay="false" :interval="3000" arrow="always" height="150px">
+              <el-carousel
+                :autoplay="false"
+                :interval="3000"
+                arrow="always"
+                height="150px"
+              >
                 <el-carousel-item>
                   <div class="title textFont16">
                     <i class="el-icon-s-tools"></i>
@@ -530,7 +569,11 @@
         </div>
       </div>
       <div class="map">
-        <ScreenMap @deviceData="getdeviceData(arguments)" :deviceList="deviceList" :device="checkDevice"></ScreenMap>
+        <ScreenMap
+          @deviceData="getdeviceData(arguments)"
+          :deviceList="deviceList"
+          :device="checkDevice"
+        ></ScreenMap>
       </div>
     </div>
   </div>
@@ -655,11 +698,9 @@ export default {
           this.$api
             .getvideoPlay(this.checkDevice.equipmentNo, this.channel)
             .then((val) => {
-              this.stopHeartBeat(this.oldChannel) //停止上一个视频的心跳
               let data = val.data.data.split("|");
               this.videosrc = data[1];
-              this.setHeartBeat(data[2], this.channel);
-              this.oldChannel = this.channel //记录这一次的视频通道
+              // this.setHeartBeat(data[2]);
             });
         });
       }
@@ -896,7 +937,6 @@ export default {
 
         .el-input {
           display: block;
-
           .el-input__inner {
             height: 28px;
             color: rgba(173, 200, 205, 0.4);
@@ -905,12 +945,10 @@ export default {
             border-radius: 14px;
             padding: 0 30px 0 12px;
           }
-
           .el-input__icon {
             line-height: normal;
           }
         }
-
         .hasContent {
           .el-icon-search {
             display: none;
@@ -1119,14 +1157,12 @@ export default {
                 }
               }
             }
-
             .noVideo {
               height: 55%;
               display: flex;
               flex-direction: column;
               justify-content: center;
               align-items: center;
-
               .videoStatus,
               .hasVideo {
                 margin: 0 auto;
@@ -1135,25 +1171,21 @@ export default {
                 background-size: 100%;
                 background-repeat: no-repeat;
               }
-
               .videoStatus {
                 background-image: url("@/assets/images/kzuqi/noVideoOnline.png");
               }
-
               .hasVideo {
                 width: 150px;
                 height: 100px;
                 margin-bottom: 20px;
                 background-image: url("@/assets/images/kzuqi/noVideo.png");
               }
-
               p {
                 text-align: center;
                 color: rgba(173, 200, 205, 0.6);
                 font-size: 12px;
               }
             }
-
             .location {
               margin-top: 2.2px;
               padding-bottom: 2.3px;
@@ -1218,7 +1250,6 @@ export default {
                 border: 1px solid rgba(0, 198, 255, 0.5);
                 border-radius: 6.12px;
                 background-color: #000002;
-
                 .mark {
                   margin: 0;
                   padding: 1.8px 1px;
@@ -1550,13 +1581,11 @@ export default {
                   background-image: url("@/assets/images/kzuqi/icon2.png");
                 }
               }
-
               .expireTimeContent:nth-child(3) {
                 .expireTimeItem::before {
                   background-image: url("@/assets/images/kzuqi/icon3.png");
                 }
               }
-
               .expireTimeContent:nth-child(4) {
                 .expireTimeItem::before {
                   background-image: url("@/assets/images/kzuqi/icon4.png");
