@@ -431,8 +431,8 @@ export default {
       this.BMap = BMap;
       // 保存地图对象
       this.Map = map;
-      // this.centerPoint.lng = 106.317788;
-      // this.centerPoint.lat = 35.923493;
+      this.centerPoint.lng = 120;
+      this.centerPoint.lat = 36;
     },
     // 判断数据是否获取成功，成功则存入，不成功则弹出错误，登录失效则返回登录页面
     judgeResponse(response, storageName) {

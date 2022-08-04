@@ -27,16 +27,16 @@
           <el-tabs type="border-card">
             <el-tab-pane label="全部设备">
 
-
-              <el-table :data="tableData" style="width: 100%" stripe>
+              <!-- height: calc(100vh - 295px) -->
+              <el-table :data="deviceList" style="width: 100%;;" stripe :height="'calc(100vh - 295px)'">
                 <el-table-column type="selection" width="55">
                 </el-table-column>
 
-                <el-table-column prop="num" label="序号" width="50">
+                <el-table-column prop="actualReceipts" label="序号" width="50">
                 </el-table-column>
                 <el-table-column prop="name" label="设备名称" width="120">
                 </el-table-column>
-                <el-table-column prop="plateNo" label="车牌号" width="120">
+                <el-table-column prop="equipmentNo" label="设备编号" width="150">
                 </el-table-column>
                 <el-table-column prop="typeLabel" label="设备类型">
                 </el-table-column>
@@ -55,7 +55,8 @@
 
 
             </el-tab-pane>
-            <el-pagination background layout="prev, pager, next" :total="1000">
+            <el-pagination background layout="prev, pager, next" @current-change="currentChange" :total="total"
+              :page-count="pages" :current-page="pageNum" :page-size="pageSize">
             </el-pagination>
           </el-tabs>
 
@@ -70,81 +71,36 @@
 export default {
   data() {
     return {
-      tableData: [{
-        num: '1',
-        name: '214',
-        plateNo: '',
-        typeLabel: '履带式起重机',
-        modelLabel: '260T',
-        carStatusLabel: '工作中',
-        leaseStatusLabel: '闲置',
-        address: '上海市普陀区金沙江路 1518 弄8',
-        operate: '查看详情'
-      }, {
-        num: '1',
-        name: '214',
-        plateNo: '',
-        typeLabel: '履带式起重机',
-        modelLabel: '260T',
-        carStatusLabel: '工作中',
-        leaseStatusLabel: '闲置',
-        address: '上海市普陀区金沙江路 1518 弄8',
-        operate: '查看详情'
-      }, {
-        num: '1',
-        name: '214',
-        plateNo: '',
-        typeLabel: '履带式起重机',
-        modelLabel: '260T',
-        carStatusLabel: '工作中',
-        leaseStatusLabel: '闲置',
-        address: '上海市普陀区金沙江路 1518 弄8',
-        operate: '查看详情'
-      }, {
-        num: '1',
-        name: '214',
-        plateNo: '',
-        typeLabel: '履带式起重机',
-        modelLabel: '260T',
-        carStatusLabel: '工作中',
-        leaseStatusLabel: '闲置',
-        address: '上海市普陀区金沙江路 1518 弄8',
-        operate: '查看详情'
-      }, {
-        num: '1',
-        name: '214',
-        plateNo: '',
-        typeLabel: '履带式起重机',
-        modelLabel: '260T',
-        carStatusLabel: '工作中',
-        leaseStatusLabel: '闲置',
-        address: '上海市普陀区金沙江路 1518 弄8',
-        operate: '查看详情'
-      }, {
-        num: '1',
-        name: '214',
-        plateNo: '',
-        typeLabel: '履带式起重机',
-        modelLabel: '260T',
-        carStatusLabel: '工作中',
-        leaseStatusLabel: '闲置',
-        address: '上海市普陀区金沙江路 1518 弄8',
-        operate: '查看详情'
-      }, {
-        num: '1',
-        name: '214',
-        plateNo: '',
-        typeLabel: '履带式起重机',
-        modelLabel: '260T',
-        carStatusLabel: '工作中',
-        leaseStatusLabel: '闲置',
-        address: '上海市普陀区金沙江路 1518 弄8',
-        operate: '查看详情'
-      }],
+      // 总数据条目
+      total: 0,
+      // 是否有下一页
+      hasNextPage: 0,
+      // 当前数据页数
+      pageNum: 1,
+      // 每一页数据长度
+      pageSize: 15,
+      // 当前数据长度共有多少页数据
+      pages: 0,
+      // 设备列表
+      deviceList: [],
       multipleSelection: []
     }
   },
   methods: {
+    currentChange() {
+      console.log('this.pageNum', this.currentPage)
+    },
+    initDeviceList() {
+      this.$api.getselectList(1, 15).then(val => {
+        let deviceList = val.data.data;
+        this.total = deviceList.total;
+        this.pages = deviceList.pages;
+        this.pageSize = deviceList.pageSize;
+        this.pageNum = deviceList.pageNum;
+        this.deviceList = deviceList.rows;
+        console.log('deviceList', deviceList)
+      });
+    },
     toggleSelection(rows) {
       if (rows) {
         rows.forEach(row => {
@@ -155,8 +111,12 @@ export default {
       }
     },
     handleSelectionChange(val) {
+      console.log(val);
       this.multipleSelection = val;
     }
+  },
+  created() {
+    this.initDeviceList();
   }
 }
 </script>
@@ -310,10 +270,21 @@ export default {
           position: absolute;
           right: 20px;
           top: 5px;
-          z-index: 999999;
+          z-index: 9;
+        }
+
+        .el-tabs {
+          .el-tabs__content {
+            display: flex;
+            // align-items: flex-end;
+            flex-direction: column;
+
+            .el-pagination.is-background {
+              margin-top: 10px;
+            }
+          }
         }
       }
-
     }
   }
 }

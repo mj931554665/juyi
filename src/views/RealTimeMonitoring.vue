@@ -163,11 +163,11 @@ export default {
       this.stopHeartBeat(index)
       --index
       let refInfo = this.$refs['screen' + index]
-      alert(index)
-      if (refInfo[0]) {
-        alert(index)
-        refInfo[0].stop() //视频终止
-      }
+      // alert(index)
+      // if (refInfo[0]) {
+      //   alert(index)
+      //   refInfo[0].stop() //视频终止
+      // }
     }
   },
   methods: {

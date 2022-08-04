@@ -24,10 +24,16 @@ export default {
   data() {
     return {
       loginForm: {
+        username: '',
+        password: ''
         // username: 'shuju',
         // password: 'Shuju1234'
-        username: 'moj1',
-        password: 'lk8wmp3A'
+        // username: 'moj1',
+        // password: '12345678Mj'
+        // username: 'juyi010',
+        // password: 'xiaoCAI1101'
+        // username: 'kaif11',
+        // password: '12345678Aa'
       },
       errMsg: '',
       responseResult: []
