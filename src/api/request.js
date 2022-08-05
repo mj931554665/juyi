@@ -1,24 +1,27 @@
 import axios from "./axios";
 
 export default {
-  // 判断数据是否获取成功，成功则存入，不成功则弹出错误，登录失效则返回登录页面
-  judgeResponse(response, storageName) {
-    if (response.data.code === 200) {
-      localStorage.setItem(storageName, JSON.stringify(response.data.data));
-    } else if (response.data.code === 401) {
-      this.$notify.error({
-        title: response.data.code + " 错误",
-        message: response.data.message,
-      });
-      this.$router.replace({ path: "/login" });
-    } else {
-      this.$notify({
-        title: response.data.code + " 警告",
-        message: response.data.message,
-        type: "warning",
-        duration: 0,
-      });
-    }
+  // 实时刷新判断用户是否账号在线
+  refreshSession(that) {
+    axios.get('/refreshSession').then(response => {
+      if (response.data.code === 200) {
+        console.log('刷新成功', response.data.data)
+      } else if (response.data.code === 401) {
+        console.log('失败失败', that)
+        that.$notify.error({
+          title: response.data.code + " 错误",
+          message: response.data.message,
+        });
+        that.$router.replace({ path: "/login" });
+      } else {
+        that.$notify({
+          title: response.data.code + " 警告",
+          message: response.data.message,
+          type: "warning",
+          duration: 0,
+        });
+      }
+    })
   },
   // 登录接口
   getLogin(username, password) {
@@ -57,8 +60,8 @@ export default {
   // 获取大屏设备列表数据
   getcustomerScreen(pageNum, pageSize) {
     return axios.post('/customerScreen/equipments', {
-      'pageNum':pageNum,
-      'pageSize':pageSize
+      'pageNum': pageNum,
+      'pageSize': pageSize
     })
   },
   // 2.16-设备详细信息（获取id
@@ -90,7 +93,7 @@ export default {
     })
   },
   // 2.7-实时视频地址获取（新天眼）
-  getvideoPlay(vehicleCode,channel,clarity) {
+  getvideoPlay(vehicleCode, channel, clarity) {
     return axios.get('/cranecloud/videoClient/videoPlay', {
       params: {
         // 整车编号

@@ -164,10 +164,7 @@
         </div>
       </div>
     </el-card>
-    <TableInfo
-      :onlineStatus="onlineStatus"
-      :deviceList="deviceList"
-    ></TableInfo>
+    <TableInfo></TableInfo>
   </div>
 </template>
 
@@ -390,8 +387,7 @@ export default {
       targetDisplayName: "图标+设备名称",
 
       //`````api接口获取的数据````````````````````````
-      onlineStatus: JSON.parse(localStorage.getItem("Home_onlineStatus")),
-      deviceList: JSON.parse(localStorage.getItem("Home_deviceList")),
+      deviceList: [],
       // 地图类
       BMap: "",
       // 地图对象
@@ -434,50 +430,14 @@ export default {
       this.centerPoint.lng = 120;
       this.centerPoint.lat = 36;
     },
-    // 判断数据是否获取成功，成功则存入，不成功则弹出错误，登录失效则返回登录页面
-    judgeResponse(response, storageName) {
-      if (response.data.code === 200) {
-        localStorage.setItem(storageName, JSON.stringify(response.data.data));
-      } else if (response.data.code === 401) {
-        this.$notify.error({
-          title: response.data.code + " 错误",
-          message: response.data.message,
-        });
-        this.$router.replace({ path: "/login" });
-      } else {
-        this.$notify({
-          title: response.data.code + " 警告",
-          message: response.data.message,
-          type: "warning",
-          duration: 0,
-        });
-      }
-    },
-    // 获取设备定位数
-    async getEquipmentAmountByLocated() {
-      let locationStateNum = await this.$api.getEquipmentAmountByLocated();
-      this.judgeResponse(locationStateNum, "Home_locationStateNum");
-    },
-    // 获取设备总数
-    async getTotalDevicesNum() {
-      let locationStateNum = await this.$api.getEquipmentAmountByType();
-      this.judgeResponse(locationStateNum, "Home_totalDevicesNum");
-    },
-    // 获取设备上线，风险，定位数据 函数
-    async getonlineStatus() {
-      let onlineStatus = await this.$api.getonlineStatus();
-      // 传入判断响应是否成功的函数进行判断
-      this.judgeResponse(onlineStatus, "Home_onlineStatus");
-    },
     // 获取设备列表数据
-    async getqueryEquipmentsByPage() {
+    getqueryEquipmentsByPage() {
       // 获取已定位的设备总数显示在地图上
-      let amount =
-        this.onlineStatus[0].amount + this.onlineStatus[1].amount + 1 + "";
-      // 传入在线设备数据获取定位设备列表
-      let deviceList = await this.$api.getqueryEquipmentsByPage("0", amount);
-      // 传入判断响应是否成功的函数进行判断
-      this.judgeResponse(deviceList, "Home_deviceList");
+      this.$api.getqueryEquipmentsByPage("0", "9999").then((val) => {
+        this.deviceList = val.data.data;
+        // 渲染地图上面的数据
+        this.renderMap();
+      });
     },
     // 渲染地图上面的数据
     renderMap() {
@@ -576,13 +536,6 @@ export default {
       // 打开信息窗口
       this.infoWindow.show = true;
     },
-    // 筛选的函数，没有用
-    filterList() {
-      // 获取设备列表数据
-      // let deviceList = this.deviceList.rows;
-      // 暂时留数据，后续如需更改可以使用，下拉式搜索数据
-      // this.deviceNameAndNumber = this.deviceList.rows;
-    },
     // 清空自定义吨位数据
     emptyModelLabe() {
       // 清空原本数据
@@ -615,18 +568,26 @@ export default {
     },
   },
   created() {
-    // 获取设备上线，风险，故障，定位数据
-    this.getonlineStatus();
     // 获取设备列表
     this.getqueryEquipmentsByPage();
-    // 获取设备总数
-    this.getTotalDevicesNum();
-    // 获取定位设备数
-    this.getEquipmentAmountByLocated();
-    // 根据设备列表添加筛选选项
-    this.filterList();
-    // 渲染地图上面的数据
-    this.renderMap();
+
+
+    this.$api.refreshSession(this);
+    // let that = this;
+    // (function () {
+    //   let event = setTimeout(refresh, 1000);
+
+    //   Vue.set(that.timeEvent,channel,event)
+    //   function refresh() {
+    //     that.$api.refreshSession(that);
+    //     event = setTimeout(refresh, 1000); //设定定时器，循环运行
+    //     Vue.set(that.refreshEvent, event);
+    //   }
+    // })();
+  },
+  deactivated() {
+    // console.log('this.refreshEvent',this.refreshEvent);
+    // clearTimeout(this.refreshEvent); //清除定时器
   },
 };
 </script>

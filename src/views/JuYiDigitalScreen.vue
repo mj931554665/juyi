@@ -1,8 +1,11 @@
 <template>
   <div class="DigitalScreen">
     <header>
-      <div class="headerLeftShow" @click="hideLeftTree = !hideLeftTree" :class="hideLeftTree ? '' : 'leftTreehide'">
-      </div>
+      <div
+        class="headerLeftShow"
+        @click="hideLeftTree = !hideLeftTree"
+        :class="hideLeftTree ? '' : 'leftTreehide'"
+      ></div>
       <div class="headerTitle">
         <div>
           <div class="title">钜亿安全监控大屏</div>
@@ -10,7 +13,11 @@
       </div>
       <div class="showTime" style="display: flex">
         <span class="time" title="当前时间"></span>
-        <FuncBtn :isScreen="true" id="fullScreen" title="全屏/退出全屏"></FuncBtn>
+        <FuncBtn
+          :isScreen="true"
+          id="fullScreen"
+          title="全屏/退出全屏"
+        ></FuncBtn>
       </div>
     </header>
     <!-- 页面主体部分 -->
@@ -18,21 +25,40 @@
       <div class="leftTree" v-show="hideLeftTree">
         <div class="leftTreeContent borderImg">
           <div class="leftTreeTop">
-            <el-input placeholder="搜索设备" clearable suffix-icon="el-icon-search" v-model="searchInput"
-              :class="searchInput === '' ? '' : 'hasContent'">
+            <el-input
+              placeholder="搜索设备"
+              clearable
+              suffix-icon="el-icon-search"
+              v-model="searchInput"
+              :class="searchInput === '' ? '' : 'hasContent'"
+            >
             </el-input>
           </div>
           <div class="leftTreeBottom">
-            <div class="equipmentItem textFont14" v-for="(item, index) in deviceList" :key="index"
-              v-show="item.name.indexOf(searchInput) > -1">
-              <div class="itemContent" @click="checked(index)" :class="checkedIndex == index ? 'checked' : ''">
-                <div :style="
-                  item.onlineStatus == '1' ? '' : 'background: #5e5e5f;'
-                " class="prevIconOnline"></div>
+            <div
+              class="equipmentItem textFont14"
+              v-for="(item, index) in deviceList"
+              :key="index"
+              v-show="item.name.indexOf(searchInput) > -1"
+            >
+              <div
+                class="itemContent"
+                @click="checked(index)"
+                :class="checkedIndex == index ? 'checked' : ''"
+              >
+                <div
+                  :style="
+                    item.onlineStatus == '1' ? '' : 'background: #5e5e5f;'
+                  "
+                  class="prevIconOnline"
+                ></div>
                 <div>
                   <span>{{ item.name }}</span>
-                  <i v-if="item.hasVideo" :style="item.videoStatus == 0 ? 'color:#5e5e5f;' : ''"
-                    class="el-icon-video-camera-solid videoOnlineClass"></i>
+                  <i
+                    v-if="item.hasVideo"
+                    :style="item.videoStatus == 0 ? 'color:#5e5e5f;' : ''"
+                    class="el-icon-video-camera-solid videoOnlineClass"
+                  ></i>
                 </div>
               </div>
             </div>
@@ -43,7 +69,10 @@
         <div class="leftScreen">
           <div class="leftTop borderImg">
             <div class="leftTopContent">
-              <div class="equipmentName textFont16" style="display: flex; align-items: center">
+              <div
+                class="equipmentName textFont16"
+                style="display: flex; align-items: center"
+              >
                 <i class="el-icon-s-tools"></i>
                 <span>{{ checkDevice.name }}</span>
                 <!-- <i class="el-icon-microphone"></i> -->
@@ -70,12 +99,23 @@
               </div>
               <div class="splitLine"></div>
               <div class="video" v-if="checkDevice.videoStatus">
-                <el-radio-group v-model="channel" class="channel-content" @change="initVideo()">
-                  <el-radio-button v-for="(aisle, index) in VideoChannelState.slice(0, 8)" :label="index + 1"
-                    :key="index" :class="aisle == '1' ? 'channel-disabled' : ''">
-                    <p class="dot" :style="
-                      'background:' + (aisle == '0' ? '#13ca40' : '#d8d8d8')
-                    "></p>
+                <el-radio-group
+                  v-model="channel"
+                  class="channel-content"
+                  @change="initVideo()"
+                >
+                  <el-radio-button
+                    v-for="(aisle, index) in VideoChannelState.slice(0, 8)"
+                    :label="index + 1"
+                    :key="index"
+                    :class="aisle == '1' ? 'channel-disabled' : ''"
+                  >
+                    <p
+                      class="dot"
+                      :style="
+                        'background:' + (aisle == '0' ? '#13ca40' : '#d8d8d8')
+                      "
+                    ></p>
                     通道{{ index + 1 }}
                   </el-radio-button>
                 </el-radio-group>
@@ -104,7 +144,10 @@
                 </div>
                 <div>
                   <div class="addressIcon"></div>
-                  <div :title="checkDevice.address" class="address nowrapText textColor textNowarp">
+                  <div
+                    :title="checkDevice.address"
+                    class="address nowrapText textColor textNowarp"
+                  >
                     {{ checkDevice.address }}
                   </div>
                 </div>
@@ -117,7 +160,7 @@
                   <span class="mark">{{ checkDevice.modelLabel }}</span>
                   <span class="mark">{{ checkDevice.typeLabel }}</span>
                   <span class="mark">{{
-                      checkDevice.equipmentBrandLabel
+                    checkDevice.equipmentBrandLabel
                   }}</span>
                 </div>
                 <div class="operator">
@@ -137,7 +180,12 @@
                 </div>
                 <div class="splitLine"></div>
                 <div class="workingCondition">
-                  <el-carousel :interval="5000" arrow="always" indicator-position="outside" height="100px">
+                  <el-carousel
+                    :interval="5000"
+                    arrow="always"
+                    indicator-position="outside"
+                    height="100px"
+                  >
                     <el-carousel-item>
                       <div class="dataArea">
                         <div class="panel">
@@ -154,7 +202,7 @@
                             <p><span>主钩实重</span></p>
                             <h6>
                               {{
-                                  workConditionData.mainHookActualWeight
+                                workConditionData.mainHookActualWeight
                               }}&nbsp;t
                             </h6>
                           </div>
@@ -179,7 +227,7 @@
                             <p><span>副钩额重</span></p>
                             <h6>
                               {{
-                                  workConditionData.slaveHookRatedWeight
+                                workConditionData.slaveHookRatedWeight
                               }}&nbsp;t
                             </h6>
                           </div>
@@ -190,7 +238,7 @@
                             <p><span>副钩实重</span></p>
                             <h6>
                               {{
-                                  workConditionData.slaveHookActualWeight
+                                workConditionData.slaveHookActualWeight
                               }}&nbsp;t
                             </h6>
                           </div>
@@ -228,7 +276,7 @@
                             <p><span>力矩百分比</span></p>
                             <h6>
                               {{
-                                  workConditionData.torquePercent
+                                workConditionData.torquePercent
                               }}%&nbsp;(负载率)
                             </h6>
                           </div>
@@ -284,7 +332,11 @@
                 </div>
                 <div class="splitLine"></div>
                 <div class="weekAnalysisData">
-                  <EchartsComp :options="chart1_option" :width="'298px'" :minHeight="'146px'"></EchartsComp>
+                  <EchartsComp
+                    :options="chart1_option"
+                    :width="'298px'"
+                    :minHeight="'146px'"
+                  ></EchartsComp>
                 </div>
               </div>
             </div>
@@ -318,7 +370,11 @@
               <div class="splitLine"></div>
               <div class="area chart1">
                 <div class="chart">
-                  <EchartsComp :options="chart2_option" :width="'112px'" :minHeight="'121px'"></EchartsComp>
+                  <EchartsComp
+                    :options="chart2_option"
+                    :width="'112px'"
+                    :minHeight="'121px'"
+                  ></EchartsComp>
                 </div>
                 <div class="data">
                   <div class="item">
@@ -353,7 +409,11 @@
               <div class="splitLine"></div>
               <div class="area chart2">
                 <div class="chart">
-                  <EchartsComp :options="chart3_option" :width="'112px'" :minHeight="'121px'"></EchartsComp>
+                  <EchartsComp
+                    :options="chart3_option"
+                    :width="'112px'"
+                    :minHeight="'121px'"
+                  ></EchartsComp>
                 </div>
                 <div class="data">
                   <div class="item">
@@ -397,7 +457,11 @@
               <div class="splitLine"></div>
               <div class="area chart3">
                 <div class="chart">
-                  <EchartsComp :options="chart4_option" :width="'112px'" :minHeight="'121px'"></EchartsComp>
+                  <EchartsComp
+                    :options="chart4_option"
+                    :width="'112px'"
+                    :minHeight="'121px'"
+                  ></EchartsComp>
                 </div>
                 <div class="data">
                   <div class="item">
@@ -424,7 +488,12 @@
           </div>
           <div class="rightBottom borderImg">
             <div class="content">
-              <el-carousel :autoplay="false" :interval="3000" arrow="always" height="150px">
+              <el-carousel
+                :autoplay="false"
+                :interval="3000"
+                arrow="always"
+                height="150px"
+              >
                 <el-carousel-item>
                   <div class="title textFont16">
                     <i class="el-icon-s-tools"></i>
@@ -530,7 +599,11 @@
         </div>
       </div>
       <div class="map">
-        <ScreenMap @deviceData="getdeviceData(arguments)" :deviceList="deviceList" :device="checkDevice"></ScreenMap>
+        <ScreenMap
+          @deviceData="getdeviceData(arguments)"
+          :deviceList="deviceList"
+          :device="checkDevice"
+        ></ScreenMap>
       </div>
     </div>
   </div>
@@ -600,7 +673,7 @@ export default {
     };
   },
   destroyed() {
-    this.stopHeartBeat(this.oldChannel)
+    this.stopHeartBeat(this.oldChannel);
   },
   methods: {
     // 点击地图切换设备传入的值为 id,index（子传父
@@ -655,11 +728,11 @@ export default {
           this.$api
             .getvideoPlay(this.checkDevice.equipmentNo, this.channel)
             .then((val) => {
-              this.stopHeartBeat(this.oldChannel);//停止上一个视频的心跳
+              this.stopHeartBeat(this.oldChannel); //停止上一个视频的心跳
               let data = val.data.data.split("|");
               this.videosrc = data[1];
               this.setHeartBeat(data[2], this.channel);
-              this.oldChannel = this.channel //记录这一次的视频通道
+              this.oldChannel = this.channel; //记录这一次的视频通道
             });
         });
       }
@@ -708,6 +781,7 @@ export default {
         let s = dt.getSeconds(); //获取秒
         document.querySelector(".time").innerHTML =
           y + "-" + mt + "-" + day + " -" + h + ":" + m + ":" + s;
+          t = setTimeout(time, 1000); //设定定时器，循环运行
       }
     })();
     this.initData();
@@ -728,7 +802,7 @@ export default {
   letter-spacing: 1px;
 
   // 去除百度logo
-  .anchorBL>a>img {
+  .anchorBL > a > img {
     display: none;
   }
 
@@ -816,7 +890,7 @@ export default {
       background-repeat: no-repeat;
       background-size: 100% 100%;
 
-      >div {
+      > div {
         position: absolute;
         left: 50%;
         -webkit-transform: translate(-50%);
@@ -878,7 +952,7 @@ export default {
       align-items: center;
     }
 
-    .title>i {
+    .title > i {
       font-size: 16px;
     }
 
@@ -1159,7 +1233,7 @@ export default {
               padding-bottom: 2.3px;
               border-bottom: 0.8px solid rgba(0, 198, 255, 0.3);
 
-              >div {
+              > div {
                 display: flex;
                 line-height: 18.5px;
               }
@@ -1189,7 +1263,7 @@ export default {
               flex-direction: column;
               justify-content: space-evenly;
 
-              >div {
+              > div {
                 display: flex;
                 line-height: 16px;
               }
@@ -1242,7 +1316,7 @@ export default {
             height: 100%;
             margin: 10px;
 
-            >div {
+            > div {
               height: calc(50% - 20px);
             }
 
@@ -1288,7 +1362,7 @@ export default {
                     justify-content: space-between;
                     flex-direction: column;
 
-                    >p {
+                    > p {
                       margin-bottom: 5px;
                     }
                   }
@@ -1375,7 +1449,7 @@ export default {
               .chart {
                 width: 40%;
 
-                >div {
+                > div {
                   display: flex;
                   align-items: center;
                 }

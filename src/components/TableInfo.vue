@@ -1,5 +1,5 @@
 <template>
-  <div class="table-info">
+  <div class="table-info" v-if="isshow">
     <!-- 右侧 -->
     <div class="data_display">
       <!-- 上面的功能按钮 -->
@@ -22,17 +22,13 @@
             </div>
             <!-- 网页全屏按钮 -->
             <FuncBtn :isScreen="true" :isShadow="true"></FuncBtn>
-            <!-- 跳转数字大屏 -->
-            <FuncBtn :isShadow="true">
-              <span slot="content" @click="screenRule">数字大屏</span>
-            </FuncBtn>
             <!-- 退出登录，或者用户操作按钮 -->
             <div @click="LoginOut">
               <FuncBtn :isShadow="true">
-                <div slot="content" style="display: flex">
+                <div slot="content" style="display: flex;align-items: center;">
                   <i class="el-icon-s-custom"></i>
                   <div style="margin-left: 5px" class="username">
-                    {{
+                    用户名：{{
                       userInfo.user.userName
                         ? userInfo.user.userName
                         : "noUserName"
@@ -50,19 +46,19 @@
         <FloatCard>
           <span slot="header">设备在线统计</span>
           <div slot="content" class="onlineStatus">
-            <div style="display: flex;justify-content: space-between;">
+            <div style="display: flex; justify-content: space-between">
               <div>
-              <i class="el-icon-success" style="color: #00d893"></i>
-              <span
-                >在线设备：<span>{{ onlineStatus[1].amount }}</span></span
-              >
-            </div>
-            <div>
-              <i class="el-icon-remove" style="color: gray"></i>
-              <span
-                >离线设备：<span>{{ onlineStatus[0].amount }}</span></span
-              >
-            </div>
+                <i class="el-icon-success" style="color: #00d893"></i>
+                <span
+                  >在线设备：<span>{{ onlineStatus[1].amount }}</span></span
+                >
+              </div>
+              <div>
+                <i class="el-icon-remove" style="color: gray"></i>
+                <span
+                  >离线设备：<span>{{ onlineStatus[0].amount }}</span></span
+                >
+              </div>
             </div>
             <br />
             <br />
@@ -184,26 +180,54 @@ export default {
   },
   data() {
     return {
+      // 整个页面是否显示（未获取到数据就暂时不显示
+      isshow: false,
+      // 卡片折叠功能
       showContent: true,
-      totalDevicesNum: JSON.parse(localStorage.getItem("Home_totalDevicesNum")),
+      // 设备在线状态
+      onlineStatus: [],
+      // 用户名
       userInfo: JSON.parse(localStorage.getItem("Login_userInfo")),
-      locationStateNum: JSON.parse(
-        localStorage.getItem("Home_locationStateNum")
-      ),
+      // 设备总数
+      totalDevicesNum: {},
+      // 定位设备的数量
+      locationStateNum: [],
+      // 有监控终端的数量
       hasVideoNum: 0,
+      // 开工设备数量
       carStatusNum: 0,
+      deviceList:{}
     };
   },
-  props: {
-    onlineStatus: Array,
-    deviceList: Object,
-  },
   methods: {
-    screenRule() {
-      let routeLink = this.$router.resolve({
-        path: "/screen",
+    
+    // 获取设备列表数据
+    getqueryEquipmentsByPage() {
+      // 获取已定位的设备总数显示在地图上
+      this.$api.getqueryEquipmentsByPage("0", "9999").then((val) => {
+        this.deviceList = val.data.data;
+        this.initData();
       });
-      window.open(routeLink.href, "_blank");
+    },
+    // 获取设备上线，风险，定位数据 函数
+    getonlineStatus() {
+      this.$api.getonlineStatus().then((val) => {
+        this.onlineStatus = val.data.data;
+        this.isshow = true
+      });
+    },
+    // 获取设备总数
+    getTotalDevicesNum() {
+      this.$api.getEquipmentAmountByType().then(val=>{
+        this.totalDevicesNum = val.data.data;
+      })
+    },
+    // 获取设备定位数
+    getEquipmentAmountByLocated() {
+      this.$api.getEquipmentAmountByLocated().then(val=>{
+        this.locationStateNum = val.data.data;
+        console.log('this.locationStateNum',this.locationStateNum)
+      })
     },
     LoginOut() {
       this.$confirm("是否退出登录?", "提示", {
@@ -240,11 +264,17 @@ export default {
       });
       this.hasVideoNum = hasVideoNum;
       this.carStatusNum = carStatusNum;
-      // console.log(carStatusNum);
     },
   },
   created() {
-    this.initData();
+    // 获取设备列表信息
+    this.getqueryEquipmentsByPage()
+    // 获取设备上线，风险，故障，定位数据
+    this.getonlineStatus();
+    // 获取设备总数
+    this.getTotalDevicesNum();
+    // 获取定位设备数
+    this.getEquipmentAmountByLocated();
   },
 };
 </script>
