@@ -13,23 +13,31 @@ import EchartsData from './utils/EchartsData'
 Vue.prototype.$EchartsData = EchartsData
 
 Vue.use(ElementUI);
-/* // import VueAMap from 'vue-amap'; //引入高德地图
-// // 高德地图
-// Vue.use(VueAMap);
-// VueAMap.initAMapApiLoader({
-//   key: '09c0d8fba098058de0784ccb61dd8e93',
-//   plugin: [                // 这里根据自己项目按需引入插件
-//     "AMap.Autocomplete",
-//     "AMap.PlaceSearch",
-//     "AMap.Scale",
-//     "AMap.OverView",
-//     "AMap.ToolBar",
-//     "AMap.MapType",
-//     "AMap.PolyEditor",
-//     "AMap.CircleEditor",
-//     "AMap.Geocoder"
-//   ]
-// }); */
+
+
+
+import VueAMap from 'vue-amap'; //引入高德地图
+
+// 高德地图
+Vue.use(VueAMap);
+VueAMap.initAMapApiLoader({
+  key: '09c0d8fba098058de0784ccb61dd8e93',
+  plugin: [                // 这里根据自己项目按需引入插件
+    "AMap.Autocomplete", //输入提示插件
+    "AMap.PlaceSearch", //POI搜索插件
+    "AMap.Scale", //右下角缩略图插件 比例尺
+    "AMap.OverView", //地图鹰眼插件
+    "AMap.ToolBar", //地图工具条
+    "AMap.MapType", //类别切换控件，实现默认图层与卫星图、实施交通图层之间切换的控制
+    "AMap.PolyEditor", //编辑 折线多，边形
+    "AMap.CircleEditor", //圆形编辑器插件
+    "AMap.Geolocation", //定位控件，用来获取和展示用户主机所在的经纬度位置
+    "AMap.MarkerClusterer"
+  ]
+});
+
+
+
 
 import BaiduMap from 'vue-baidu-map';// 导入百度地图
 // 进行全局注册，一次性引入百度地图组件库的所有组件
@@ -43,8 +51,8 @@ Vue.prototype.$echarts = echarts
 
 
 // 修改网页标题
-router.beforeEach((to,from,next)=>{
-  if(to.meta.title){
+router.beforeEach((to, from, next) => {
+  if (to.meta.title) {
     document.title = to.meta.title
   }
   next();
