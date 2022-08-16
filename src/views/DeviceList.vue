@@ -28,7 +28,7 @@
             <el-tab-pane label="全部设备">
 
               <!-- height: calc(100vh - 295px) -->
-              <el-table :data="deviceList" style="width: 100%;;" stripe :height="'calc(100vh - 295px)'">
+              <el-table :data="deviceList" style="width: 100%;" border stripe :height="'calc(100vh - 310px)'">
                 <el-table-column type="selection" width="55">
                 </el-table-column>
 

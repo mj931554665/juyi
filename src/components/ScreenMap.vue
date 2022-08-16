@@ -65,6 +65,7 @@ export default {
     },
     // 点击某一台设备进行地图中心点的移动
     device(a) {
+      console.log('a',a)
       // 把经纬度转换成数组2类型
       let lng = Number(a.lng);
       let lat = Number(a.lat);

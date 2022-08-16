@@ -24,9 +24,7 @@
         <el-menu-item index="2-4" route="/historicalTrack"
           >历史轨迹</el-menu-item
         >
-        <el-menu-item index="2-5" route="/deviceAlarm"
-          >设备报警</el-menu-item
-        >
+        <el-menu-item index="2-5" route="/deviceAlarm">设备报警</el-menu-item>
       </el-submenu>
       <el-menu-item index="3" route="/electricFence">电子围栏</el-menu-item>
       <el-menu-item index="4" route="/equipmentCondition"
@@ -35,6 +33,16 @@
       <el-menu-item index="5" route="/riskAlert">风险报警</el-menu-item>
       <el-menu-item @click="screenRule">钜亿安全监控大屏</el-menu-item>
     </el-menu>
+    <!-- 用户操作按钮 -->
+    <div class="user">
+      <i class="el-icon-s-custom"></i>
+      <div class="username">
+        用户名：{{
+          userInfo.user.userName ? userInfo.user.userName : "noUserName"
+        }}
+      </div>
+      <!-- <i style="margin-left: 10px" class="el-icon-arrow-down"></i> -->
+    </div>
   </div>
 </template>
 <script>
@@ -43,6 +51,8 @@ export default {
     return {
       isCollapse: true,
       activeIndex: "",
+      // 用户名
+      userInfo: JSON.parse(localStorage.getItem("Login_userInfo")),
     };
   },
   methods: {
@@ -81,6 +91,7 @@ export default {
 </script>
 <style lang="less">
 #Navbar {
+  position: relative;
   z-index: 99;
   height: 100%;
   background-color: #ff0000;
@@ -110,6 +121,14 @@ export default {
   .el-submenu__title:hover i {
     background-color: #2c2b30 !important;
     color: #f2ce91 !important;
+  }
+  .user{
+    position: absolute;
+    display: flex;
+    right: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff;
   }
 }
 /* 因为导航一般来说只存在一个，所以没用id限制 */

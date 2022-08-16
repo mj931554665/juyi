@@ -598,12 +598,17 @@
           </div>
         </div>
       </div>
-      <div class="map">
-        <ScreenMap
+      <div class="map" style="overflow: hidden;">
+        <!-- <ScreenMap
           @deviceData="getdeviceData(arguments)"
           :deviceList="deviceList"
           :device="checkDevice"
-        ></ScreenMap>
+        ></ScreenMap> -->
+        <TestMap
+          @deviceData="getdeviceData(arguments)"
+          :deviceList="deviceList"
+          :device="checkDevice"
+        ></TestMap>
       </div>
     </div>
   </div>
@@ -612,6 +617,8 @@
 <script>
 // 引入大屏地图
 import ScreenMap from "@/components/ScreenMap.vue";
+// 引入大屏地图
+import TestMap from "@/components/TestMap.vue";
 // 引入全屏按钮
 import FuncBtn from "@/components/FuncBtn.vue";
 // 引入图表组件
@@ -630,6 +637,7 @@ export default {
     EchartsComp,
     VideoArea,
     CstorLivePlayer,
+    TestMap
   },
   computed: {
     chart3_option() {
@@ -738,7 +746,7 @@ export default {
       }
     },
     initData() {
-      this.$api.getcustomerScreen("1", "9999").then((val) => {
+      this.$api.getcustomerScreen("1", "9999").then(val => {
         // 给设备列表赋值
         this.deviceList = val.data.data;
         // 给设备数据赋值

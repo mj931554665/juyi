@@ -20,6 +20,7 @@ import VueAMap from 'vue-amap'; //引入高德地图
 
 // 高德地图
 Vue.use(VueAMap);
+// 初始化vue-amap
 VueAMap.initAMapApiLoader({
   key: '09c0d8fba098058de0784ccb61dd8e93',
   plugin: [                // 这里根据自己项目按需引入插件

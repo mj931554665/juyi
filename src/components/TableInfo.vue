@@ -21,9 +21,9 @@
               </FuncBtn>
             </div>
             <!-- 网页全屏按钮 -->
-            <FuncBtn :isScreen="true" :isShadow="true"></FuncBtn>
+            <!-- <FuncBtn :isScreen="true" :isShadow="true"></FuncBtn> -->
             <!-- 退出登录，或者用户操作按钮 -->
-            <div @click="LoginOut">
+            <!-- <div @click="LoginOut">
               <FuncBtn :isShadow="true">
                 <div slot="content" style="display: flex;align-items: center;">
                   <i class="el-icon-s-custom"></i>
@@ -34,10 +34,9 @@
                         : "noUserName"
                     }}
                   </div>
-                  <!-- <i style="margin-left: 10px" class="el-icon-arrow-down"></i> -->
                 </div>
               </FuncBtn>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -299,7 +298,7 @@ export default {
       .bg {
         width: 100%;
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
         .el-icon-arrow-down {
           font-size: 16px;
         }

@@ -145,7 +145,7 @@ const routes = [
       },
     ],
     redirect: '/home',
-    component: () => import('../views/Test.vue')
+    component: () => import('../views/index.vue')
   }
 
 ]
