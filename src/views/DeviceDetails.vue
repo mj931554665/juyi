@@ -668,7 +668,7 @@ export default {
 
         .panel {
           position: relative;
-          width: 90px;
+          width: 26%;
           height: 54px;
           margin: 6px;
           border: 1px solid #000;
