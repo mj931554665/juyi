@@ -491,13 +491,23 @@ export default {
   computed: {
     // 传入的设备id值，如没有就使用默认设备id值
     id() {
-      return this.$route.params.id
-        ? this.$route.params.id
-        : "c1e221866ab84ae28aeb89f975a667c4";
+      let id
+      if(this.$route.params.id){
+        id=this.$route.params.id
+        sessionStorage.setItem('equipmentId', JSON.stringify(this.$route.params.id))
+      }else{
+        id=JSON.parse(sessionStorage.getItem('equipmentId'))
+      }
+      return id ? id : "c1e221866ab84ae28aeb89f975a667c4";
     },
   },
   destroyed(){
     this.stopHeartBeat(this.oldChannel)
+    sessionStorage.removeItem('equipmentId')
+  },
+  created() {
+    // 获取设备信息
+    this.getDeviceDetails();
   },
   methods: {
     initChannel(vehicleCodes) {
@@ -542,8 +552,8 @@ export default {
         this.chart2 = this.$EchartsData.Dchart2(
           data.workConditionData.remainingOilPercent
         );
-        // this.equipmentNo = data.baseInfo.equipmentNo;
-        this.equipmentNo='CC0260CB5362'
+        this.equipmentNo = data.baseInfo.equipmentNo;
+        // this.equipmentNo='CC0260CB5362'
         this.initChannel(this.equipmentNo);
         this.initVideo(this.equipmentNo);
       });
@@ -555,14 +565,10 @@ export default {
         name: path,
         params: {
           equipmentNo: this.equipmentNo,
-          deviceDetails:this.deviceDetails
+          id:this.id
         },
       });
     },
-  },
-  created() {
-    // 获取设备信息
-    this.getDeviceDetails();
   },
 };
 </script>
@@ -668,7 +674,7 @@ export default {
 
         .panel {
           position: relative;
-          width: 26%;
+          width: 90px;
           height: 54px;
           margin: 6px;
           border: 1px solid #000;

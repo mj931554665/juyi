@@ -70,7 +70,7 @@ export default {
       markerArr: [],
       center: [105, 39.990464], // 地图初始化视图中心点
       zooms: [4, 18], // 地图缩放倍率
-      mapStyle: "amap://styles/blue", //修改地图的背景颜色
+      mapStyle: "amap://styles/darkblue", //修改地图的背景颜色
       expandZoomRange: 15, // 最大缩放级别
       plugin: [
         // 这里放扩展的插件
@@ -124,7 +124,7 @@ export default {
 								padding: 3px 4px;
 								background: ${item.onlineStatus == 1 ? "#409EFF" : "#868686"};
 								border-radius: 8px;">${item.name}</div>
-								<img src="https://s1.xptou.com/2022/08/05/62ec9ad6837fe.png" style="width:25px;margin-left:3px;margin-top:10px;" alt="">
+								<img src="http://cp.juyiaqyy.com/images/juyiScreen/screen/device.png" style="width:25px;margin-left:3px;margin-top:10px;" alt="">
 								`;
           // 切换设备信息
           item.events = {

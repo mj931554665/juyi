@@ -71,14 +71,59 @@ const routes = [
           title:"首页"
         }
       },
-      // 设备列表
+        //设备管理
       {
-        path: '/deviceList',
-        name: 'deviceList',
-        component: DeviceList,
-        meta:{
-          title:"设备列表"
-        }
+        path: '/deviceManage',
+        name: 'deviceManage',
+        children:[
+          // 设备列表
+          {
+            path: 'deviceList',
+            name: 'deviceList',
+            component: DeviceList,
+            meta:{
+              title:"设备列表"
+            }
+          },
+          // 设备详情
+          {
+            path: 'deviceDetails',
+            name: 'deviceDetails',
+            component: DeviceDetails,
+            meta:{
+              title:"设备详情"
+            }
+          },
+          // 实时监控
+          {
+            path: 'realTimeMonitoring',
+            name: 'realTimeMonitoring',
+            component: RealTimeMonitoring,
+            meta:{
+              title:"实时监控"
+            }
+          },
+          // 历史轨迹
+          {
+            path: 'historicalTrack',
+            name: 'historicalTrack',
+            component: HistoricalTrack,
+            meta:{
+              title:"历史轨迹"
+            }
+          },
+          // 设备报警
+          {
+            path: 'deviceAlarm',
+            name: 'deviceAlarm',
+            component: DeviceAlarm,
+            meta:{
+              title:"设备报警"
+            }
+          },
+        ],
+        component: ()=>import('../views/DeviceManage.vue'),
+        // redirect: 'deviceManage',
       },
       // 电子围栏
       {
@@ -96,42 +141,6 @@ const routes = [
         component: EquipmentCondition,
         meta:{
           title:"设备工况"
-        }
-      },
-      // 设备报警
-      {
-        path: '/deviceAlarm',
-        name: 'deviceAlarm',
-        component: DeviceAlarm,
-        meta:{
-          title:"设备报警"
-        }
-      },
-      // 设备详情
-      {
-        path: '/deviceDetails',
-        name: 'deviceDetails',
-        component: DeviceDetails,
-        meta:{
-          title:"设备详情"
-        }
-      },
-      // 实时监控 
-      {
-        path: '/realTimeMonitoring',
-        name: 'realTimeMonitoring',
-        component: RealTimeMonitoring,
-        meta:{
-          title:"实时监控"
-        }
-      },
-      // 历史轨迹
-      {
-        path: '/historicalTrack',
-        name: 'historicalTrack',
-        component: HistoricalTrack,
-        meta:{
-          title:"历史轨迹"
         }
       },
       // 风险报警

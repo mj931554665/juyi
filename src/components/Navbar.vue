@@ -14,17 +14,16 @@
       :router="true"
     >
       <el-menu-item index="1" active route="/">首页</el-menu-item>
+
       <el-submenu index="2">
-        <template slot="title" route="/">设备管理</template>
-        <el-menu-item index="2-1" route="/deviceList">设备列表</el-menu-item>
-        <el-menu-item index="2-2" route="/deviceDetails">设备详情</el-menu-item>
-        <el-menu-item index="2-3" route="/realTimeMonitoring"
-          >实时监控</el-menu-item
-        >
-        <el-menu-item index="2-4" route="/historicalTrack"
-          >历史轨迹</el-menu-item
-        >
-        <el-menu-item index="2-5" route="/deviceAlarm">设备报警</el-menu-item>
+        <template slot="title">
+          <span @click="deviceAdmin('list')">设备管理</span>
+        </template>
+        <el-menu-item index="2-1" @click="deviceAdmin('list')">设备列表</el-menu-item>
+        <el-menu-item index="2-2" @click="deviceAdmin('detail')">设备详情</el-menu-item>
+        <el-menu-item index="2-3" @click="deviceAdmin('real')">实时监控</el-menu-item>
+        <el-menu-item index="2-4" @click="deviceAdmin('history')">历史轨迹</el-menu-item>
+        <el-menu-item index="2-5" @click="deviceAdmin('alarm')">设备报警</el-menu-item>
       </el-submenu>
       <el-menu-item index="3" route="/electricFence">电子围栏</el-menu-item>
       <el-menu-item index="4" route="/equipmentCondition"
@@ -56,6 +55,14 @@ export default {
     };
   },
   methods: {
+    deviceAdmin(info){
+      this.$router.push({
+        path:'/deviceManage',
+        query:{
+          where:info
+        }
+      })
+    },
     screenRule() {
       let routeLink = this.$router.resolve({
         path: "/screen",

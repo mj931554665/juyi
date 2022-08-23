@@ -24,7 +24,7 @@
                 >
               </template>
             </el-table-column>
-            <el-table-column prop="num" label="设备绑定数"> </el-table-column>
+            <el-table-column prop="num" label="设备位置"> </el-table-column>
             <el-table-column prop="status" label="状态"> </el-table-column>
           </el-table>
         </div>
@@ -62,7 +62,9 @@
               v-model="fenceName"
               placeholder="请输入围栏名称"
               size="small"
+              maxlength="20"
             ></el-input>
+            <p>{{ errMsg1 }}&nbsp;</p>
           </div>
           <div class="region">
             <span>*</span>
@@ -76,19 +78,45 @@
               >
               </el-option>
             </el-select>
+            <p>{{ errMsg2 }}&nbsp;</p>
+          </div>
+          <div class="region">
+            <span>*</span>
+            <div>设备绑定</div>
+            <el-select
+              v-model="devicValue"
+              placeholder="请选择"
+              filterable
+              size="small"
+              @change="selectChange()"
+            >
+              <el-option
+                v-for="item in deviceList"
+                :key="item.id"
+                :label="item.name + ` | ` + item.equipmentNo"
+                :value="item.id"
+              >
+              </el-option>
+            </el-select>
+            <p>{{ errMsg3 }}&nbsp;</p>
           </div>
           <div>
             <b>状态</b>
           </div>
           <div class="enable">
-            <el-radio v-model="radio" label="1">启用</el-radio>
-            <el-radio v-model="radio" label="2">停用</el-radio>
+            <el-radio v-model="state" label="1">启用</el-radio>
+            <el-radio v-model="state" label="2">停用</el-radio>
           </div>
           <div class="redraw">
-            <el-button type="primary" size="small">重新绘制区域</el-button>
+            <el-button type="primary" size="small" @click="addFence"
+              >绘制区域</el-button
+            >
+            <p>{{ errMsg4 }}&nbsp;</p>
           </div>
           <div class="save">
-            <el-button type="primary" size="small">保存</el-button>
+            <el-button type="primary" size="small" @click="save"
+              >保存</el-button
+            >
             <el-button size="small">取消</el-button>
           </div>
         </div>
@@ -98,6 +126,7 @@
           class="amap-box"
           :vid="'amap-vue'"
           ref="GdMap"
+          :zoom="10"
           :events="amapGD"
           style="width: 100%; height: 100%"
         ></el-amap>
@@ -118,8 +147,6 @@ export default {
         // 地图加载后触发的事件
         complete: () => {
           this.map = this.$refs.GdMap.$$getInstance();
-          let map = this.map;
-          
         },
       },
       // 围栏列表相关-------------------------------------------
@@ -131,13 +158,18 @@ export default {
       tableData: [
         {
           name: "test",
-          num: "0",
+          num: "围栏内",
           status: "启用",
         },
       ],
       // 新增围栏相关---------------------------------------------
+      // 点击保存错误提示的文字
+      errMsg1: "",
+      errMsg2: "",
+      errMsg3: "",
+      errMsg4: "",
       // 是否显示添加围栏卡片
-      idShowAddFence: true,
+      idShowAddFence: false,
       // 区域类型
       type: "自定义区域",
       typeOptions: [
@@ -165,8 +197,158 @@ export default {
         },
       ],
       // 是否启用
-      radio: "1",
+      state: "1",
+      // 设备列表
+      deviceList: [],
+      // 选中的设备
+      devicValue: "",
+      // 上一个多边形区域
+      oldPolygon: null,
+      // 上一个多边形编辑区域
+      oldPolyEditor: null,
+      // 上一个设备标记
+      oldMarker: null,
     };
+  },
+  methods: {
+    // 简单实现绘制正方形，side 正方形边长，单位米
+    // 若需要绘制其他矩形，需自行修改代码
+    centerPointGetFourPoint: ({ lat, lng }, side = 1000) => {
+      const centerPoint = new AMap.LngLat(lng, lat);
+      const upLeftPoint = centerPoint.offset(-side / 1, side / 2);
+      const upRightPoint = centerPoint.offset(side / 1, side / 2);
+      const leftBottomPoint = centerPoint.offset(-side / 1, -side / 2);
+      const rightBottomPoint = centerPoint.offset(side / 1, -side / 2);
+      return [
+        [upLeftPoint.lng, upLeftPoint.lat],
+        [upRightPoint.lng, upRightPoint.lat],
+        [rightBottomPoint.lng, rightBottomPoint.lat],
+        [leftBottomPoint.lng, leftBottomPoint.lat],
+      ];
+    },
+    addFence() {
+      // 显示新增围栏的卡牌
+      this.idShowAddFence = true;
+      // 获取地图实例
+      let map = this.map;
+      if (this.oldPolygon !== null) {
+        // 使用clearMap方法删除所有覆盖物
+        map.remove(this.oldPolygon);
+      }
+      if (this.oldPolyEditor !== null) {
+        // 关闭多边形编辑
+        this.oldPolyEditor.close();
+      }
+      // map.clearMap();
+      // 获取当前地图中心
+      let mapCenter = map.getCenter();
+      // 获取当前地图级别
+      let mapZoom = map.getZoom();
+      // 地图级别与矩形的缩放比例
+      let scale = map.getScale() / 20;
+      // 获取当前地图中心的多边矩形
+      let path = this.centerPointGetFourPoint(
+        {
+          lat: mapCenter.lat,
+          lng: mapCenter.lng,
+        },
+        scale
+      );
+      let polygon = (this.oldPolygon = new AMap.Polygon({
+        path: path,
+        strokeColor: "#43A5FA",
+        strokeWeight: 4,
+        strokeOpacity: 0.8,
+        fillOpacity: 0.4,
+        fillColor: "#1791fc",
+        zIndex: 50,
+        bubble: true,
+        draggable: true,
+      }));
+      map.add(polygon);
+      // 缩放地图到合适的视野级别
+      // map.setFitView();
+      // 获取已经添加的覆盖物(多边形实例)
+      let poly = map.getAllOverlays("polygon")[0];
+      // 使用多边形编辑器（PolyEditor）（Map 的实例，编辑对象，设置参数）
+      let polyEditor = (this.oldPolyEditor = new AMap.PolyEditor(
+        map,
+        poly,
+        polygon
+      ));
+      // 开始编辑对象
+      polyEditor.open();
+    },
+    save() {
+      this.verify();
+    },
+    verify() {
+      if (
+        this.type !== "" &&
+        this.fenceName !== "" &&
+        this.fenceType !== "" &&
+        this.devicValue !== "" &&
+        this.oldPolygon !== null
+      ) {
+        this.errMsg1 = this.errMsg2 = this.errMsg3 = this.errMsg4 = "";
+        let obj = {};
+        (obj.type = this.type),
+          (obj.fenceName = this.fenceName),
+          (obj.fenceType = this.fenceType),
+          (obj.state = this.state),
+          (obj.device = this.devicValue),
+          (obj.polygon = this.oldPolygon);
+        console.log("obj", obj);
+      } else {
+        if (this.fenceName == "") {
+          this.errMsg1 = "请输入电子围栏名称";
+        } else {
+          this.errMsg1 = "";
+        }
+        if (this.fenceType == "") {
+          this.errMsg2 = "请选择围栏类型";
+        } else {
+          this.errMsg2 = "";
+        }
+        if (this.devicValue == "") {
+          this.errMsg3 = "请选择设备";
+        } else {
+          this.errMsg3 = "";
+        }
+        if (this.oldPolygon == null) {
+          this.errMsg4 = "请绘制区域";
+        } else {
+          this.errMsg4 = "";
+        }
+      }
+    },
+    selectChange(val) {
+      // 获取地图实例
+      let map = this.map;
+      if (this.oldMarker !== null) {
+        map.remove(this.oldMarker);
+      }
+      // 判断当前选中值和渲染数据值，以获取当前选中item
+      let item = this.deviceList.find((item) => item.id == this.devicValue);
+      //设置地图中心点
+      this.map.setCenter([item.lng, item.lat]);
+      // 构造点标记
+      let marker = (this.oldMarker = new AMap.Marker({
+        content: `<img src="http://cp.juyiaqyy.com/images/juyiScreen/fence/device.png" style="width:30px;transform: translate(-20%,50%);">`,
+        position: [item.lng, item.lat],
+      }));
+      this.map.add(marker);
+      // // 缩放地图到合适的视野级别
+      map.setFitView([marker], false, [60, 60, 60, 60]);
+    },
+    getDeviceList() {
+      this.$api.getSelectList("", "", "", "", 1, 9999).then((val) => {
+        this.deviceList = val.data.data.rows;
+      });
+    },
+  },
+  created() {
+    this.getDeviceList();
   },
 };
 </script>
@@ -189,6 +371,7 @@ export default {
     }
     .aside {
       display: flex;
+      margin-right: 16px;
       .fence {
         box-sizing: border-box;
         padding: 20px;
@@ -245,10 +428,11 @@ export default {
         }
         .region {
           display: flex;
+          position: relative;
           align-items: center;
-          margin-bottom: 20px;
+          padding-bottom: 20px;
           .el-select {
-            min-width: 150px;
+            min-width: 180px;
           }
           span {
             color: #f56c6c;
@@ -259,10 +443,19 @@ export default {
             white-space: nowrap;
             margin-right: 10px;
           }
+          p {
+            position: absolute;
+            bottom: 0;
+            left: 81px;
+            color: #f56c6c;
+          }
         }
         .enable,
         .redraw {
           margin-bottom: 20px;
+          p {
+            color: #f56c6c;
+          }
         }
         .redraw {
           .el-button {

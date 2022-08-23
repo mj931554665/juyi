@@ -5,9 +5,10 @@ import store from "./store";
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
 import "./assets/css/restcss.css";
-
+import axios from "axios";
 import api from "./api/request";
 Vue.prototype.$api = api;
+Vue.prototype.$axios=axios
 
 import EchartsData from "./utils/EchartsData";
 Vue.prototype.$EchartsData = EchartsData;

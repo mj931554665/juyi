@@ -119,15 +119,25 @@ export default {
   computed: {
     // 传入的设备编号
     vehicleCodes() {
-      return this.$route.params.equipmentNo
-        ? this.$route.params.equipmentNo
-        : "CC0260CB5362";
+      let equipmentNo
+      if(this.$route.params.equipmentNo){
+        equipmentNo=this.$route.params.equipmentNo
+        sessionStorage.setItem('equipmentNo', JSON.stringify(this.$route.params.equipmentNo))
+      }else{
+        equipmentNo=JSON.parse(sessionStorage.getItem('equipmentNo'))
+      }
+      return equipmentNo ? equipmentNo : "CC0260CB5362";
     },
     // 设备工况数据详情
-    deviceDetails() {
-      return this.$route.params.deviceDetails
-        ? this.$route.params.deviceDetails
-        : {};
+    equipmentId() {
+      let equipmentId
+      if(this.$route.params.id){
+        equipmentId=this.$route.params.id
+        sessionStorage.setItem('equipmentId', JSON.stringify(this.$route.params.id))
+      }else{
+        equipmentId=JSON.parse(sessionStorage.getItem('equipmentId'))
+      }
+      return equipmentId ? equipmentId : "c1e221866ab84ae28aeb89f975a667c4";
     }
   },
   data() {
@@ -142,7 +152,8 @@ export default {
       channel: [1],
       // 视频地址数组
       videoSrc: [],
-      screenClass: 'oneScreen'
+      screenClass: 'oneScreen',
+      deviceDetails: '' //设备详情信息
     };
   },
   watch: {
@@ -170,6 +181,12 @@ export default {
       // }
     }
   },
+  created() {
+    this.initChannel();
+    this.initVideoSrc(1);
+    this.initEquipmentDetail(this.equipmentId);
+    // console.log(Object.keys(this.deviceDetails).length ? "1" : "2");
+  },
   methods: {
     splitScreenChange(index) {
       this.splitScreen = index
@@ -184,8 +201,13 @@ export default {
     selectAll() {
       this.splitScreen = 8;
       this.channel = [1, 2, 3, 4, 5, 6, 7, 8];
-      this.initVideoSrc();
+      for(let index of this.channel){
+        this.initVideoSrc(index);
+      }
     },
+    /**
+     * 切换通道
+     * */
     changeChannel(v, index) {
       let maxChannel = Math.max.apply(null, this.channel)
       if (maxChannel <= 1) {
@@ -209,21 +231,37 @@ export default {
         }
       }
     },
+    /**
+     * 视频通道信息初始化
+     * */
     initChannel() {
       let vehicleCodes = this.vehicleCodes;
-      this.$api.getVehicleCode(vehicleCodes).then((val) => {
-        let data = val.data.data[0];
-        // 赋值获取到的数据
-        this.VideoCarByVehicleCode = data;
+      this.$api.getVehicleCode(vehicleCodes).then(res => {
+        if(res.data.code===200){
+          let data = res.data.data[0];
+          // 赋值获取到的数据
+          this.VideoCarByVehicleCode = data;
 
-        this.$api.getVideoChannelState(data.terminalId).then((val) => {
-          // 把通道信息分割成数组
-          // 通道信息赋值给data数据在页面显示状态
-          this.VideoChannelState = val.data.data[0].split(",").map(Number);
-          // console.log('State',data);
-        });
+          this.$api.getVideoChannelState(data.terminalId).then((val) => {
+            // 把通道信息分割成数组
+            // 通道信息赋值给data数据在页面显示状态
+            this.VideoChannelState = val.data.data[0].split(",").map(Number);
+            // console.log('State',data);
+          });
+        }
       });
     },
+    initEquipmentDetail(equipmentId){
+      this.$api.getDetailWithWorkConditionData(equipmentId).then(res => {
+        if(res.data.code===200){
+          // 赋值设备实时工况数据
+          this.deviceDetails = res.data.data
+        }
+      })
+    },
+    /**
+     * 连接对应的视频通道
+     * */
     initVideoSrc(index) {
       this.$api.getvideoPlay(this.vehicleCodes, index, 0).then((val) => {
         let data = val.data.data.split("|");
@@ -236,11 +274,6 @@ export default {
         }
       });
     },
-  },
-  created() {
-    this.initChannel();
-    this.initVideoSrc(1);
-    console.log(Object.keys(this.deviceDetails).length ? "1" : "2");
   },
 };
 </script>
