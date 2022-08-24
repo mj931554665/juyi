@@ -6,6 +6,7 @@ import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
 import "./assets/css/restcss.css";
 import axios from "axios";
+import './assets/iconfont/iconfont.css'
 import api from "./api/request";
 Vue.prototype.$api = api;
 Vue.prototype.$axios=axios
