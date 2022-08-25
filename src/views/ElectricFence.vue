@@ -35,11 +35,11 @@
                 >
               </template>
             </el-table-column>
-            <el-table-column prop="fenceStateLabel" label="围栏状态">
+            <el-table-column prop="fenceStateLabel" label="绑定设备">
               <template slot-scope="scope">
                 <span
                   :style="scope.row.fenceState ? 'color:green;' : 'color:red;'"
-                  >{{ scope.row.fenceStateLabel }}</span
+                  >{{ scope.row.device.equipmentNo }}</span
                 >
               </template>
             </el-table-column>
@@ -117,6 +117,15 @@
               </el-option>
             </el-select>
             <p>{{ errMsg3 }}&nbsp;</p>
+          </div>
+          <div>
+            <b>报警设置</b>
+          </div>
+          <div class="enable">
+            <el-checkbox-group v-model="hintList">
+              <el-checkbox label="出围栏报警">出围栏报警</el-checkbox>
+              <el-checkbox label="进围栏报警">进围栏报警</el-checkbox>
+            </el-checkbox-group>
           </div>
           <div>
             <b>状态</b>
@@ -207,6 +216,7 @@ export default {
           label: "作业区域",
         },
       ],
+      hintList:[], //进出围栏报警
       state: "1", // 是否启用
       deviceList: [], // 设备列表
       deviceValue: "", // 选中设备的信息
@@ -232,6 +242,7 @@ export default {
         });
       }
       let device = this.deviceValue; // 获取当前选中的设备信息
+      console.log("device", device);
       map.setCenter([device.lng, device.lat]); //设置地图中心点
       // 构造点标记
       let marker = (this.marker = new AMap.Marker({
@@ -301,10 +312,12 @@ export default {
         this.errMsg1 = this.errMsg2 = this.errMsg3 = this.errMsg4 = "";
 
         // 创建围栏
+        console.log("this.Polygon", this.Polygon);
         let fence = {
           type: this.type, // 区域类型
           fenceName: this.fenceName, // 围栏名称
           fenceType: this.fenceType, // 围栏类型
+          hintList:this.hintList, //进出围栏报警
           state: this.state, // 围栏启用状态
           stateLabel: this.state == 1 ? "启用" : "停用", // 围栏启用状态标签
           device: this.deviceValue, // 围栏绑定的设备信息
@@ -371,6 +384,7 @@ export default {
       this.idShowAddFence = true;
       this.fenceName = e.fenceName;
       this.fenceType = e.fenceType;
+      this.hintList = e.hintList;
       this.state = e.state;
       this.deviceActive = e.deviceActive;
       // 获取地图实例

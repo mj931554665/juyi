@@ -1,4 +1,9 @@
-import axios from "./axios";
+import Axios from "axios";
+//引入，配置axios
+const axios = Axios.create({
+  baseURL:' /cp_api',
+  withCredentials: true,  // 允许请求携带 cookie
+})
 
 export default {
   // 实时刷新判断用户是否账号在线
@@ -78,7 +83,7 @@ export default {
       pageSize: pageSize,
     });
   },
-  // 2.17-设备列表信息（所有设备列表） 新
+  // 2.17-设备列表信息（所有设备列表）新
   getSelectList(equipmentNo, name, plateNo, types, pageNum, pageSize) {
     let formData = new FormData();
     formData.append("equipmentNos", equipmentNo);
