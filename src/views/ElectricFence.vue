@@ -7,19 +7,28 @@
             placeholder="请输入电子围栏名称"
             prefix-icon="el-icon-search"
             v-model="fenceSearch"
+            @input="inputChange"
           >
           </el-input>
           <div class="operate">
             <el-button>删除</el-button>
-            <el-button type="primary" @click="idShowAddFence = true"
+            <el-button
+              type="primary"
+              @click="idShowAddFence = new_change = true"
               >新增</el-button
             >
           </div>
-          <el-table :data="fenceLists" style="width: 100%">
+          <el-table
+            :data="
+              fenceList.filter((data) => data.fenceName.includes(fenceSearch))
+            "
+            style="width: 100%"
+            height="450"
+          >
             <el-table-column type="selection"> </el-table-column>
             <el-table-column prop="fenceName" label="电子围栏名称">
               <template slot-scope="scope">
-                <span class="fenceName" @click="fenceDetails(scope.row)"
+                <span class="fenceName" @click="fenceDetails(scope)"
                   ><i class="el-icon-edit"></i>&nbsp;{{
                     scope.row.fenceName
                   }}</span
@@ -27,6 +36,12 @@
               </template>
             </el-table-column>
             <el-table-column prop="fenceStateLabel" label="围栏状态">
+              <template slot-scope="scope">
+                <span
+                  :style="scope.row.fenceState ? 'color:green;' : 'color:red;'"
+                  >{{ scope.row.fenceStateLabel }}</span
+                >
+              </template>
             </el-table-column>
             <el-table-column prop="stateLabel" label="状态"> </el-table-column>
           </el-table>
@@ -41,8 +56,8 @@
 
         <div class="addFence" v-if="idShowAddFence">
           <h3>
-            <b>新增电子围栏</b>
-            <i class="el-icon-close" @click="idShowAddFence = false"></i>
+            <b>{{ new_change ? "新增电子围栏" : "修改电子围栏" }}</b>
+            <i class="el-icon-close" @click="clearForm"></i>
           </h3>
           <b>类型选择</b>
           <div class="region">
@@ -87,11 +102,11 @@
             <span>*</span>
             <div>设备绑定</div>
             <el-select
-              v-model="devicValue"
+              v-model="deviceActive"
               placeholder="请选择"
               filterable
               size="small"
-              @change="selectChange(devicValue)"
+              @change="selectChange(deviceActive)"
             >
               <el-option
                 v-for="item in deviceList"
@@ -120,7 +135,7 @@
             <el-button type="primary" size="small" @click="save"
               >保存</el-button
             >
-            <el-button size="small">取消</el-button>
+            <el-button size="small" @click="clearForm">取消</el-button>
           </div>
         </div>
       </div>
@@ -139,7 +154,7 @@
 </template>
 
 <script>
-let map =null; // 地图实例
+let map = null; // 地图实例
 export default {
   data() {
     return {
@@ -152,18 +167,22 @@ export default {
           map = this.$refs.GdMap.$$getInstance(); // 获取地图实例
         },
       },
+      icon: `<img src="http://cp.juyiaqyy.com/images/juyiScreen/fence/device.png" style="width:30px;transform: translate(-20%,50%);">`,
       // 围栏列表相关-------------------------------------------
       // 是否显示围栏列表
       isShowFence: true,
       // 围栏列表搜索的值
       fenceSearch: "",
+      // 修改的围栏信息
+      fenceChange: null,
       // 新增围栏相关---------------------------------------------
       // 点击保存错误提示的文字
       errMsg1: "",
       errMsg2: "",
       errMsg3: "",
       errMsg4: "",
-
+      // 是否是新增围栏还是修改围栏
+      new_change: true,
       idShowAddFence: false, // 是否显示添加围栏卡片
       type: "自定义区域", // 区域类型
       typeOptions: [
@@ -190,48 +209,55 @@ export default {
       ],
       state: "1", // 是否启用
       deviceList: [], // 设备列表
-      devicValue: "", // 选中的设备
-      oldPolygon: null, // 上一个多边形区域
+      deviceValue: "", // 选中设备的信息
+      deviceActive: "", // 选中的设备
+      Polygon: null, // 上一个多边形区域
       oldPolyEditor: null, // 上一个多边形编辑区域
-      oldMarker: null, // 上一个设备标记
-      fenceLists: [], // 围栏列表
+      Marker: null, // 设备标记
+      fenceList: [], // 围栏列表
     };
   },
   methods: {
-    // 简单实现绘制正方形，side 正方形边长，单位米
-    // 若需要绘制其他矩形，需自行修改代码
-    centerPointGetFourPoint: ({ lat, lng }, side = 1000) => {
-      const centerPoint = new AMap.LngLat(lng, lat);
-      const upLeftPoint = centerPoint.offset(-side / 1, side / 2);
-      const upRightPoint = centerPoint.offset(side / 1, side / 2);
-      const leftBottomPoint = centerPoint.offset(-side / 1, -side / 2);
-      const rightBottomPoint = centerPoint.offset(side / 1, -side / 2);
-      return [
-        [upLeftPoint.lng, upLeftPoint.lat],
-        [upRightPoint.lng, upRightPoint.lat],
-        [rightBottomPoint.lng, rightBottomPoint.lat],
-        [leftBottomPoint.lng, leftBottomPoint.lat],
-      ];
+    // 选择设备
+    selectChange(val) {
+      // 获取选中的设备信息
+      this.deviceList.some((item) => {
+        this.deviceValue = item;
+        return item.id === val;
+      });
+      // 判断地图是否有设备图标，有则移除所有的
+      if (map.getAllOverlays("marker").length !== 0) {
+        map.getAllOverlays("marker").forEach((item) => {
+          map.remove(item);
+        });
+      }
+      let device = this.deviceValue; // 获取当前选中的设备信息
+      map.setCenter([device.lng, device.lat]); //设置地图中心点
+      // 构造点标记
+      let marker = (this.marker = new AMap.Marker({
+        content: this.icon,
+        position: [device.lng, device.lat],
+      }));
+      map.add(marker); //添加点标记
+      map.setFitView([marker], false, [60, 60, 60, 60]); // 缩放地图到合适的视野级别
     },
     // 绘制区域
     addFence() {
-      this.idShowAddFence = true;// 显示新增围栏的卡牌
-      if (this.oldPolygon !== null) {
-        // 使用remove方法删除指定覆盖物
-        map.remove(this.oldPolygon);
+      this.idShowAddFence = true; // 显示新增围栏的卡牌
+      // 判断地图是否有多余的多边形，有则移除
+      if (map.getAllOverlays("polygon").length !== 0) {
+        map.getAllOverlays("polygon").forEach((item) => {
+          map.remove(item);
+        });
       }
+      // 关闭上一个多边形编辑
       if (this.oldPolyEditor !== null) {
-        // 关闭多边形编辑
         this.oldPolyEditor.close();
       }
-      // map.clearMap();
-      // 获取当前地图中心
-      let mapCenter = map.getCenter();
-      // 获取当前地图级别
-      let mapZoom = map.getZoom();
-      // 地图级别与矩形的缩放比例
-      let scale = map.getScale() / 20;
-      // // 获取当前地图中心的多边矩形
+      let mapCenter = map.getCenter(); // 获取当前地图中心
+      let mapZoom = map.getZoom(); // 获取当前地图级别
+      let scale = map.getScale() / 20; // 地图级别与矩形的缩放比例
+      // 获取当前地图中心的多边矩形
       let path = this.centerPointGetFourPoint(
         {
           lat: mapCenter.lat,
@@ -239,7 +265,8 @@ export default {
         },
         scale
       );
-      let polygon = (this.oldPolygon = new AMap.Polygon({
+      //创建多边形实例
+      let polygon = (this.Polygon = new AMap.Polygon({
         path: path,
         strokeColor: "#43A5FA",
         strokeWeight: 4,
@@ -249,67 +276,67 @@ export default {
         zIndex: 50,
         bubble: true,
         draggable: true,
-      }));  //创建多边形实例
-      map.add(polygon);//添加多边形覆盖物
-      let poly = map.getAllOverlays("polygon")[0];// 获取已经添加的覆盖物(多边形实例)
+      }));
+      map.add(polygon); //添加多边形覆盖物
+      let poly = map.getAllOverlays("polygon")[0]; // 获取已经添加的覆盖物(多边形实例)
       // 使用多边形编辑器（PolyEditor）（Map 的实例，编辑对象，设置参数）
       let polyEditor = (this.oldPolyEditor = new AMap.PolyEditor(
         map,
         poly,
         polygon
       ));
-      polyEditor.open();// 开始编辑多边形对象
+      polyEditor.open(); // 开始编辑多边形对象
     },
+    // 保存围栏
     save() {
+      // 判断表单是否有填写
       if (
         this.type !== "" &&
         this.fenceName !== "" &&
         this.fenceType !== "" &&
-        this.devicValue !== "" &&
-        this.oldPolygon !== null
+        this.deviceActive !== "" &&
+        this.Polygon !== null
       ) {
+        // 有则清空表单填写提示
         this.errMsg1 = this.errMsg2 = this.errMsg3 = this.errMsg4 = "";
-        let obj = {};
-        obj.type = this.type;
-        obj.fenceName = this.fenceName;
-        obj.fenceType = this.fenceType;
-        obj.state = this.state;
-        obj.stateLabel = this.state == 1 ? "启用" : "停用";
-        obj.device = this.devicValue;
-        obj.fenceState = this.oldPolygon.contains([
-          this.devicValue.lng,
-          this.devicValue.lat,
-        ]);
-        obj.fenceStateLabel = this.oldPolygon.contains([
-          this.devicValue.lng,
-          this.devicValue.lat,
-        ])
-          ? "围栏内"
-          : "围栏外";
-        obj.polygon = this.oldPolygon;
 
-        // 获取围栏列表并添加新增的围栏
-        let fenceLists = this.fenceLists;
-        fenceLists.push(obj);
-        this.fenceLists = fenceLists;
-
+        // 创建围栏
+        let fence = {
+          type: this.type, // 区域类型
+          fenceName: this.fenceName, // 围栏名称
+          fenceType: this.fenceType, // 围栏类型
+          state: this.state, // 围栏启用状态
+          stateLabel: this.state == 1 ? "启用" : "停用", // 围栏启用状态标签
+          device: this.deviceValue, // 围栏绑定的设备信息
+          deviceActive: this.deviceActive, // 围栏绑定的设备信息
+          fenceState: this.Polygon.contains([
+            this.deviceValue.lng,
+            this.deviceValue.lat,
+          ]), // 围栏与设备的关系（设备是否在围栏内）
+          fenceStateLabel: this.Polygon.contains([
+            this.deviceValue.lng,
+            this.deviceValue.lat,
+          ])
+            ? "围栏内"
+            : "围栏外", // 围栏与设备的关系标签（设备是否在围栏内）
+          polygon: this.Polygon, // 围栏实例
+        };
+        if (this.new_change) {
+          // 获取围栏列表并添加新增的围栏
+          let fenceList = this.fenceList;
+          fenceList.push(fence);
+          this.fenceList = fenceList;
+        } else {
+          this.$set(this.fenceList, this.fenceChange, fence);
+        }
         //添加完之后清空表单信息以及地图内容
-        this.idShowAddFence = false;
-        this.fenceName = "";
-        this.fenceType = "";
-        this.state = "1";
-        this.devicValue = "";
-        // this.mapCenter = [114.085947, 22.547];
-        // this.map.setZoom(10);
-        // 使用clearMap方法删除所有覆盖物
-        this.map.clearMap();
+        this.clearForm();
 
         //添加成功之后的提升信息
         this.$message({
-          message: "新增成功",
+          message: this.new_change ? "新增成功" : "修改成功",
           type: "success",
         });
-        this.verify();
       } else {
         if (this.fenceName == "") {
           this.errMsg1 = "请输入电子围栏名称";
@@ -321,49 +348,34 @@ export default {
         } else {
           this.errMsg2 = "";
         }
-        if (this.devicValue == "") {
+        if (this.deviceValue == "") {
           this.errMsg3 = "请选择设备";
         } else {
           this.errMsg3 = "";
         }
-        if (this.oldPolygon == null) {
+        if (this.Polygon == null) {
           this.errMsg4 = "请绘制区域";
         } else {
           this.errMsg4 = "";
         }
       }
     },
-    selectChange(val) {
-      // 获取地图实例
-      let map = this.map;
-      if (this.oldMarker !== null) {
-        map.remove(this.oldMarker);
-      }
-      // 判断当前选中值和渲染数据值，以获取当前选中item
-      let item = this.deviceList.find((item) => item.id == this.devicValue.id);
-      //设置地图中心点
-      this.map.setCenter([item.lng, item.lat]);
-      // 构造点标记
-      let marker = (this.oldMarker = new AMap.Marker({
-        content: `<img src="http://cp.juyiaqyy.com/images/juyiScreen/fence/device.png" style="width:30px;transform: translate(-20%,50%);">`,
-        position: [item.lng, item.lat],
-      }));
-      this.map.add(marker);
-      // // 缩放地图到合适的视野级别
-      map.setFitView([marker], false, [60, 60, 60, 60]);
-    },
-    fenceDetails(e) {
+    // 查看围栏详情
+    fenceDetails(val) {
+      this.fenceChange = val.$index;
+      let e = val.row;
+      this.new_change = false; // 设置状态为修改围栏状态
+      this.clearForm(); // 清空表单及地图
       console.log("e", e);
       // 显示新增围栏的卡牌
       this.idShowAddFence = true;
       this.fenceName = e.fenceName;
       this.fenceType = e.fenceType;
       this.state = e.state;
-      this.devicValue = e.devicValue;
+      this.deviceActive = e.deviceActive;
       // 获取地图实例
-      let map = this.map;
       let marker = (this.oldMarker = new AMap.Marker({
-        content: `<img src="http://cp.juyiaqyy.com/images/juyiScreen/fence/device.png" style="width:30px;transform: translate(-20%,50%);">`,
+        content: this.icon,
         position: [e.device.lng, e.device.lat],
       }));
       map.add(marker);
@@ -380,8 +392,14 @@ export default {
       polyEditor.open();
       map.setFitView([poly], false, [60, 60, 60, 60]);
     },
-    verify() {
-      this.fenceLists.forEach((val) => {
+    // 搜索围栏
+    inputChange() {
+      this.fenceList.forEach((item) => {
+        item.fenceName == this.fenceSearch;
+      });
+    },
+    /* verify() {
+      this.fenceList.forEach((val) => {
         // console.log("val", val);
         this.$api.getDetailWithWorkConditionData(val.device.id).then((res) => {
           let lat = res.data.data.baseInfo.lat;
@@ -394,26 +412,52 @@ export default {
           }
         });
       });
+    }, */
+    //清空表单及地图覆盖物
+    clearForm() {
+      this.idShowAddFence = false;
+      this.fenceName = "";
+      this.fenceType = "";
+      this.state = "1";
+      this.deviceActive = "";
+      // 使用clearMap方法删除所有覆盖物
+      map.clearMap();
     },
+    // 获取设备列表
     getDeviceList() {
       this.$api.getSelectList("", "", "", "", 1, 9999).then((res) => {
         this.deviceList = res.data.data.rows;
       });
     },
+    // 简单实现绘制正方形，side 正方形边长，单位米
+    // 若需要绘制其他矩形，需自行修改代码
+    centerPointGetFourPoint: ({ lat, lng }, side = 1000) => {
+      const centerPoint = new AMap.LngLat(lng, lat);
+      const upLeftPoint = centerPoint.offset(-side / 1, side / 2);
+      const upRightPoint = centerPoint.offset(side / 1, side / 2);
+      const leftBottomPoint = centerPoint.offset(-side / 1, -side / 2);
+      const rightBottomPoint = centerPoint.offset(side / 1, -side / 2);
+      return [
+        [upLeftPoint.lng, upLeftPoint.lat],
+        [upRightPoint.lng, upRightPoint.lat],
+        [rightBottomPoint.lng, rightBottomPoint.lat],
+        [leftBottomPoint.lng, leftBottomPoint.lat],
+      ];
+    },
   },
   created() {
     this.getDeviceList();
-    this.verify();
+    // this.verify();
   },
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 .ElectricFence {
   box-sizing: border-box;
   height: calc(100vh - 112px);
-  .el-table--border .el-table__cell:first-child .cell {
-    padding: 0;
+  .has-gutter > tr > th:nth-child(1) > .cell {
+    padding-left: 14px !important;
   }
   .content {
     background-color: #f6f6f6;

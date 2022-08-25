@@ -19,24 +19,34 @@
         <template slot="title">
           <span @click="deviceAdmin('list')">设备管理</span>
         </template>
-        <el-menu-item index="2-1" @click="deviceAdmin('list')">设备列表</el-menu-item>
-        <el-menu-item index="2-2" @click="deviceAdmin('detail')">设备详情</el-menu-item>
-        <el-menu-item index="2-3" @click="deviceAdmin('real')">实时监控</el-menu-item>
-        <el-menu-item index="2-4" @click="deviceAdmin('history')">历史轨迹</el-menu-item>
-        <el-menu-item index="2-5" @click="deviceAdmin('alarm')">设备报警</el-menu-item>
+        <el-menu-item index="2-1" @click="deviceAdmin('list')"
+          >设备列表</el-menu-item
+        >
+        <el-menu-item index="2-2" @click="deviceAdmin('detail')"
+          >设备详情</el-menu-item
+        >
+        <el-menu-item index="2-3" @click="deviceAdmin('real')"
+          >实时监控</el-menu-item
+        >
+        <el-menu-item index="2-4" @click="deviceAdmin('history')"
+          >历史轨迹</el-menu-item
+        >
+        <el-menu-item index="2-5" @click="deviceAdmin('alarm')"
+          >设备报警</el-menu-item
+        >
       </el-submenu>
       <el-menu-item index="3" route="/electricFence">电子围栏</el-menu-item>
       <el-menu-item index="4" route="/equipmentCondition"
         >设备工况</el-menu-item
       >
-      <el-menu-item index="5" route="/riskAlert">风险报警</el-menu-item>
+      <!-- <el-menu-item index="5" route="/riskAlert">风险报警</el-menu-item> -->
       <el-menu-item @click="screenRule">钜亿安全监控大屏</el-menu-item>
     </el-menu>
     <!-- 用户操作按钮 -->
     <div class="user">
       <i class="el-icon-s-custom"></i>
       <div class="username">
-        用户名：{{
+        {{
           userInfo.user.userName ? userInfo.user.userName : "noUserName"
         }}
       </div>
@@ -55,13 +65,13 @@ export default {
     };
   },
   methods: {
-    deviceAdmin(info){
+    deviceAdmin(info) {
       this.$router.push({
-        path:'/deviceManage',
-        query:{
-          where:info
-        }
-      })
+        path: "/deviceManage",
+        query: {
+          where: info,
+        },
+      });
     },
     screenRule() {
       let routeLink = this.$router.resolve({
@@ -129,13 +139,14 @@ export default {
     background-color: #2c2b30 !important;
     color: #f2ce91 !important;
   }
-  .user{
+  .user {
     position: absolute;
     display: flex;
-    right: 50px;
+    right: 100px;
     top: 50%;
     transform: translateY(-50%);
-    color: #fff;
+    color: rgb(245, 245, 247);
+    font-size: 14px;
   }
 }
 /* 因为导航一般来说只存在一个，所以没用id限制 */

@@ -7,9 +7,7 @@
 </template>
 <script>
 export default {
-  created() {
-    
-  },
+  created() {},
 };
 </script>
 <style lang="less"></style>

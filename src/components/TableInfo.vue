@@ -20,23 +20,6 @@
                 ></i>
               </FuncBtn>
             </div>
-            <!-- 网页全屏按钮 -->
-            <!-- <FuncBtn :isScreen="true" :isShadow="true"></FuncBtn> -->
-            <!-- 退出登录，或者用户操作按钮 -->
-            <!-- <div @click="LoginOut">
-              <FuncBtn :isShadow="true">
-                <div slot="content" style="display: flex;align-items: center;">
-                  <i class="el-icon-s-custom"></i>
-                  <div style="margin-left: 5px" class="username">
-                    用户名：{{
-                      userInfo.user.userName
-                        ? userInfo.user.userName
-                        : "noUserName"
-                    }}
-                  </div>
-                </div>
-              </FuncBtn>
-            </div> -->
           </div>
         </div>
       </div>
