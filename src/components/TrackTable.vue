@@ -7,14 +7,15 @@
       style="width: 100%"
       stripe
       border
-      height="800"
+      :height="heights"
+      ref="refsTable"
     >
       <el-table-column type="index" label="序号" width="50"></el-table-column>
-      <el-table-column prop="time_cloud" label="上报时间" width="180">
+      <el-table-column prop="time_cloud" label="上报时间" width="100">
       </el-table-column>
-      <el-table-column prop="speed_gps" label="车速（km/h）" width="180">
+      <el-table-column prop="speed_gps" label="车速 (km/h)" width="98">
       </el-table-column>
-      <el-table-column prop="incMileageGPS" label="距起点里程（km）">
+      <el-table-column prop="incMileageGPS" label="距起点里程（km）" width="85">
       </el-table-column>
       <el-table-column prop="position" label="地理位置"> </el-table-column>
     </el-table>
@@ -55,6 +56,18 @@ export default {
         this.tableData = res.data.data.listPoint;
       });
   },
+  mounted() {
+    this.$nextTick(() => {
+      // 根据浏览器高度设置初始高度
+      this.heights =
+        window.innerHeight - this.$refs.refsTable.$el.offsetTop - 100;
+      // 监听浏览器高度变化，修改表格高度
+      window.onresize = () => {
+        this.heights =
+          window.innerHeight - this.$refs.refsTable.$el.offsetTop - 100;
+      };
+    });
+  },
   methods: {
     //每页条数改变时触发 选择一页显示多少行
     handleSizeChange(val) {
@@ -81,6 +94,7 @@ export default {
         background-color: #c6e2ff !important;
         outline: 1px solid #8cc5ff;
         border-color: #8cc5ff !important;
+        font-size: 12px;
       }
     }
   }
