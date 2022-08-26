@@ -344,7 +344,7 @@ export default {
           columnKey: "beginTime",
           label: "发生时间",
           align: "center",
-          minWidth: 140,
+          minWidth: 160,
         },
         {
           prop: "alarmName",
@@ -382,7 +382,7 @@ export default {
           columnKey: "equipmentNo",
           label: "设备编号",
           align: "center",
-          minWidth: 120,
+          minWidth: 140,
           formatter: (row, column, cellValue) => {
             return row.baseInfo.equipmentNo;
           },

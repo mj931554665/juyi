@@ -1,13 +1,13 @@
 <template>
-  <div class="TrackTable">
+  <div class="TrackTable" ref="tableCot">
     <el-table
       :data="
         tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)
       "
-      id="table"
       stripe
       border
       ref="refsTable"
+      :height="heights"
     >
       <el-table-column type="index" label="序号" width="50"></el-table-column>
       <el-table-column prop="time_cloud" label="上报时间" width="100">
@@ -44,6 +44,7 @@ export default {
     };
   },
   created() {
+    //获取设备轨迹信息
     this.$api
       .getHistoryTrackDetail(
         "2022-06-08 00:00:00",
@@ -56,7 +57,16 @@ export default {
       });
   },
   mounted() {
-    document.getElementById("table").style.height = "calc(100% - 40px)";
+    this.$nextTick(() => {
+      // 根据浏览器高度设置初始高度
+      this.heights =
+        window.innerHeight - this.$refs.refsTable.$el.offsetTop - 220;
+      // 监听浏览器高度变化，修改表格高度
+      window.onresize = () => {
+        this.heights =
+          window.innerHeight - this.$refs.refsTable.$el.offsetTop - 220;
+      };
+    });
   },
   methods: {
     //每页条数改变时触发 选择一页显示多少行
@@ -77,24 +87,25 @@ export default {
 .TrackTable {
   height: 100%;
   background-color: #fff;
-  #table {
-    thead {
-      tr {
-        box-sizing: border-box;
-        border: 1px solid #8cc5ff;
-        th {
-          background-color: #c6e2ff !important;
-          outline: 1px solid #8cc5ff;
-          border-color: #8cc5ff !important;
-          font-size: 12px;
-        }
+  thead {
+    tr {
+      box-sizing: border-box;
+      border: 1px solid #8cc5ff;
+      th {
+        background-color: #c6e2ff !important;
+        outline: 1px solid #8cc5ff;
+        border-color: #8cc5ff !important;
+        font-size: 12px;
       }
     }
-    tbody {
-      td {
-        border-right: none !important;
-      }
+  }
+  tbody {
+    td {
+      border-right: none !important;
     }
+  }
+  .el-pagination {
+    padding: 10px 0;
   }
 }
 </style>

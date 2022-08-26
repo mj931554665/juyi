@@ -476,7 +476,6 @@ export default {
   .content {
     background-color: #f6f6f6;
     display: flex;
-    height: 94%;
     padding: 20px;
     min-height: 450px;
     div {
