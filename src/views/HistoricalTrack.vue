@@ -1,280 +1,245 @@
 <template>
   <div class="HistoricalTrack">
-    <div class="navbar">
+    <el-container>
+      <el-main>
+        <el-amap
+          class="amap-box"
+          :vid="'amap-vue'"
+          ref="GdMap"
+          style="height: 100%"
+        ></el-amap>
+      </el-main>
+      <el-aside width="650px">
+        <el-tabs
+          v-model="activeName"
+          :stretch="true"
+          type="card"
+          @tab-click="handleClick"
+        >
+          <el-tab-pane name="first">
+            <span class="title" slot="label"> 设备信息</span>
 
-      <el-breadcrumb separator=">">
-        <el-breadcrumb-item>设备管理</el-breadcrumb-item>
-        <el-breadcrumb-item>设备列表</el-breadcrumb-item>
-        <el-breadcrumb-item active>轨迹查询</el-breadcrumb-item>
-      </el-breadcrumb>
+            设备信息</el-tab-pane
+          >
+          <el-tab-pane name="second">
+            <span class="title" slot="label"> 轨迹信息</span>
+            <TrackTable></TrackTable>
+          </el-tab-pane>
+        </el-tabs>
+      </el-aside>
+    </el-container>
+    <!-- <div class="deviceInfo">
+      <el-row type="flex" align="middle">
+        <el-col :span="12">设备名称:</el-col>
+        <el-col :span="12"
+          ><el-select
+            v-model="deviceActive"
+            placeholder="请选择"
+            filterable
+            size="small"
+            clearable
+            @change="selectChange(deviceActive)"
+          >
+            <el-option
+              v-for="item in deviceList"
+              :key="item.id"
+              :label="item.name + ` | ` + item.equipmentNo"
+              :value="item.id"
+            >
+            </el-option> </el-select
+        ></el-col>
+      </el-row>
+      <el-row type="flex" align="middle">
+        <el-col :span="12">开始时间:</el-col>
+        <el-col :span="12">
+          <el-date-picker
+            v-model="start"
+            type="datetime"
+            :editable="false"
+            :clearable="false"
+            align="right"
+            size="small"
+            placeholder="选择日期时间"
+            default-time="12:00:00"
+          >
+          </el-date-picker>
+        </el-col>
+      </el-row>
+      <el-row type="flex" align="middle">
+        <el-col :span="12">结束时间:</el-col>
+        <el-col :span="12">
+          <el-date-picker
+            v-model="end"
+            type="datetime"
+            :editable="false"
+            :clearable="false"
+            align="right"
+            size="small"
+            placeholder="选择日期时间"
+            default-time="12:00:00"
+          >
+          </el-date-picker>
+        </el-col>
+      </el-row>
+      <el-row type="flex" align="middle">
+        <el-col :span="12">速度大于</el-col>
+        <el-col :span="3"><el-input v-model="speedInput"></el-input></el-col>
+        <el-col :span="1"></el-col>
+        <el-col :span="3">km/h</el-col>
+      </el-row>
+      <el-row type="flex" justify="space-between">
+        <el-col :span="12">速度大于50时突出显示</el-col>
+        <el-col :span="1">
+          <el-switch
+            v-model="value"
+            active-color="#13ce66"
+            inactive-color="#DBDEE5"
+          >
+          </el-switch
+        ></el-col>
+      </el-row>
+      <el-row type="flex" justify="space-between">
+        <el-col :span="12">高风险事件显示</el-col>
+        <el-col :span="1">
+          <el-switch
+            v-model="value"
+            active-color="#13ce66"
+            inactive-color="#DBDEE5"
+          >
+          </el-switch
+        ></el-col>
+      </el-row>
+      <el-row type="flex" justify="space-between">
+        <el-col :span="12">中风险事件显示</el-col>
+        <el-col :span="1">
+          <el-switch
+            v-model="value"
+            active-color="#13ce66"
+            inactive-color="#DBDEE5"
+          >
+          </el-switch
+        ></el-col>
+      </el-row>
+      <el-row type="flex" justify="space-between">
+        <el-col :span="12">低风险事件显示</el-col>
+        <el-col :span="1">
+          <el-switch
+            v-model="value"
+            active-color="#13ce66"
+            inactive-color="#DBDEE5"
+          >
+          </el-switch
+        ></el-col>
+      </el-row>
+      <el-row type="flex" justify="space-between">
+        <el-col :span="12">电子围栏显示</el-col>
+        <el-col :span="1">
+          <el-switch
+            v-model="value"
+            active-color="#13ce66"
+            inactive-color="#DBDEE5"
+          >
+          </el-switch
+        ></el-col>
+      </el-row>
 
-      <div class="operate">
-        <div class="fullScreen">
-          <div class="btn">
-            <i class="el-icon-full-screen"></i>
-          </div>
-        </div>
-
-        <div class="userMenu">
-          <div class="btn">
-            <div style="margin-left: 5px;" class="username">userName</div>
-            <i style="margin-left: 10px;" class="el-icon-arrow-down"></i>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="content">
-      <div class="module1">
-        <div class="mainWarp">
-          <div class="map"></div>
-          <div class="controls">
-            <div>轨迹里程：0.05km</div>
-            <div class="playControls">
-              <i class="el-icon-video-play"></i>
-              <i class="el-icon-video-pause"></i>
-              <i class="el-icon-d-arrow-left"></i>
-              <div class="block">
-                <!-- <span class="demonstration">0.01km</span> -->
-                <el-slider v-model="valueslider" :step="10">
-                </el-slider>
-              </div>
-              <i class="el-icon-d-arrow-right"></i>
-            </div>
-            <div>
-              暂停中... 速度X1
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="module2">
-        <div class="mainWarp">
-          <el-tabs type="border-card">
-            <el-tab-pane label="设备信息">
-              <div class="container">
-                <div>
-                  设备名称：
-                  <el-select v-model="value" filterable placeholder="请选择">
-                    <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-                    </el-option>
-                  </el-select>
-                </div>
-                <div class="block">
-                  <span class="demonstration">开始时间： </span>
-                  <el-date-picker v-model="value2" type="datetime" placeholder="选择日期时间" align="right"
-                    :picker-options="pickerOptions">
-                  </el-date-picker>
-                </div>
-                <div class="block">
-                  <span class="demonstration">结束时间： </span>
-                  <el-date-picker v-model="value2" type="datetime" placeholder="选择日期时间" align="right"
-                    :picker-options="pickerOptions">
-                  </el-date-picker>
-                </div>
-                <div class="speed">
-                  速度大于 &nbsp;
-                  <el-input v-model="input" placeholder="50"></el-input>
-                  &nbsp; km/h
-                </div>
-                <div>
-                  速度大于50时突出显示
-                  <el-switch v-model="valueswitch" active-color="#13ce66" inactive-color="#ff4949">
-                  </el-switch>
-                </div>
-                <div>
-                  高风险事件显示
-                  <el-switch v-model="valueswitch" active-color="#13ce66" inactive-color="#ff4949">
-                  </el-switch>
-                </div>
-                <div>
-                  中风险事件显示
-                  <el-switch v-model="valueswitch" active-color="#13ce66" inactive-color="#ff4949">
-                  </el-switch>
-                </div>
-                <div>
-                  低风险事件显示
-                  <el-switch v-model="valueswitch" active-color="#13ce66" inactive-color="#ff4949">
-                  </el-switch>
-                </div>
-                <div>
-                  电子围栏显示
-                  <el-switch v-model="valueswitch" active-color="#13ce66" inactive-color="#ff4949">
-                  </el-switch>
-                </div>
-                <div>
-                  <el-button type="primary">查询</el-button>
-                </div>
-              </div>
-            </el-tab-pane>
-            <el-tab-pane label="轨迹信息">
-
-              <!-- <el-table :data="tableData" style="width: 100%">
-                <el-table-column prop="date" label="日期" width="180">
-                </el-table-column>
-                <el-table-column prop="name" label="姓名" width="180">
-                </el-table-column>
-                <el-table-column prop="address" label="地址">
-                </el-table-column>
-              </el-table> -->
-
-            </el-tab-pane>
-          </el-tabs>
-        </div>
-      </div>
-    </div>
+      <el-row>
+        <el-col><el-button type="primary" round>主要按钮</el-button></el-col>
+      </el-row>
+    </div> -->
   </div>
 </template>
 <script>
+import TrackTable from "@/components/TrackTable.vue";
+import { dateFormat } from "@/utils/validate";
 export default {
+  components: {
+    TrackTable,
+  },
   data() {
     return {
-      options: [{
-        value: '选项1',
-        label: '选项1'
-      }, {
-        value: '选项2',
-        label: '选项2'
-      }, {
-        value: '选项3',
-        label: '选项3'
-      }, {
-        value: '选项4',
-        label: '选项4'
-      }, {
-        value: '选项5',
-        label: '选项5'
-      }],
-      value: '',
-      valueslider: 0,
-      valueswitch: true,
-      pickerOptions: {
-        shortcuts: [{
-          text: '今天',
-          onClick(picker) {
-            picker.$emit('pick', new Date());
-          }
-        }, {
-          text: '昨天',
-          onClick(picker) {
-            const date = new Date();
-            date.setTime(date.getTime() - 3600 * 1000 * 24);
-            picker.$emit('pick', date);
-          }
-        }, {
-          text: '一周前',
-          onClick(picker) {
-            const date = new Date();
-            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-            picker.$emit('pick', date);
-          }
-        }]
-      },
-      value1: '',
-      value2: '',
-      value3: '',
-      // tableData: [{
-      //   date: '2016-05-02',
-      //   name: '王小虎',
-      //   address: '上海市普陀区金沙江路 1518 弄'
-      // }, {
-      //   date: '2016-05-04',
-      //   name: '王小虎',
-      //   address: '上海市普陀区金沙江路 1517 弄'
-      // }, {
-      //   date: '2016-05-01',
-      //   name: '王小虎',
-      //   address: '上海市普陀区金沙江路 1519 弄'
-      // }, {
-      //   date: '2016-05-03',
-      //   name: '王小虎',
-      //   address: '上海市普陀区金沙江路 1516 弄'
-      // }]
-    }
+      activeName: "second",
+      // 设备列表及选中设备
+      deviceList: [],
+      deviceActive: null,
+      // 开始时间及结束时间
+      start: "2022-08-26 00:00:00",
+      end: "2022-08-26 23:59:59",
+      speedInput: 50,
+      value: true,
+    };
+  },
+  created() {
+    this.initDeviceInfo();
   },
   methods: {
-
-  }
-}
+    initDeviceInfo() {
+      // 获取设备列表
+      this.$api.getSelectList("", "", "", "", 1, 9999).then((res) => {
+        console.log("res.data", res.data);
+        this.deviceList = res.data.data.rows;
+      });
+    },
+    selectChange() {
+      console.log("selectChange");
+    },
+    handleClick(tab, event) {
+      console.log(tab, event);
+    },
+  },
+};
 </script>
 <style lang="less">
 .HistoricalTrack {
-  .content {
-    background-color: #dfdfdf;
-    display: flex;
-
-    .module1 {
-      margin: 10px 10px 0 10px;
-      background-color: #fff;
-      padding: 10px;
-      border-radius: 10px;
-
-      .map {
-        width: 985px;
-        height: 590px;
-        padding-bottom: 30px;
-        background: url('@/assets/test/lsgj.png');
-        background-size: contain;
-      }
-
-      .controls {
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-
-        .playControls {
-          display: flex;
-          align-items: center;
-
-          .block {
-            margin: 0 10px 0 20px;
-            width: 400px;
-          }
-
-          i {
-            margin: 0 5px;
-          }
-        }
+  height: calc(100vh - 85px);
+  .el-container {
+    box-sizing: border-box;
+    height: 100%;
+    margin-top: 15px;
+    .el-main {
+      background: #fff;
+      box-sizing: border-box;
+      width: calc(100% - 270px);
+      padding: 14px !important;
+      .amp-box {
+        margin: 14px;
       }
     }
-
-    .module2 {
-      background-color: #fff;
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 10px;
-
-      .mainWarp {
-        width: 100%;
-        // height: 534px;
-        background-color: blue;
-
-        .el-tabs {
-          width: 100%;
-          height: 100%;
-
-          .container {
-            &>div {
-              height: 40px;
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-top:10px;
-
-              .el-button {
-                width: 100%;
-              }
-            }
-
-            .speed {
-              font-size: 20px;
-
-              .el-input {
-                width: 80px;
-              }
-            }
+    .el-aside {
+      background: #fff;
+      margin-left: 15px;
+      min-width: 270px;
+      .el-tabs__nav.is-top.is-stretch {
+        border-left: none !important;
+        border-top: none !important;
+        .el-tabs__item {
+          background: hsla(0, 0%, 85%, 0.14);
+          color: #999;
+          .title {
+            font-size: 18px;
+            font-weight: 700;
+            padding-right: 10px;
+          }
+          .title::before {
+            content: "";
+            display: inline-block;
+            width: 6px;
+            height: 12px;
+            margin-right: 10px;
+            background: #bfbfbf;
+            border-radius: 1px;
           }
         }
+        .is-active {
+          background: #fff;
+          color: #333232;
+          .title::before {
+            background: #f2ce91;
+          }
+        }
+      }
+      .el-tabs__content {
+        padding: 0 15px;
       }
     }
   }
