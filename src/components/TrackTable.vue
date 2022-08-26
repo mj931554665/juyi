@@ -4,10 +4,9 @@
       :data="
         tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)
       "
-      style="width: 100%"
+      id="table"
       stripe
       border
-      :height="heights"
       ref="refsTable"
     >
       <el-table-column type="index" label="序号" width="50"></el-table-column>
@@ -57,16 +56,7 @@ export default {
       });
   },
   mounted() {
-    this.$nextTick(() => {
-      // 根据浏览器高度设置初始高度
-      this.heights =
-        window.innerHeight - this.$refs.refsTable.$el.offsetTop - 100;
-      // 监听浏览器高度变化，修改表格高度
-      window.onresize = () => {
-        this.heights =
-          window.innerHeight - this.$refs.refsTable.$el.offsetTop - 100;
-      };
-    });
+    document.getElementById("table").style.height = "calc(100% - 40px)";
   },
   methods: {
     //每页条数改变时触发 选择一页显示多少行
@@ -85,22 +75,25 @@ export default {
 </script>
 <style lang="less">
 .TrackTable {
+  height: 100%;
   background-color: #fff;
-  thead {
-    tr {
-      box-sizing: border-box;
-      border: 1px solid #8cc5ff;
-      th {
-        background-color: #c6e2ff !important;
-        outline: 1px solid #8cc5ff;
-        border-color: #8cc5ff !important;
-        font-size: 12px;
+  #table {
+    thead {
+      tr {
+        box-sizing: border-box;
+        border: 1px solid #8cc5ff;
+        th {
+          background-color: #c6e2ff !important;
+          outline: 1px solid #8cc5ff;
+          border-color: #8cc5ff !important;
+          font-size: 12px;
+        }
       }
     }
-  }
-  tbody {
-    td {
-      border-right: none !important;
+    tbody {
+      td {
+        border-right: none !important;
+      }
     }
   }
 }

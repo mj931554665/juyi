@@ -23,7 +23,9 @@
           >
           <el-tab-pane name="second">
             <span class="title" slot="label"> 轨迹信息</span>
-            <TrackTable></TrackTable>
+            <div style="height: calc(100vh - 170px);">
+              <TrackTable></TrackTable>
+            </div>
           </el-tab-pane>
         </el-tabs>
       </el-aside>
@@ -191,11 +193,12 @@ export default {
 </script>
 <style lang="less">
 .HistoricalTrack {
-  height: calc(100vh - 85px);
+  box-sizing: border-box;
+  margin: 15px;
+  height: calc(100vh - 100px);
   .el-container {
     box-sizing: border-box;
     height: 100%;
-    margin-top: 15px;
     .el-main {
       background: #fff;
       box-sizing: border-box;
