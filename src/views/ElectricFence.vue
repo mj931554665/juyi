@@ -216,7 +216,7 @@ export default {
           label: "作业区域",
         },
       ],
-      hintList:[], //进出围栏报警
+      hintList: [], //进出围栏报警
       state: "1", // 是否启用
       deviceList: [], // 设备列表
       deviceValue: "", // 选中设备的信息
@@ -317,7 +317,7 @@ export default {
           type: this.type, // 区域类型
           fenceName: this.fenceName, // 围栏名称
           fenceType: this.fenceType, // 围栏类型
-          hintList:this.hintList, //进出围栏报警
+          hintList: this.hintList, //进出围栏报警
           state: this.state, // 围栏启用状态
           stateLabel: this.state == 1 ? "启用" : "停用", // 围栏启用状态标签
           device: this.deviceValue, // 围栏绑定的设备信息
@@ -476,7 +476,7 @@ export default {
   .content {
     background-color: #f6f6f6;
     display: flex;
-    height: 100%;
+    height: 94%;
     padding: 20px;
     min-height: 450px;
     div {

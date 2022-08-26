@@ -598,7 +598,7 @@
           </div>
         </div>
       </div>
-      <div class="map" style="overflow: hidden;">
+      <div class="map" style="overflow: hidden">
         <!-- <ScreenMap
           @deviceData="getdeviceData(arguments)"
           :deviceList="deviceList"
@@ -637,7 +637,7 @@ export default {
     EchartsComp,
     VideoArea,
     CstorLivePlayer,
-    TestMap
+    TestMap,
   },
   computed: {
     chart3_option() {
@@ -746,7 +746,7 @@ export default {
       }
     },
     initData() {
-      this.$api.getcustomerScreen("1", "9999").then(val => {
+      this.$api.getcustomerScreen("1", "9999").then((val) => {
         // 给设备列表赋值
         this.deviceList = val.data.data;
         // 给设备数据赋值
@@ -789,7 +789,7 @@ export default {
         let s = dt.getSeconds(); //获取秒
         document.querySelector(".time").innerHTML =
           y + "-" + mt + "-" + day + " -" + h + ":" + m + ":" + s;
-          t = setTimeout(time, 1000); //设定定时器，循环运行
+        t = setTimeout(time, 1000); //设定定时器，循环运行
       }
     })();
     this.initData();

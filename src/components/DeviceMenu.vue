@@ -1,9 +1,7 @@
 <template>
-  <div>
+  <div class="deviceMenu">
     <el-menu
       class="el-menu-vertical-demo"
-      @open="handleOpen"
-      @close="handleClose"
       background-color="#545c64"
       text-color="#fff"
       active-text-color="#ffd04b"
@@ -27,7 +25,7 @@ export default {
   name: "DeviceMenu",
   data() {
     return {
-      active: "history",
+      active: "list",
       routerInfo: {
         list: {
           index: "list",
@@ -83,31 +81,25 @@ export default {
       path: this.routerInfo[this.active].url,
     });
   },
-  methods: {
-    handleOpen(key, keyPath) {
-      console.log(key, keyPath);
-    },
-    handleClose(key, keyPath) {
-      console.log(key, keyPath);
-    },
-  },
 };
 </script>
 
-<style scoped>
-.el-menu-vertical-demo:not(.el-menu--collapse) {
-  width: 180px;
-  height: calc(100vh - 70px);
-  overflow-y: auto;
-  text-align: center;
-}
-.el-menu-vertical-demo i {
-  color: white;
-}
-.el-menu-vertical-demo .is-active i {
-  color: #f2ce91 !important;
-}
-.el-menu-item:hover i {
-  color: #f2ce91 !important;
+<style lang="less">
+.deviceMenu {
+  .el-menu-vertical-demo:not(.el-menu--collapse) {
+    width: 180px;
+    height: calc(100vh - 70px);
+    overflow-y: auto;
+    text-align: center;
+  }
+  .el-menu-vertical-demo i {
+    color: white;
+  }
+  .el-menu-vertical-demo .is-active i {
+    color: #f2ce91 !important;
+  }
+  .el-menu-item:hover i {
+    color: #f2ce91 !important;
+  }
 }
 </style>

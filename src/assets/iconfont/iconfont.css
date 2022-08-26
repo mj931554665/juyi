@@ -15,19 +15,24 @@
   content: "\e738";
 }
 
-.icon-daichulidingdan:before {
-  content: "\e640";
-}
-
 .icon-lishishuju:before {
   content: "\e517";
 }
 
-.icon-xiangqing-:before {
-  content: "\e607";
+.icon-xiangqing:before {
+  content: "\e66b";
+}
+
+.icon-quchuli:before {
+  content: "\e624";
+}
+
+.icon-lishishijian:before {
+  content: "\e60d";
 }
 
 .icon-xiazai:before {
   content: "\e6d0";
 }
+
 

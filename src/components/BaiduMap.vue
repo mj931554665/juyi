@@ -571,7 +571,6 @@ export default {
     // 获取设备列表
     this.getqueryEquipmentsByPage();
 
-
     this.$api.refreshSession(this);
     // let that = this;
     // (function () {

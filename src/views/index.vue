@@ -1,10 +1,10 @@
 <template>
   <div>
     <el-container>
-      <el-header height="100" style="padding: 0;">
+      <el-header height="100" style="padding: 0">
         <NavbarVue />
       </el-header>
-      <el-main  style="background-color: #f6f6f6;min-height:calc(100vh - 70px);">
+      <el-main>
         <router-view />
       </el-main>
     </el-container>
