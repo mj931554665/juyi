@@ -312,7 +312,7 @@ export default {
         this.errMsg1 = this.errMsg2 = this.errMsg3 = this.errMsg4 = "";
 
         // 创建围栏
-        console.log("this.Polygon", this.Polygon);
+        console.log("this.Polygon", this.Polygon.getPath());
         let fence = {
           type: this.type, // 区域类型
           fenceName: this.fenceName, // 围栏名称
@@ -332,7 +332,7 @@ export default {
           ])
             ? "围栏内"
             : "围栏外", // 围栏与设备的关系标签（设备是否在围栏内）
-          polygon: this.Polygon, // 围栏实例
+          polygon: this.Polygon.getPath(), // 围栏实例
         };
         if (this.new_change) {
           // 获取围栏列表并添加新增的围栏
@@ -392,8 +392,21 @@ export default {
         content: this.icon,
         position: [e.device.lng, e.device.lat],
       }));
+
+      //创建多边形实例
+      let polygon = (this.Polygon = new AMap.Polygon({
+        path: e.polygon,
+        strokeColor: "#43A5FA",
+        strokeWeight: 4,
+        strokeOpacity: 0.8,
+        fillOpacity: 0.4,
+        fillColor: "#1791fc",
+        zIndex: 50,
+        bubble: true,
+        draggable: true,
+      }));
       map.add(marker);
-      map.add(e.polygon);
+      map.add(polygon);
       // 获取已经添加的覆盖物(多边形实例)
       let poly = map.getAllOverlays("polygon")[0];
       // 使用多边形编辑器（PolyEditor）（Map 的实例，编辑对象，设置参数）

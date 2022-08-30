@@ -16,7 +16,8 @@
       </el-table-column>
       <el-table-column prop="incMileageGPS" label="距起点里程（km）" width="85">
       </el-table-column>
-      <el-table-column prop="position" label="地理位置"> </el-table-column>
+      <el-table-column prop="position" label="地理位置" min-width="300">
+      </el-table-column>
     </el-table>
     <el-pagination
       background
@@ -34,28 +35,7 @@
 </template>
 <script>
 export default {
-  props: {},
-  data() {
-    return {
-      tableData: [],
-      currentPage: 1, // 当前页码
-      total: 0, // 总条数
-      pageSize: 10, // 每页的数据条数
-    };
-  },
-  created() {
-    //获取设备轨迹信息
-    this.$api
-      .getHistoryTrackDetail(
-        "2022-06-08 00:00:00",
-        "2022-06-08 23:59:59",
-        "CC0260CB5352"
-      )
-      .then((res) => {
-        console.log("res.data", res.data.data.listPoint);
-        this.tableData = res.data.data.listPoint;
-      });
-  },
+  created() {},
   mounted() {
     this.$nextTick(() => {
       // 根据浏览器高度设置初始高度
@@ -67,6 +47,19 @@ export default {
           window.innerHeight - this.$refs.refsTable.$el.offsetTop - 220;
       };
     });
+  },
+  props: {
+    tableData: {
+      default: () => [],
+    },
+  },
+  data() {
+    return {
+      currentPage: 1, // 当前页码
+      total: 0, // 总条数
+      pageSize: 10, // 每页的数据条数
+      heights: 0,
+    };
   },
   methods: {
     //每页条数改变时触发 选择一页显示多少行
