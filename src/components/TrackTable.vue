@@ -33,7 +33,9 @@
   </div>
 </template>
 <script>
-export default {
+  import {historyTrackDetail} from "@/api/zqData";
+
+  export default {
   props: {},
   data() {
     return {
@@ -44,15 +46,14 @@ export default {
     };
   },
   created() {
-    this.$api
-      .getHistoryTrackDetail(
-        "2022-06-08 00:00:00",
-        "2022-06-08 23:59:59",
-        "CC0260CB5352"
-      )
-      .then((res) => {
-        console.log("res.data", res.data.data.listPoint);
-        this.tableData = res.data.data.listPoint;
+    let params={
+      startDate: '2022-06-08 00:00:00',
+      endDate: '2022-06-08 23:59:59',
+      vehicleCode: 'CC0260CB5352',
+    }
+    historyTrackDetail(params).then((res) => {
+        console.log("res.data", res.data.listPoint);
+        this.tableData = res.data.listPoint;
       });
   },
   mounted() {

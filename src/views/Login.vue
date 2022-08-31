@@ -73,7 +73,16 @@ export default {
         captcha: [{ required: true, trigger: 'blur', validator: validateCaptcha }],
       },
       errMsg: '',
-      responseResult: []
+      responseResult: [],
+      redirect: undefined
+    }
+  },
+  watch: {
+    $route: {
+      handler: function(route) {
+        this.redirect = route.query && route.query.redirect
+      },
+      immediate: true
     }
   },
   created() {
@@ -87,9 +96,10 @@ export default {
     },
     getCaptcha(){
       this.loginForm.uuid= this.idGen()
-      this.captchaPath="http://106.55.19.111:8080/renren-admin/captcha?uuid="+this.loginForm.uuid
+      this.captchaPath="http://192.168.0.103:8081/renren-admin/captcha?uuid="+this.loginForm.uuid
     },
-    async login() {
+    /*async login() {
+
       let userInfo = await this.$api.getLogin(this.loginForm.username, this.loginForm.password)
       if (userInfo.data.code === 200) {
         console.info('----------------->',userInfo)
@@ -99,30 +109,26 @@ export default {
       } else {
         this.errMsg = userInfo.data.message
       }
-    },
-    /*login() {
+    },*/
+    login() {
       this.$refs['loginForm'].validate(valid => {
         if (valid) {
-          let formData = new FormData();
-          formData.append('username', this.loginForm.username);
-          formData.append('password', this.loginForm.password)
-          formData.append('uuid', this.loginForm.uuid)
-          formData.append('captcha', this.loginForm.captcha)
-          this.$axios.post("http://106.55.19.111:8080/renren-admin/login",this.loginForm).then(res=>{
-            if(res.data.code===0){
-              localStorage.setItem('Login_userInfo',JSON.stringify(this.loginForm.username))
-              this.$router.replace({ path: '/' })
+          this.$store.dispatch('user/login',this.loginForm).then(res=>{
+            if(res.code === 200){
+              this.$router.push({ path: this.redirect || '/' })
             }else{
-              this.errMsg=res.data.msg
+              this.$message({
+                type: 'error',
+                message: res.msg
+              })
             }
-            console.info("------------------>>>>",res)
           })
         }else {
           console.log('error submit!!')
           return false
         }
       })
-    }*/
+    }
   }
 }
 </script>

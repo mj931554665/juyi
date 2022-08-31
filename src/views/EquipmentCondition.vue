@@ -265,6 +265,8 @@
 <script>
 import Vue from "vue";
 import { dateFormat } from "@/utils/validate";
+import {queryEquipmentsByPage,historyTrackDetail,equipmentBusinessNameByNo,workStatInfo,workDetailInfoByEquipmentNo,drivingDataDownload} from "@/api/zqData";
+
 export default {
   data() {
     return {
@@ -412,13 +414,17 @@ export default {
      * */
     initDeviceInfo() {
       this.loading = true;
-      this.$api.getqueryEquipmentsByPage(1, 99999).then((res) => {
-        if (res.data.code === 200) {
+      let params={
+        pageNum:0,
+        pageSize:9999
+      }
+      queryEquipmentsByPage(params).then((res) => {
+        if (res.code === 200) {
           this.allDeviceInfo = [];
           this.deviceNameList = [];
           this.deviceEquipmentNoList = [];
           this.plateNoList = [];
-          let data = res.data.data.rows;
+          let data = res.data.rows;
           for (let info of data) {
             let name = info.name; //设备名称
             let equipmentNo = info.equipmentNo; //设备编码
@@ -459,9 +465,9 @@ export default {
         pageNo
       );
 
-      if (detailInfo.data.code === 200) {
-        let data = detailInfo.data.data.rows;
-        this.total = detailInfo.data.data.total; //总数据量
+      if (detailInfo.code === 200) {
+        let data = detailInfo.data.rows;
+        this.total = detailInfo.data.total; //总数据量
         if (this.total < this.pageSize) {
           this.pageSize = this.total;
         }
@@ -492,15 +498,14 @@ export default {
         this.equipmentBusinessByNo(businessNo.join(","));
 
         for (let deviceNo of businessNo) {
-          this.$api
-            .getHistoryTrackDetail(
-              startDate + " 00:00:00",
-              endDate + " 23:59:59",
-              deviceNo
-            )
-            .then((res) => {
-              if (res.data.code === 200) {
-                let locationInfo = res.data.data.listPoint;
+          let params={
+            startDate: startDate + " 00:00:00",
+            endDate: endDate + " 23:59:59",
+            vehicleCode: deviceNo
+          }
+          historyTrackDetail(params).then((res) => {
+              if (res.code === 200) {
+                let locationInfo = res.data.listPoint;
                 if (locationInfo.length > 0) {
                   for (let info of this.tableData) {
                     if (info.deviceId === locationInfo[0].equip_code) {
@@ -530,9 +535,9 @@ export default {
      * 根据设备编号查询对应的基础信息
      * */
     equipmentBusinessByNo(equipment) {
-      this.$api.getEquipmentBusinessNameByNo(equipment).then((res) => {
-        if (res.data.code === 200) {
-          let data = res.data.data;
+      equipmentBusinessNameByNo({equipmentNos:equipment}).then((res) => {
+        if (res.code === 200) {
+          let data = res.data;
           for (let info of data) {
             let businessName = info.businessName; //客户名称
             let equipmentNo = info.equipmentNo; //设备编码
@@ -567,11 +572,14 @@ export default {
      * 根据设备编码获取工况的统计数据
      * */
     workStatisticalInfo(equipment, startDate, endDate) {
-      this.$api
-        .getWorkStatInfo(equipment, startDate, endDate)
-        .then((res) => {
-          if (res.data.code === 200) {
-            let data = res.data.data;
+      let params={
+        vehicleCodes: equipment,
+        startTime: startDate,
+        endTime: endDate
+      }
+      workStatInfo(params).then((res) => {
+          if (res.code === 200) {
+            let data = res.data;
             this.workOils = data.intervalCraneOilcost;
             this.workHours = data.intervalCraneWorktimeStr;
             this.craneLoadCount = data.intervalHoistingCount;
@@ -587,13 +595,14 @@ export default {
      * 根据设备编码获取工况的详情信息
      * */
     workDetailInfo(equipment, startDate, endDate, pageNo) {
-      return this.$api.getWorkDetailInfoByEquipmentNo(
-        equipment,
-        startDate,
-        endDate,
-        pageNo,
-        this.pageSize
-      );
+      let params={
+        vehicleCodes: equipment,
+        startTime: startDate,
+        endTime: endDate,
+        pageNum: pageNo,
+        pageSize: this.pageSize
+      }
+      return workDetailInfoByEquipmentNo(params);
     },
     /**
      * 设备信息类型切换
@@ -620,11 +629,15 @@ export default {
      * 导出
      * */
     downloadData() {
-      let equipment = this.conditionDealInfo();
-      let startDate = dateFormat(this.chooseTime[0], "yyyy-MM-dd");
-      let endDate = dateFormat(this.chooseTime[1], "yyyy-MM-dd");
-      this.$api
-        .drivingDataDownload(equipment, startDate, endDate)
+      let params={
+        vehicleCodes: this.conditionDealInfo(),
+        startTime: dateFormat(this.chooseTime[0], "yyyy-MM-dd"),
+        endTime: dateFormat(this.chooseTime[1], "yyyy-MM-dd"),
+        searchType: 3,
+        sortType: null,
+        sortWay: 2
+      }
+      drivingDataDownload(params)
         .then((res) => {
           let fileNameUnicode =
             res.headers["content-disposition"].split("filename=")[1];

@@ -628,7 +628,8 @@ import VideoArea from "@/components/VideoArea.vue";
 // 引入在线视频播放组件
 import CstorLivePlayer from "cstor-live-player";
 import "cstor-live-player/dist/cstor-live-player.css";
-import mixin from "./mixin";
+import mixin from "../utils/mixin";
+import {customerScreen,detailWithWorkConditionData,vehicleCode,videoChannelState,videoPlay} from "@/api/zqData";
 export default {
   mixins: [mixin],
   components: {
@@ -702,9 +703,9 @@ export default {
     // 获取设备详细工况数据
     getDeviceData(id) {
       // 获取实时工况数据
-      this.$api.getDetailWithWorkConditionData(id).then((val) => {
+      detailWithWorkConditionData(id).then((val) => {
         // 赋值工况数据
-        let detail = val.data.data;
+        let detail = val.data;
         if (detail.workConditionData === null) {
           this.workConditionData = {};
           this.chart1_option = this.$EchartsData.Schart1(null);
@@ -723,21 +724,31 @@ export default {
       // 判断是否实时视频是否在线
       if (this.checkDevice.videoStatus) {
         // 获取实时监控视频通道数据
-        this.$api.getVehicleCode(this.checkDevice.equipmentNo).then((val) => {
-          console.log(val.data.data.length == 0, val.data.data);
+        vehicleCode({vehicleCodes:this.checkDevice.equipmentNo}).then((val) => {
+          console.log(val.data.length == 0, val.data);
 
-          let data = val.data.data[0];
-          this.$api.getVideoChannelState(data.terminalId).then((val) => {
-            let data = val.data.data[0].split(",").map(Number);
+          let data = val.data[0];
+          videoChannelState({terminalId:data.terminalId}).then((res) => {
+            let data = res.data[0].split(",").map(Number);
             // 通道信息赋值给data数据在页面显示状态
             this.VideoChannelState = data;
           });
 
-          this.$api
-            .getvideoPlay(this.checkDevice.equipmentNo, this.channel)
-            .then((val) => {
+          let params={
+            // 整车编号
+            vehicleCode: this.checkDevice.equipmentNo,
+            // 终端类型 1上车 2下车
+            videoTerType: 1,
+            // 通道号
+            channel: this.channel,
+            // 视频地址类型0 rtmp 1http-flv
+            videoAddrType: 1,
+            // 视频清晰度 0高清 1流畅
+            streamType: 0,
+          }
+          videoPlay(params).then((val) => {
               this.stopHeartBeat(this.oldChannel); //停止上一个视频的心跳
-              let data = val.data.data.split("|");
+              let data = val.data.split("|");
               this.videosrc = data[1];
               this.setHeartBeat(data[2], this.channel);
               this.oldChannel = this.channel; //记录这一次的视频通道
@@ -746,18 +757,22 @@ export default {
       }
     },
     initData() {
-      this.$api.getcustomerScreen("1", "9999").then((val) => {
+      let params={
+        pageNum:1,
+        pageSize:9999
+      }
+      customerScreen(params).then((val) => {
         // 给设备列表赋值
-        this.deviceList = val.data.data;
+        this.deviceList = val.data;
         // 给设备数据赋值
         let checkDevice = this.deviceList[0];
         this.checkDevice = checkDevice;
         // 获取第一个设备的id
         let id = checkDevice.id;
         // 获取默认设备工况数据
-        this.$api.getDetailWithWorkConditionData(id).then((val) => {
+        detailWithWorkConditionData(id).then((val) => {
           // 赋值工况数据
-          let detail = val.data.data;
+          let detail = val.data;
           this.workConditionData = detail.workConditionData;
           // 赋值工况数据给图表
           this.chart1_option = this.$EchartsData.Schart1(

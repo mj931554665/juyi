@@ -453,7 +453,9 @@ import EchartsComp from "@/components/EchartsComponent.vue";
 // 引入在线视频播放组件
 import CstorLivePlayer from "cstor-live-player";
 import "cstor-live-player/dist/cstor-live-player.css";
-import mixin from "./mixin";
+import mixin from "../utils/mixin";
+import {detailWithWorkConditionData,vehicleCode,videoChannelState,videoPlay} from "@/api/zqData";
+
 export default {
   mixins: [mixin],
   components: {
@@ -511,14 +513,14 @@ export default {
   },
   methods: {
     initChannel(vehicleCodes) {
-      this.$api.getVehicleCode(vehicleCodes).then((val) => {
-        let data = val.data.data[0];
+      vehicleCode({vehicleCodes:vehicleCodes}).then((val) => {
+        let data = val.data[0];
         // 赋值获取到的数据
         this.VideoCarByVehicleCode = data;
         // console.log("VideoCarByVehicleCode", data);
-        this.$api.getVideoChannelState(data.terminalId).then((val) => {
+        videoChannelState({terminalId:data.terminalId}).then((val) => {
           // 把通道信息分割成数组
-          let data = val.data.data[0].split(",").map(Number);
+          let data = val.data[0].split(",").map(Number);
           // 通道信息赋值给data数据在页面显示状态
           this.VideoChannelState = data;
           console.log('this.VideoChannelState',this.VideoChannelState)
@@ -527,9 +529,21 @@ export default {
     },
     // 获取视频并赋值函数
     initVideo(equipmentNo) {
-      this.$api.getvideoPlay(equipmentNo, this.channel).then(val => {
+      let params={
+        // 整车编号
+        vehicleCode: equipmentNo,
+        // 终端类型 1上车 2下车
+        videoTerType: 1,
+        // 通道号
+        channel: this.channel,
+        // 视频地址类型0 rtmp 1http-flv
+        videoAddrType: 1,
+        // 视频清晰度 0高清 1流畅
+        streamType: 0,
+      }
+      videoPlay(params).then(val => {
         this.stopHeartBeat(this.oldChannel) //停止上一个视频的心跳
-        let data = val.data.data.split("|");
+        let data = val.data.split("|");
         this.videosrc = data[1];
         this.setHeartBeat(data[2],this.channel);
         this.oldChannel=this.channel //记录这一次的视频通道
@@ -539,8 +553,8 @@ export default {
     handleClick(tab, event) {},
     // 获取设备详细工况信息
     getDeviceDetails() {
-      this.$api.getDetailWithWorkConditionData(this.id).then((res) => {
-        let data = res.data.data;
+      detailWithWorkConditionData(this.id).then((res) => {
+        let data = res.data;
         // 赋值设备实时工况数据
         this.deviceDetails = data;
         console.log("data", data);

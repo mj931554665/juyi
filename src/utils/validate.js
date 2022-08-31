@@ -33,6 +33,9 @@ export function dateFormat(originVal,format){
     return `${y}-${m}-${d}`
   }else if(format==='yyyy-MM-dd HH:mm:ss'){
     return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
+  }else if(format==='yyyy年MM月dd日HH时mm分ss秒'){
+    return `${y}年${m}月${d}日${hh}时${mm}分${ss}秒`
   }
+
 
 }

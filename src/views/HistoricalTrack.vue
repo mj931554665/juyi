@@ -154,6 +154,8 @@
 <script>
 import TrackTable from "@/components/TrackTable.vue";
 import { dateFormat } from "@/utils/validate";
+import {selectList} from "@/api/zqData";
+
 export default {
   components: {
     TrackTable,
@@ -177,9 +179,17 @@ export default {
   methods: {
     initDeviceInfo() {
       // 获取设备列表
-      this.$api.getSelectList("", "", "", "", 1, 9999).then((res) => {
+      let params={
+        equipmentNo: '',
+        name: '',
+        plateNo: '',
+        types: [],
+        pageNum: 1,
+        pageSize: 9999
+      }
+      selectList(params).then((res) => {
         console.log("res.data", res.data);
-        this.deviceList = res.data.data.rows;
+        this.deviceList = res.data.rows;
       });
     },
     selectChange() {

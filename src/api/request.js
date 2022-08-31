@@ -37,7 +37,7 @@ export default {
   },
   // 保持登录状态接口
   // 2.12——获取设备在线状态接口
-  getonlineStatus() {
+  getOnLineStatus() {
     return axios.get("/equipment/getOnlineEquipmentAmountByRiskLevel");
   },
   // 2.14——设备总数
@@ -86,7 +86,7 @@ export default {
   // 2.17-设备列表信息（所有设备列表）新
   getSelectList(equipmentNo, name, plateNo, types, pageNum, pageSize) {
     let formData = new FormData();
-    formData.append("equipmentNos", equipmentNo);
+    formData.append("equipmentNo", equipmentNo);
     formData.append("name", name);
     formData.append("plateNo", plateNo);
     formData.append("types", types);

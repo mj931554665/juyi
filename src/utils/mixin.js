@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import {flashHeartBeat} from "@/api/zqData";
+
 export default {
   data(){
     return {
@@ -12,7 +14,7 @@ export default {
       let event = setTimeout(time, 3000); //開始运行
       Vue.set(that.timeEvent,channel,event)
       function time() {
-        that.$api.getflashHeartBeat(heartBeat).then((val) => {
+        flashHeartBeat({streamingMediaUId:heartBeat}).then((val) => {
           console.log("发送心跳id了噢！！！！！！！！！！！！！！！！");
           // that.timeEvent = setTimeout(time, 3000); //设定定时器，循环运行
           let event = setTimeout(time, 3000);//设定定时器，循环运行

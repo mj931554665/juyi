@@ -12,7 +12,7 @@
       <FuncBtn>
         <div slot="content" style="display: flex">
           <i class="el-icon-s-custom"></i>
-          <span slot="content">{{ userInfo.user.userName }}</span>
+          <span slot="content">{{ name }}</span>
         </div>
       </FuncBtn>
     </div>
@@ -21,13 +21,19 @@
 
 <script>
 import FuncBtn from "@/components/FuncBtn.vue";
+import { mapGetters } from 'vuex'
 export default {
   components: {
     FuncBtn,
   },
+  computed: {
+    ...mapGetters([
+      'name'
+    ])
+  },
   data() {
     return {
-      userInfo: JSON.parse(localStorage.getItem("Login_userInfo")),
+      // userInfo: JSON.parse(localStorage.getItem("Login_userInfo")),
     };
   },
   props: {

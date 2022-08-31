@@ -175,6 +175,8 @@ import TableInfo from "@/components/TableInfo.vue";
 import Popups from "@/components/Popups.vue";
 // 引入聚合点组件（vue-baidu-map自带）
 import { BmlMarkerClusterer } from "vue-baidu-map";
+import {queryEquipmentsByPage} from "@/api/zqData";
+
 export default {
   name: "HomeView",
   components: {
@@ -431,10 +433,14 @@ export default {
       this.centerPoint.lat = 36;
     },
     // 获取设备列表数据
-    getqueryEquipmentsByPage() {
+    getQueryEquipmentsByPage() {
       // 获取已定位的设备总数显示在地图上
-      this.$api.getqueryEquipmentsByPage("0", "9999").then((val) => {
-        this.deviceList = val.data.data;
+      let params={
+        pageNum:0,
+        pageSize:9999
+      }
+      queryEquipmentsByPage(params).then((val) => {
+        this.deviceList = val.data;
         // 渲染地图上面的数据
         this.renderMap();
       });
@@ -569,9 +575,9 @@ export default {
   },
   created() {
     // 获取设备列表
-    this.getqueryEquipmentsByPage();
+    this.getQueryEquipmentsByPage();
 
-    this.$api.refreshSession(this);
+    // this.$api.refreshSession(this);
     // let that = this;
     // (function () {
     //   let event = setTimeout(refresh, 1000);

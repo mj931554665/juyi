@@ -268,6 +268,8 @@
 <script>
 import { dateFormat } from "@/utils/validate";
 import AlarmDetail from "./alarm/AlarmDetail";
+import {selectList,equipmentAlarmList,alarmType,alarmEventListInfo,downAlarmListInfo} from "@/api/zqData";
+
 import Vue from "vue";
 export default {
   data() {
@@ -344,7 +346,7 @@ export default {
           columnKey: "beginTime",
           label: "发生时间",
           align: "center",
-          minWidth: 140,
+          minWidth: 160,
         },
         {
           prop: "alarmName",
@@ -382,7 +384,7 @@ export default {
           columnKey: "equipmentNo",
           label: "设备编号",
           align: "center",
-          minWidth: 120,
+          minWidth: 140,
           formatter: (row, column, cellValue) => {
             return row.baseInfo.equipmentNo;
           },
@@ -652,9 +654,17 @@ export default {
       this.plateNoOptions = {};
       this.alarmTypeOptions = {};
       this.eventNameOptions = {};
-      this.$api.getSelectList("", "", "", [], 1, 9999).then((res) => {
-        if (res.data.code === 200) {
-          let data = res.data.data.rows;
+      let params={
+        equipmentNo: '',
+        name: '',
+        plateNo: '',
+        types: [],
+        pageNum: 1,
+        pageSize: 9999
+      }
+      selectList(params).then((res) => {
+        if (res.code === 200) {
+          let data = res.data.rows;
           for (let info of data) {
             let name = info.name; //设备名称
             let terminalId = info.terminalId; //设备终端
@@ -678,9 +688,9 @@ export default {
         }
       });
       //风险类型的
-      this.$api.getAlarmType().then((res) => {
-        if (res.data.code === 200) {
-          let data = res.data.data;
+      alarmType({}).then((res) => {
+        if (res.code === 200) {
+          let data = res.data;
           Vue.set(this.alarmTypeOptions, 0, "全部");
           for (let info of data) {
             let keys = Object.keys(this.alarmTypeOptions);
@@ -696,9 +706,9 @@ export default {
       });
 
       //事件名称
-      this.$api.getAlarmEventListInfo().then((res) => {
-        if (res.data.code === 200) {
-          let data = res.data.data;
+      alarmEventListInfo({}).then((res) => {
+        if (res.code === 200) {
+          let data = res.data;
           for (let info of data) {
             let keys = Object.keys(this.eventNameOptions);
             if (!keys.includes(info.warnType)) {
@@ -731,10 +741,10 @@ export default {
         pageSize: this.pageSize,
       };
 
-      this.$api.getEquipmentAlarmList(params).then((res) => {
-        if (res.data.code === 200) {
-          this.tableData = res.data.data.rows;
-          this.total = res.data.data.total;
+      equipmentAlarmList(params).then((res) => {
+        if (res.code === 200) {
+          this.tableData = res.data.rows;
+          this.total = res.data.total;
         } else {
           this.$message.error("接口出错，请联系维护人员");
         }
@@ -783,7 +793,7 @@ export default {
         pageNum: this.currentPage,
         pageSize: this.pageSize,
       };
-      this.$api.downAlarmListInfo(params).then((res) => {
+      downAlarmListInfo(params).then((res) => {
         let fileName =
           "风险事件_" +
           dateFormat(new Date().getTime(), "yyyy年MM月dd日HH时mm分ss秒");

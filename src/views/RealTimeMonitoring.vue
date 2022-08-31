@@ -107,7 +107,8 @@ import VideoArea from "@/components/VideoArea.vue";
 // 引入在线视频播放组件
 import CstorLivePlayer from "cstor-live-player";
 import "cstor-live-player/dist/cstor-live-player.css";
-import mixin from "./mixin";
+import mixin from "../utils/mixin";
+import {detailWithWorkConditionData,vehicleCode,videoChannelState,videoPlay} from "@/api/zqData";
 
 export default {
   mixins: [mixin],
@@ -236,26 +237,26 @@ export default {
      * */
     initChannel() {
       let vehicleCodes = this.vehicleCodes;
-      this.$api.getVehicleCode(vehicleCodes).then(res => {
-        if(res.data.code===200){
-          let data = res.data.data[0];
+      vehicleCode({vehicleCodes:vehicleCodes}).then(res => {
+        if(res.code===200){
+          let data = res.data[0];
           // 赋值获取到的数据
           this.VideoCarByVehicleCode = data;
 
-          this.$api.getVideoChannelState(data.terminalId).then((val) => {
+          videoChannelState({terminalId:data.terminalId}).then((val) => {
             // 把通道信息分割成数组
             // 通道信息赋值给data数据在页面显示状态
-            this.VideoChannelState = val.data.data[0].split(",").map(Number);
+            this.VideoChannelState = val.data[0].split(",").map(Number);
             // console.log('State',data);
           });
         }
       });
     },
     initEquipmentDetail(equipmentId){
-      this.$api.getDetailWithWorkConditionData(equipmentId).then(res => {
-        if(res.data.code===200){
+      detailWithWorkConditionData(equipmentId).then(res => {
+        if(res.code===200){
           // 赋值设备实时工况数据
-          this.deviceDetails = res.data.data
+          this.deviceDetails = res.data
         }
       })
     },
@@ -263,8 +264,20 @@ export default {
      * 连接对应的视频通道
      * */
     initVideoSrc(index) {
-      this.$api.getvideoPlay(this.vehicleCodes, index, 0).then((val) => {
-        let data = val.data.data.split("|");
+      let params={
+        // 整车编号
+        vehicleCode: this.vehicleCodes,
+        // 终端类型 1上车 2下车
+        videoTerType: 1,
+        // 通道号
+        channel: index,
+        // 视频地址类型0 rtmp 1http-flv
+        videoAddrType: 1,
+        // 视频清晰度 0高清 1流畅
+        streamType: 0,
+      }
+      videoPlay(params).then((val) => {
+        let data = val.data.split("|");
         this.setHeartBeat(data[2], index);
 
         --index

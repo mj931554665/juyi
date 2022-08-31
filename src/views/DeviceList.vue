@@ -13,7 +13,7 @@
             prefix-icon="el-icon-search"
             @keyup.enter.native="doRefresh('search')"
             v-model="searchKey"
-            placeholder="请输入设备名称或者设备编号"
+            placeholder="请输入设备编号"
             size="medium"
             clearable
           ></el-input>
@@ -299,6 +299,8 @@
 </template>
 <script>
 import Vue from "vue";
+import {selectList} from "@/api/zqData";
+
 export default {
   data() {
     return {
@@ -689,20 +691,19 @@ export default {
      * 搜索的条件数据
      * */
     initSearchData() {
-      this.$api
-        .getSelectList(
-          this.equipmentNo,
-          this.name,
-          this.plateNo,
-          this.types,
-          1,
-          9999
-        )
-        .then((res) => {
-          if (res.data.code === 200) {
+      let params={
+        equipmentNo: this.equipmentNo,
+        name: this.name,
+        plateNo: this.plateNo,
+        types: this.types,
+        pageNum: 1,
+        pageSize: 9999
+      }
+      selectList(params).then((res) => {
+          if (res.code === 200) {
             this.deviceModelList = [];
             this.permissionList = {};
-            let data = res.data.data.rows;
+            let data = res.data.rows;
             for (let info of data) {
               //设备型号
               let model = info.modelLabel;
@@ -728,18 +729,17 @@ export default {
      * */
     initDeviceList(pageNo, pageSize) {
       this.loading = true;
-      this.$api
-        .getSelectList(
-          this.equipmentNo,
-          this.name,
-          this.plateNo,
-          this.types,
-          pageNo,
-          pageSize
-        )
-        .then((res) => {
-          if (res.data.code === 200) {
-            let deviceList = res.data.data;
+      let params={
+        equipmentNo: this.equipmentNo,
+        name: this.name,
+        plateNo: this.plateNo,
+        types: this.types,
+        pageNum: pageNo,
+        pageSize: pageSize
+      }
+      selectList(params).then((res) => {
+          if (res.code === 200) {
+            let deviceList = res.data;
             this.total = deviceList.total;
             this.pages = deviceList.pages;
             this.pageSize = deviceList.pageSize;
@@ -758,7 +758,7 @@ export default {
     doRefresh(value) {
       if (value) {
         this.equipmentNo = this.searchKey;
-        this.name = this.searchKey;
+        // this.name = this.searchKey;
       }
       this.currentPage = 1;
       this.initDeviceList(this.currentPage, this.pageSize);

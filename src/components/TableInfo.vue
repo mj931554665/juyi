@@ -154,11 +154,19 @@
 <script>
 import FloatCard from "@/components/FloatCard.vue";
 import FuncBtn from "@/components/FuncBtn.vue";
+import {mapGetters} from 'vuex'
+import {onLineStatus,equipmentAmountByType,equipmentAmountByLocated,queryEquipmentsByPage} from "@/api/zqData";
+
 export default {
   name: "TableInfo",
   components: {
     FloatCard,
     FuncBtn,
+  },
+  computed: {
+    ...mapGetters([
+      'name'
+    ])
   },
   data() {
     return {
@@ -169,7 +177,7 @@ export default {
       // 设备在线状态
       onlineStatus: [],
       // 用户名
-      userInfo: JSON.parse(localStorage.getItem("Login_userInfo")),
+      // userInfo: JSON.parse(localStorage.getItem("Login_userInfo")),
       // 设备总数
       totalDevicesNum: {},
       // 定位设备的数量
@@ -184,30 +192,34 @@ export default {
   methods: {
     
     // 获取设备列表数据
-    getqueryEquipmentsByPage() {
+    getQueryEquipmentsByPage() {
       // 获取已定位的设备总数显示在地图上
-      this.$api.getqueryEquipmentsByPage("0", "9999").then((val) => {
-        this.deviceList = val.data.data;
+      let param={
+        pageNum:0,
+        pageSize:9999
+      }
+      queryEquipmentsByPage(param).then((val) => {
+        this.deviceList = val.data;
         this.initData();
       });
     },
     // 获取设备上线，风险，定位数据 函数
-    getonlineStatus() {
-      this.$api.getonlineStatus().then((val) => {
-        this.onlineStatus = val.data.data;
+    getOnLineStatus() {
+      onLineStatus().then((val) => {
+        this.onlineStatus = val.data;
         this.isshow = true
       });
     },
     // 获取设备总数
     getTotalDevicesNum() {
-      this.$api.getEquipmentAmountByType().then(val=>{
-        this.totalDevicesNum = val.data.data;
+      equipmentAmountByType().then(val=>{
+        this.totalDevicesNum = val.data;
       })
     },
     // 获取设备定位数
     getEquipmentAmountByLocated() {
-      this.$api.getEquipmentAmountByLocated().then(val=>{
-        this.locationStateNum = val.data.data;
+      equipmentAmountByLocated().then(val=>{
+        this.locationStateNum = val.data;
         console.log('this.locationStateNum',this.locationStateNum)
       })
     },
@@ -250,9 +262,9 @@ export default {
   },
   created() {
     // 获取设备列表信息
-    this.getqueryEquipmentsByPage()
+    this.getQueryEquipmentsByPage()
     // 获取设备上线，风险，故障，定位数据
-    this.getonlineStatus();
+    this.getOnLineStatus();
     // 获取设备总数
     this.getTotalDevicesNum();
     // 获取定位设备数

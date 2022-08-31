@@ -47,7 +47,7 @@
       <i class="el-icon-s-custom"></i>
       <div class="username">
         {{
-          userInfo.user.userName ? userInfo.user.userName : "noUserName"
+          name ? name : "noUserName"
         }}
       </div>
       <!-- <i style="margin-left: 10px" class="el-icon-arrow-down"></i> -->
@@ -55,14 +55,20 @@
   </div>
 </template>
 <script>
+  import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
       isCollapse: true,
       activeIndex: "",
       // 用户名
-      userInfo: JSON.parse(localStorage.getItem("Login_userInfo")),
+      // userInfo: JSON.parse(localStorage.getItem("Login_userInfo")),
     };
+  },
+  computed: {
+    ...mapGetters([
+      'name'
+    ])
   },
   methods: {
     deviceAdmin(info) {
