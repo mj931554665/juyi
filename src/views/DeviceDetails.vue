@@ -1,6 +1,5 @@
 <template>
   <div class="DeviceDetails">
-    <!-- <NavbarComponent :breadCrumbList="breadCrumbList"></NavbarComponent> -->
 
     <div class="mainBox" v-if="isshow">
       <div class="column">

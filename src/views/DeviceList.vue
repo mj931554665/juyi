@@ -223,11 +223,11 @@
 
       <div class="detail">
         <div class="operate">
-          <el-button plain class="btnChangeColor">列表显示配置</el-button>
+          <!-- <el-button plain class="btnChangeColor">列表显示配置</el-button>
           <el-button plain class="btnChangeColor">批量权限申请</el-button>
           <el-button plain class="btnChangeColor">导入</el-button>
           <el-button plain class="btnChangeColor">删除</el-button>
-          <el-button plain class="btnChangeColor">新增</el-button>
+          <el-button plain class="btnChangeColor">新增</el-button> -->
         </div>
         <el-tabs type="border-card">
           <el-tab-pane label="全部设备">
@@ -244,7 +244,7 @@
               <el-table-column type="selection" width="55" align="center" />
               <el-table-column
                 type="index"
-                width="80"
+                width="50"
                 align="center"
                 label="序号"
               >
@@ -360,42 +360,42 @@ export default {
           columnKey: "name",
           label: "设备名称",
           align: "center",
-          minWidth: 120,
+          minWidth: 80,
         },
         {
           prop: "equipmentNo",
           columnKey: "equipmentNo",
           label: "设备编号",
           align: "center",
-          minWidth: 130,
+          minWidth: 100,
         },
         {
           prop: "typeLabel",
           columnKey: "typeLabel",
           label: "设备类型",
           align: "center",
-          minWidth: 120,
+          minWidth: 100,
         },
         {
           prop: "equipmentBrandLabel",
           columnKey: "equipmentBrandLabel",
           label: "设备品牌",
           align: "center",
-          minWidth: 120,
+          minWidth: 80,
         },
         {
           prop: "modelLabel",
           columnKey: "modelLabel",
           label: "设备型号",
           align: "center",
-          minWidth: 120,
+          minWidth: 80,
         },
         {
           prop: "carStatusLabel",
           columnKey: "carStatusLabel",
           label: "设备状态",
           align: "center",
-          minWidth: 120,
+          minWidth: 80,
           render: (h, params) => {
             let carStatus = params.row.carStatus;
             let style = {};
@@ -438,14 +438,14 @@ export default {
           columnKey: "leaseStatusLabel",
           label: "经营状态",
           align: "center",
-          minWidth: 120,
+          minWidth: 80,
         },
         {
           prop: "permissionTypeLabel",
           columnKey: "permissionTypeLabel",
           label: "权限类型",
           align: "center",
-          minWidth: 120,
+          minWidth: 80,
         },
         {
           prop: "address",
@@ -483,7 +483,7 @@ export default {
           fixed: "right",
           minWidth: 150,
           render: (h, params) => {
-            let detail, real, history, more;
+            let detail, real, history, alarm;
             let hasVideo = params.row.hasVideo;
             detail = {
               class: "el-icon-tickets",
@@ -533,87 +533,121 @@ export default {
                 },
               };
               history = {
-                class: "el-icon-video-play",
+                class: "el-icon-film",
                 style: {
                   fontSize: "18px",
                   cursor: "pointer",
                   color: "red",
                 },
                 domProps: {
-                  title: "视频回放",
+                  title: "历史轨迹",
+                },
+
+                on: {
+                  click: () => {
+                    this.$router.push({
+                      name: "historicalTrack",
+                      params: {
+                        equipmentNo: params.row.equipmentNo,
+                      },
+                    });
+                  },
                 },
               };
-              more = [
-                h("span", {
-                  class: "el-dropdown-link el-icon-more-outline",
-                  style: {
-                    fontSize: "18px",
-                    cursor: "pointer",
-                    color: "red",
-                    marginLeft: "15px",
-                  },
-                  domProps: {
-                    title: "更多",
-                  },
-                }),
-                h(
-                  "el-dropdown-menu",
-                  {
-                    slot: "dropdown",
-                  },
-                  [
-                    h(
-                      "el-dropdown-item",
-                      {
-                        //历史轨迹
-                        on: {
-                          click: () => {
-                            this.$router.push({
-                              name: "historicalTrack",
-                              params: {
-                                equipmentNo: params.row.equipmentNo,
-                              },
-                            });
-                          },
-                        },
+              alarm = {
+                class: "el-icon-aim",
+                style: {
+                  fontSize: "18px",
+                  cursor: "pointer",
+                  color: "red",
+                },
+                domProps: {
+                  title: "风险报警",
+                },
+
+                //风险报警
+                on: {
+                  click: () => {
+                    this.$router.push({
+                      name: "deviceAlarm",
+                      params: {
+                        equipmentId: params.row.id,
                       },
-                      "历史轨迹"
-                    ),
-                    h(
-                      "el-dropdown-item",
-                      {
-                        //风险报警
-                        on: {
-                          click: () => {
-                            this.$router.push({
-                              name: "deviceAlarm",
-                              params: {
-                                equipmentId: params.row.id,
-                              },
-                            });
-                          },
-                        },
-                      },
-                      "风险报警"
-                    ),
-                    h(
-                      "el-dropdown-item",
-                      {
-                        //收藏
-                        on: {
-                          click: () => {},
-                        },
-                      },
-                      "收藏"
-                    ),
-                  ]
-                ),
-              ];
+                    });
+                  },
+                },
+              };
+              // more = [
+              //   h("span", {
+              //     class: "el-dropdown-link el-icon-more-outline",
+              //     style: {
+              //       fontSize: "18px",
+              //       cursor: "pointer",
+              //       color: "red",
+              //       marginLeft: "15px",
+              //     },
+              //     domProps: {
+              //       title: "更多",
+              //     },
+              //   }),
+              //   h(
+              //     "el-dropdown-menu",
+              //     {
+              //       slot: "dropdown",
+              //     },
+              //     [
+              //       h(
+              //         "el-dropdown-item",
+              //         {
+              //           //历史轨迹
+              //           on: {
+              //             click: () => {
+              //               this.$router.push({
+              //                 name: "historicalTrack",
+              //                 params: {
+              //                   equipmentNo: params.row.equipmentNo,
+              //                 },
+              //               });
+              //             },
+              //           },
+              //         },
+              //         "历史轨迹"
+              //       ),
+              //       h(
+              //         "el-dropdown-item",
+              //         {
+              //           //风险报警
+              //           on: {
+              //             click: () => {
+              //               this.$router.push({
+              //                 name: "deviceAlarm",
+              //                 params: {
+              //                   equipmentId: params.row.id,
+              //                 },
+              //               });
+              //             },
+              //           },
+              //         },
+              //         "风险报警"
+              //       ),
+              //       // h(
+              //       //   "el-dropdown-item",
+              //       //   {
+              //       //     //收藏
+              //       //     on: {
+              //       //       click: () => {},
+              //       //     },
+              //       //   },
+              //       //   "收藏"
+              //       // ),
+              //     ]
+              //   ),
+              // ];
               return h("div", [
                 h("i", detail),
                 h("i", real),
                 h("i", history),
-                h("el-dropdown", more),
+                h("i", alarm),
               ]);
             } else {
               real = {
@@ -649,7 +683,7 @@ export default {
                   title: "收藏",
                 },
               };
-              return h("div", [h("i", detail), h("i", real), h("i", history)]);
+              return h("div", [h("i", detail), h("i", real), h("i", history), h("i", alarm)]);
             }
           },
         },

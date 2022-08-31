@@ -357,8 +357,8 @@ export default {
     headerCellStyle({ row, column, rowIndex, columnIndex }) {
       let style = {};
       style.borderColor = "#C0C0C0";
-      style.background = "#2c2b30";
-      style.color = "whitesmoke";
+      style.background = "#2c2b30cc";
+      style.color = "#F2CE91";
       return style;
     },
     cellStyle({ row, column, rowIndex, columnIndex }) {
@@ -702,14 +702,13 @@ export default {
         .countData {
           display: flex;
           justify-content: space-around;
-          background: #2c2b30;
+          background: #2c2b30cc;
           padding: 20px;
           margin: 20px 0;
           border-radius: 10px;
           div {
             font-size: 16px;
-            /*color: #909399;*/
-            color: whitesmoke;
+            color: #F2CE91;
           }
 
           p {
