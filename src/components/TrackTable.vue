@@ -16,7 +16,7 @@
       </el-table-column>
       <el-table-column prop="incMileageGPS" label="距起点里程（km）" width="85">
       </el-table-column>
-      <el-table-column prop="position" label="地理位置" min-width="300">
+      <el-table-column prop="position" label="地理位置" min-width="200">
       </el-table-column>
     </el-table>
     <el-pagination

@@ -5,7 +5,6 @@
         <el-amap
           class="amap-box"
           :vid="'amap-vue'"
-          ref="GdMap"
           style="height: 100%"
           :center="mapCenter"
           :amap-manager="amapManager"
@@ -17,12 +16,22 @@
           <el-row type="flex" align="middle">
             <el-col class="left" :span="4">轨迹里程：{{ mileageStr }}km</el-col>
             <el-col class="right" :span="20">
-              <i class="el-icon-refresh"></i>
-              <i class="el-icon-video-play" @click="startTrack()"></i>
-              <i class="el-icon-video-pause"></i>
-              <i class="el-icon-d-arrow-left"></i>
+              <i
+                class="el-icon-video-play"
+                v-show="isPlay"
+                @click="trackPlay()"
+              ></i>
+              <i
+                class="el-icon-video-pause"
+                v-show="!isPlay"
+                @click="trackPause()"
+              ></i>
+              <div class="stop" @click="startTrack">
+                <i class="el-icon-video-pause"> <i class="rotate"></i></i>
+              </div>
+              <i class="el-icon-d-arrow-left" @click="reduceSpeed"></i>
               <el-slider v-model="trackSlider" height="8"></el-slider>
-              <i class="el-icon-d-arrow-right"></i>
+              <i class="el-icon-d-arrow-right" @click="addSpeed"></i>
               <span>暂停中... 速度X1</span>
             </el-col>
           </el-row>
@@ -202,19 +211,15 @@ export default {
     return {
       // 地图相关------------------------------
       mapCenter: [114.085947, 22.547], // 地图中心
-      amapGD: {
-        // 地图加载后触发的事件
-        complete: () => {
-          map = this.$refs.GdMap.$$getInstance(); // 获取地图实例
-        },
-      },
       plugins: [],
-      amapManager,
+      amapManager, // 地图管理对象(可以用于获取地图实例)
       events: {
         init(map) {
           console.log("map init ok", map);
         },
       },
+      marker: null, // 轨迹车辆实例
+      lineArr: null, // 轨迹线路实例
       // 表格查询相关-----------------------------
       TrackList: [], //轨迹信息列表表格
       activeName: "first", // 标签页切换
@@ -226,23 +231,26 @@ export default {
       end: new Date().setHours(23, 59, 59),
       speedInput: 50,
       speedValue: false, //速度显示开关
-      highRiskValue: true, //高风险显示开关
-      mediumRiskValue: true, //中风险显示开关
-      lowRiskValue: true, //低风险显示开关
-      fenceValue: true, //电子围栏显示开关
+      highRiskValue: false, //高风险显示开关
+      mediumRiskValue: false, //中风险显示开关
+      lowRiskValue: false, //低风险显示开关
+      fenceValue: false, //电子围栏显示开关
       // 控制轨迹相关数据-------------------------------
       mileageStr: "", // 轨迹里程
       trackSlider: 0,
       trackLine: [],
+      isPlay: true,
+      isStartPlay: false,
+      //动态控制小车移动速度
+      speed: 1,
     };
   },
   created() {
     this.initDeviceInfo();
   },
   methods: {
-    
     startTrack() {
-      // let map = amapManager.getMap();
+      let map = amapManager.getMap();
       map.clearMap();
 
       // 轨迹点
@@ -279,12 +287,52 @@ export default {
       marker.on("moving", function (e) {
         passedPolyline.setPath(e.passedPath);
       });
+      // 轨迹走完更新按钮状态
+      marker.on("movealong", () => {
+        console.log("asdawsd");
+        this.isPlay = true;
+        this.isStartPlay = false;
+      });
 
       // 自动适配视图
-      map.setFitView();
-
-      // 开始沿坐标移动
-      marker.moveAlong(lineArr, 200);
+      map.setFitView([polyline], false, [60, 60, 60, 60]);
+      this.marker = marker;
+      this.lineArr = lineArr;
+    },
+    trackPlay() {
+      this.isPlay = false;
+      if (!this.isStartPlay) {
+        // 开始沿坐标移动
+        this.marker.moveAlong(this.lineArr, 200, (e)=> {
+          // e 是 当前小汽车 在路径中的比值
+          // 路径是由多个坐标组成, e 不是整个路径的比值
+          // e 是每两个坐标点之间的比值 从0 到 1
+          // return 返回的值 就是改变小汽车在路径上的比值 ,比如现在走了一半(e为0.5),这时候return 0.8 那小车就会移动到 0.8的位置上,视觉上小车移动速度就变快了,但是不能超过1 超过1 就 跑出路径了
+          return e * this.speed > 1 ? 1 : e * this.speed;
+        });
+        this.isStartPlay = true;
+      } else {
+        this.marker.resumeMove();
+      }
+    },
+    trackPause() {
+      this.isPlay = true;
+      // 暂停沿坐标移动
+      this.marker.pauseMove();
+    },
+    addSpeed() {
+      this.speed +=this.speed
+      // this.changeSpeed()
+    },
+    reduceSpeed() {
+      this.speed-=this.speed
+      // this.changeSpeed()
+    },
+    changeSpeed() {
+      // this.marker.pauseMove();
+      // //改变小车移动速度,这里要注意 需要暂停 再继续 不然会有小车倒退的问题出现
+      // this.speed = this.speed === 2 ? 1 : 2;
+      // this.marker.resumeMove();
     },
     initDeviceInfo() {
       // 获取设备列表
@@ -314,6 +362,7 @@ export default {
             lineArr.push([item.longitude, item.latitude]);
           });
           this.trackLine = lineArr;
+          this.startTrack();
         });
     },
     selectChange() {
@@ -368,6 +417,24 @@ export default {
             width: 100%;
             font-size: 20px;
             color: rgba(220, 220, 220, 1);
+            .stop {
+              .el-icon-video-pause {
+                position: relative;
+                .rotate {
+                  margin: 0;
+                  width: 8px;
+                  height: 8px;
+                  background: rgba(220, 220, 220, 1);
+                  position: absolute;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                }
+              }
+              .el-icon-video-pause:hover .rotate {
+                background: rgb(255, 255, 255);
+              }
+            }
             i {
               margin: 0 5px;
             }

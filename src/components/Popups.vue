@@ -5,7 +5,8 @@
       <!-- &nbsp;<i class="el-icon-location-outline"></i>&nbsp;<i class="el-icon-video-camera"></i> -->
     </p>
     <div class="rectangle">
-      <div class="panel" @click="routerChange('deviceDetails')">
+      <div class="panel" @click="deviceAdmin('detail')">
+        <!--routerChange('deviceDetails') -->
         <span>设备详情</span>
         <p>查看</p>
         <div class="panel-footer"></div>
@@ -13,18 +14,18 @@
       <div
         class="panel"
         v-if="hasVideo"
-        @click="routerChange('realTimeMonitoring')"
+        @click="deviceAdmin('real')"
       >
         <span>视频监控</span>
         <p>实时</p>
         <div class="panel-footer"></div>
       </div>
-      <div class="panel" @click="routerChange('deviceAlarm')">
+      <div class="panel" @click="deviceAdmin('alarm')">
         <span>风险事件</span>
         <p>查询</p>
         <div class="panel-footer"></div>
       </div>
-      <div class="panel" @click="routerChange('historicalTrack')">
+      <div class="panel" @click="deviceAdmin('history')">
         <span>历史轨迹</span>
         <p>信息</p>
         <div class="panel-footer"></div>
@@ -69,14 +70,25 @@
 export default {
   props: ["hasVideo", "id"],
   methods: {
-    routerChange(path) {
+    deviceAdmin(info) {
       this.$router.push({
-        name: path,
+        path: "/deviceManage",
         params: {
           id: this.id,
         },
+        query: {
+          where: info,
+        },
       });
     },
+    // routerChange(path) {
+    //   this.$router.push({
+    //     name: path,
+    //     params: {
+    //       id: this.id,
+    //     },
+    //   });
+    // },
   },
 };
 </script>

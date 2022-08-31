@@ -22,5 +22,7 @@
 </script>
 
 <style scoped>
-
+.el-main{
+    background-color: #F6F6F6;
+}
 </style>

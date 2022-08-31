@@ -599,16 +599,11 @@
         </div>
       </div>
       <div class="map" style="overflow: hidden">
-        <!-- <ScreenMap
+        <AMap
           @deviceData="getdeviceData(arguments)"
           :deviceList="deviceList"
           :device="checkDevice"
-        ></ScreenMap> -->
-        <TestMap
-          @deviceData="getdeviceData(arguments)"
-          :deviceList="deviceList"
-          :device="checkDevice"
-        ></TestMap>
+        ></AMap>
       </div>
     </div>
   </div>
@@ -616,9 +611,7 @@
 
 <script>
 // 引入大屏地图
-import ScreenMap from "@/components/ScreenMap.vue";
-// 引入大屏地图
-import TestMap from "@/components/TestMap.vue";
+import AMap from "@/components/AMap.vue";
 // 引入全屏按钮
 import FuncBtn from "@/components/FuncBtn.vue";
 // 引入图表组件
@@ -633,11 +626,10 @@ export default {
   mixins: [mixin],
   components: {
     FuncBtn,
-    ScreenMap,
     EchartsComp,
     VideoArea,
     CstorLivePlayer,
-    TestMap,
+    AMap,
   },
   computed: {
     chart3_option() {
