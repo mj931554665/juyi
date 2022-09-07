@@ -487,6 +487,7 @@ export default {
     padding-left: 14px !important;
   }
   .content {
+    height: calc(100% - 40px);
     background-color: #f6f6f6;
     display: flex;
     padding: 20px;

@@ -4,39 +4,26 @@
       vid="amap"
       class="amap"
       :center="center"
-      :plugin="plugin"
-      zoom="4"
+      :zoom="zoom"
       :zooms="zooms"
       isHotspot="true"
       :mapStyle="mapStyle"
       :expandZoomRange="expandZoomRange"
+      :amap-manager="amapManager"
+      :events="events"
     >
-      <!-- <el-amap-marker
-        v-for="(marker, index) in markerArr"
-        :key="marker.id"
-        :position="marker.position"
-        :icon="marker.icon"
-				:label="marker.name"
-      /> -->
-      <el-amap-marker
-        v-for="(marker, index) in markerArr"
-        :offset="[-12, -60]"
-        :key="marker.lat"
-        :position="marker.position"
-        :label="marker.name"
-        :content="marker.content"
-        :events="marker.events"
-        topWhenClick="true"
-        @click="lookDetail"
-      />
     </el-amap>
   </div>
 </template>
 
 <script>
+let map = null; // 地图实例
+import { AMapManager } from "vue-amap";
+
+const amapManager = new AMapManager();
 import location from "@/assets/images/digitalScreen/device.png";
 export default {
-  props: {
+   props: {
     // 在线设备列表数据
     deviceList: {
       type: Array,
@@ -55,47 +42,63 @@ export default {
       // 把经纬度转换成数组2类型
       let lng = Number(a.lng);
       let lat = Number(a.lat);
-      console.log('lng',lng)
-      console.log('lat',lat)
       // 判断是否是初始化，并且经纬度不能为再移动地图
       if (this.Map !== null && lng !== 0 && lng !== 0) {
-        // 调用百度地图的中心点方法,把点击的设备点设为地图中心
-        this.center = [lng,lat];
+        // 把点击的设备点设为地图中心
+        this.center = [lng, lat];
       }
     },
   },
   data() {
+    let that = this;
     return {
       // 坐标点位置 + 设备定位
       markerArr: [],
       center: [105, 39.990464], // 地图初始化视图中心点
-      zooms: [4, 18], // 地图缩放倍率
+      zoom: 4, // 地图缩放倍率
+      zooms: [4, 20], // 地图缩放倍率范围
       mapStyle: "amap://styles/darkblue", //修改地图的背景颜色
       expandZoomRange: 15, // 最大缩放级别
-      plugin: [
-        // 这里放扩展的插件
-        {
-          pName: "Scale", // 比例尺
-          events: {
-            init(instance) {
-              // console.log(instance);
-            },
-          },
+      // deviceList: [],
+      amapManager, // 地图管理对象
+      markers: [],
+      cluster: null, //点聚合实例
+      events: {
+        init(map) {
+          that.renderMap();
+          map.on("zoomchange", () => {
+            console.log(map.getZoom());
+            if (map.getZoom() == 18) {
+              //   清除地图上所有聚合 clearMarkers();
+              that.cluster.clearMarkers();
+              map.add(that.markerArr);
+            } else {
+              that.cluster.clearMarkers();
+              map.add(that.markerArr);
+              map.plugin(["AMap.MarkerClusterer"], () => {
+                that.cluster = new AMap.MarkerClusterer(map, that.markerArr, {
+                  gridSize: 20,
+                });
+              });
+            }
+          });
         },
-      ],
+      },
     };
   },
   mounted() {},
   created() {
     // this.$api.getcustomerScreen("1", "9999").then((val) => {
-    //   // 给设备列表赋值
-    //   this.deviceList = val.data.data;
-    this.renderMap();
+      // 给设备列表赋值
+      // this.deviceList = val.data.data;
+      
     // });
   },
   methods: {
     // 渲染地图上面的数据
     renderMap() {
+      // 获取地图实例
+      let map = amapManager.getMap();
       let _this = this;
       //自定义map点坐标图标
       let icon = new AMap.Icon({
@@ -116,32 +119,49 @@ export default {
           // 提取设备经纬度，为对象增加位置数组属性
           item.position = [item.lng, item.lat];
           item.icon = icon;
-          item.content = `<div data-id="123" style="color: #fff;
+          // 设置在线层级高于离线层级
+          item.zIndex = item.onlineStatus == 1 ? 12 : 11;
+          // 设置标记内容
+          item.content = `<div style="color: #fff;
 								font-size: 12px;
 								border: none;
 								min-width: 20px;
 								text-align: center;
 								padding: 3px 4px;
+                opacity: 0.8;
 								background: ${item.onlineStatus == 1 ? "#409EFF" : "#868686"};
 								border-radius: 8px;">${item.name}</div>
 								<img src="http://cp.juyiaqyy.com/images/juyiScreen/screen/device.png" style="width:25px;margin-left:3px;margin-top:10px;" alt="">
 								`;
-          // 切换设备信息
-          item.events = {
-            click() {
-              // 调用百度地图的中心点方法,把点击的设备点设为地图中心
-              _this.center = [Number(item.lng), Number(item.lat)];
-              // 点击的设备信息传到父组件
-              _this.$emit("deviceData", item.id, key);
-            },
-          };
-          this.markerArr.push(item);
+          // 构造点标记
+          var marker = new AMap.Marker(item);
+          // 为标记添加点击事件 // 切换设备信息
+          marker.on("click", function (e) {
+            // 获取地图上所有的标记
+            map.getAllOverlays().forEach((item) => {
+              // 把页面未被点击到的标记层级设置为11
+              item.setzIndex(11);
+            });
+            // 把点击设备层级增加
+            marker.setzIndex(12);
+            // 把点击的设备点设为地图中心
+            _this.center = [Number(item.lng), Number(item.lat)];
+            // 点击的设备信息传到父组件
+            _this.$emit("deviceData", item.id, key);
+          });
+          // 地图添加点标记
+          this.markerArr.push(marker);
         }
       });
-      console.log("this.markerArr", this.markerArr[0]);
-    },
-    lookDetail() {
-      console.log("12314");
+      // 地图添加设备标记点
+      map.add(this.markerArr);
+      // 为所有标记添加点聚合功能
+      map.plugin(["AMap.MarkerClusterer"], () => {
+        // 把点聚合实例保存到data中以便于清除点聚合
+        this.cluster = new AMap.MarkerClusterer(map, this.markerArr, {
+          gridSize: 20,
+        });
+      });
     },
   },
 };

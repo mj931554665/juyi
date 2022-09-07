@@ -61,6 +61,12 @@
               }}</el-col>
             </el-row>
             <el-row style="width: 100%; height: 350px; margin-top: 5px">
+              <el-amap :center="[lng, lat]">
+                <el-amap-marker
+                  :position="[lng, lat]"
+                  :content="iconContent"
+                ></el-amap-marker>
+              </el-amap>
             </el-row>
             <el-row style="margin: 30px 0">
               <el-col :span="22" :offset="2">
@@ -85,6 +91,7 @@ export default {
     },
   },
   data() {
+    let that = this;
     return {
       deviceName: "", //设备名称
       equipmentNo: "", //设备编号
@@ -100,6 +107,17 @@ export default {
       lat: "", //纬度
       lng: "", //经度
       dealStatus: "", //处理状态
+      // 图标样式
+      iconContent: `<div data-id="123" style="color: #fff;
+								font-size: 12px;
+								border: none;
+								min-width: 20px;
+								text-align: center;
+								padding: 3px 4px;
+								background: #FF4620;
+								border-radius: 8px;">${this.alarmDetailInfo.baseInfo.name}</div>
+								<img src="http://cp.juyiaqyy.com/images/juyiScreen/screen/device.png" style="width:25px;margin-left:3px;margin-top:5px;border-radius:50%;border:2px solid #FF4620;">
+								`,
     };
   },
   created() {

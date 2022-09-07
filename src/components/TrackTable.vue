@@ -35,7 +35,6 @@
 </template>
 <script>
 export default {
-  created() {},
   mounted() {
     this.$nextTick(() => {
       // 根据浏览器高度设置初始高度

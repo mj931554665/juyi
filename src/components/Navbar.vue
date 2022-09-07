@@ -50,7 +50,6 @@
           userInfo.user.userName ? userInfo.user.userName : "noUserName"
         }}
       </div>
-      <!-- <i style="margin-left: 10px" class="el-icon-arrow-down"></i> -->
     </div>
   </div>
 </template>

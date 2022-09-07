@@ -387,16 +387,18 @@ export default {
             return row.baseInfo.equipmentNo;
           },
         },
-        {
-          prop: "plateNo",
-          columnKey: "plateNo",
-          label: "车牌号",
-          align: "center",
-          minWidth: 120,
-          formatter: (row, column, cellValue) => {
-            return row.baseInfo.plateNo;
-          },
-        },
+        // #region
+        // {
+        //   prop: "plateNo",
+        //   columnKey: "plateNo",
+        //   label: "车牌号",
+        //   align: "center",
+        //   minWidth: 120,
+        //   formatter: (row, column, cellValue) => {
+        //     return row.baseInfo.plateNo;
+        //   },
+        // },
+        // #endregion
         {
           prop: "address",
           columnKey: "address",
@@ -425,44 +427,46 @@ export default {
             ]);
           },
         },
-        {
-          prop: "dealStatus",
-          columnKey: "dealStatus",
-          label: "处理状态",
-          align: "center",
-          minWidth: 120,
-          render: (h, params) => {
-            let dealStatus = params.row.dealStatus;
-            let dealName;
-            let dealStyle;
-            if (dealStatus === 0) {
-              dealName = "未处理";
-              dealStyle = {
-                class: "el-icon-remove-outline",
-                style: {
-                  color: "red",
-                },
-              };
-            } else if (dealStatus === 1) {
-              dealName = "已解决";
-              dealStyle = {
-                class: "el-icon-success",
-                style: {
-                  color: "green",
-                },
-              };
-            } else {
-              dealName = "未知晓";
-              dealStyle = {
-                class: "el-icon-warning",
-                style: {
-                  color: "orange",
-                },
-              };
-            }
-            return h("div", [h("i", dealStyle), h("span", {}, dealName)]);
-          },
-        },
+        // #region
+        // /* {
+        //   prop: "dealStatus",
+        //   columnKey: "dealStatus",
+        //   label: "处理状态",
+        //   align: "center",
+        //   minWidth: 120,
+        //   render: (h, params) => {
+        //     let dealStatus = params.row.dealStatus;
+        //     let dealName;
+        //     let dealStyle;
+        //     if (dealStatus === 0) {
+        //       dealName = "未处理";
+        //       dealStyle = {
+        //         class: "el-icon-remove-outline",
+        //         style: {
+        //           color: "red",
+        //         },
+        //       };
+        //     } else if (dealStatus === 1) {
+        //       dealName = "已解决";
+        //       dealStyle = {
+        //         class: "el-icon-success",
+        //         style: {
+        //           color: "green",
+        //         },
+        //       };
+        //     } else {
+        //       dealName = "未知晓";
+        //       dealStyle = {
+        //         class: "el-icon-warning",
+        //         style: {
+        //           color: "orange",
+        //         },
+        //       };
+        //     }
+        //     return h("div", [h("i", dealStyle), h("span", {}, dealName)]);
+        //   },
+        // }, */
+        // #endregion
         {
           prop: "controller",
           columnKey: "controller",
@@ -477,6 +481,7 @@ export default {
               style: {
                 color: "red",
                 fontSize: "18px",
+                margin: "0 15px",
                 cursor: "pointer",
               },
               on: {
@@ -491,55 +496,56 @@ export default {
                 title: "查看详情",
               },
             };
-            deal = {
-              class: "iconfont icon-quchuli",
-              style: {
-                color: "red",
-                fontSize: "18px",
-                margin: "0 15px",
-                cursor: "pointer",
-              },
-              on: {
-                click: () => {
-                  /*this.$router.push({
-                    name:'deviceDetails',
-                    params:{
-                      id:params.row.id
-                    }
-                  })*/
-                },
-              },
-              domProps: {
-                title: "处理",
-              },
-            };
-            feedback = {
-              class: "iconfont icon-fankui",
-              style: {
-                color: "red",
-                fontSize: "18px",
-                marginRight: "15px",
-                cursor: "pointer",
-              },
-              on: {
-                click: () => {
-                  /*this.$router.push({
-                    name:'deviceDetails',
-                    params:{
-                      id:params.row.id
-                    }
-                  })*/
-                },
-              },
-              domProps: {
-                title: "反馈",
-              },
-            };
+            // deal = {
+            //   class: "iconfont icon-quchuli",
+            //   style: {
+            //     color: "red",
+            //     fontSize: "18px",
+            //     margin: "0 15px",
+            //     cursor: "pointer",
+            //   },
+            //   on: {
+            //     click: () => {
+            //       /*this.$router.push({
+            //         name:'deviceDetails',
+            //         params:{
+            //           id:params.row.id
+            //         }
+            //       })*/
+            //     },
+            //   },
+            //   domProps: {
+            //     title: "处理",
+            //   },
+            // };
+            // feedback = {
+            //   class: "iconfont icon-fankui",
+            //   style: {
+            //     color: "red",
+            //     fontSize: "18px",
+            //     marginRight: "15px",
+            //     cursor: "pointer",
+            //   },
+            //   on: {
+            //     click: () => {
+            //       /*this.$router.push({
+            //         name:'deviceDetails',
+            //         params:{
+            //           id:params.row.id
+            //         }
+            //       })*/
+            //     },
+            //   },
+            //   domProps: {
+            //     title: "反馈",
+            //   },
+            // };
             history = {
               class: "iconfont icon-lishishijian",
               style: {
                 color: "red",
-                fontSize: "18px",
+                fontSize: "22px",
+                margin: "0 7px",
                 cursor: "pointer",
               },
               on: {

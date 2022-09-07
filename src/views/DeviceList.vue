@@ -557,6 +557,7 @@ export default {
                 style: {
                   fontSize: "18px",
                   cursor: "pointer",
+                  margin: "0 15px",
                   color: "red",
                 },
                 domProps: {
@@ -675,6 +676,7 @@ export default {
                 style: {
                   fontSize: "18px",
                   cursor: "pointer",
+                  margin: "0 15px",
                   color: "red",
                 },
                 domProps: {
