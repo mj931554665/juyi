@@ -496,6 +496,7 @@ export default {
                 title: "查看详情",
               },
             };
+            // #region
             // deal = {
             //   class: "iconfont icon-quchuli",
             //   style: {
@@ -540,6 +541,7 @@ export default {
             //     title: "反馈",
             //   },
             // };
+            // #endregion
             history = {
               class: "iconfont icon-lishishijian",
               style: {

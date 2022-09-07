@@ -853,9 +853,6 @@ export default {
     background-color: rgba(0, 168, 255, 0.3);
   }
 
-  ::-webkit-scrollbar-corner {
-    background: #179a16;
-  }
 
   header {
     display: flex;
