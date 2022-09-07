@@ -9,7 +9,7 @@
 
     <div class="content">
       <div class="module">
-        <el-row :gutter="20">
+        <el-row :gutter="20" v-show="!conditionDetails">
           <el-col :span="2" :offset="2" style="margin-right: -20px">
             <el-select
               v-model="deviceMessage"
@@ -80,6 +80,7 @@
               <el-button
                 type="primary"
                 style="background-color: #2c2b30; border: none"
+                class="btnChangeColor"
                 size="medium"
                 icon="el-icon-download"
                 @click="downloadData"
@@ -89,7 +90,7 @@
           </el-col>
         </el-row>
         <div class="content">
-          <div class="countData">
+          <div class="countData" v-show="!conditionDetails">
             <div>
               <p>行驶里程</p>
               <h4>
@@ -121,8 +122,55 @@
               </h4>
             </div>
           </div>
+          <div class="countData" v-show="conditionDetails">
+            <div>
+              <p>设备编号</p>
+              <h4>
+                <span>21CC02008114</span>
+              </h4>
+            </div>
+            <div>
+              <p>统计时间</p>
+              <h4>
+                <span>2022-08-31~2022-09-06</span>
+              </h4>
+            </div>
+            <div>
+              <p>行驶公里</p>
+              <h4><span>0.00</span> 公里</h4>
+            </div>
+            <div>
+              <p>行驶油耗</p>
+              <h4><span>0.00</span> 升</h4>
+            </div>
+            <div>
+              <p>工作时长</p>
+              <h4><span>79.80</span> 小时</h4>
+            </div>
+            <div>
+              <p>工作油耗</p>
+              <h4><span>464.00</span> 升</h4>
+            </div>
+            <div>
+              <p>吊载次数</p>
+              <h4><span>2</span> 次</h4>
+            </div>
+            <div>
+              <el-button
+                plain
+                size="medium"
+                style="border: none; outline: 1px solid #dcdfe6"
+                class="back"
+                icon="el-icon-arrow-left"
+                @click="backOut"
+                v-show="conditionDetails"
+                >返回</el-button
+              >
+            </div>
+          </div>
           <div class="module">
             <el-table
+              ref="conditionTable"
               v-loading="loading"
               element-loading-spinner="el-icon-loading"
               element-loading-background="rgba(0, 0, 0, 0.8)"
@@ -143,107 +191,33 @@
                   {{ (currentPage - 1) * pageSize + (scope.$index + 1) }}
                 </template>
               </el-table-column>
-              <el-table-column
-                prop="numberPlate"
-                label="车牌号"
-                align="center"
-                width="140"
-              >
-              </el-table-column>
-              <el-table-column
-                prop="deviceId"
-                label="设备编号"
-                align="center"
-                width="140"
-              >
-              </el-table-column>
-              <el-table-column
-                prop="equipmentType"
-                label="设备类型"
-                align="center"
-                width="140"
-              >
-              </el-table-column>
-              <el-table-column
-                prop="drivenDistance"
-                label="行驶里程（km）"
-                align="center"
-                width="140"
-              >
-              </el-table-column>
-              <el-table-column
-                prop="fuelConsumption"
-                label="行驶油耗（L）"
-                align="center"
-                width="130"
-              >
-              </el-table-column>
-              <el-table-column
-                prop="workTime"
-                label="工作时长（h）"
-                align="center"
-                width="130"
-              >
-              </el-table-column>
-              <el-table-column
-                prop="workingFuelConsumption"
-                label="工作油耗（L）"
-                align="center"
-                width="130"
-              >
-              </el-table-column>
-              <el-table-column
-                prop="liftingTimes"
-                label="吊载次数"
-                align="center"
-                width="130"
-              >
-              </el-table-column>
-              <el-table-column
-                prop="deviceOwnership"
-                label="设备归属"
-                align="center"
-                width="130"
-              >
-              </el-table-column>
-              <el-table-column
-                prop="lastLocation"
-                label="最后定位位置"
-                align="center"
-                show-overflow-tooltip
-                width="180"
-              >
-              </el-table-column>
-              <el-table-column
-                prop="lastPositioningTime"
-                label="最后定位时间"
-                align="center"
-                width="160"
-              >
-              </el-table-column>
-              <el-table-column
-                prop="operate"
-                label="操作"
-                width="160"
-                align="center"
-              >
-                <template slot-scope="scope">
-                  <span>
-                    <el-button
-                      @click="deviceDetailInfo(scope.row.deviceId)"
-                      type="text"
-                      size="medium"
-                      >详情</el-button
-                    >
-                    <el-button
-                      @click="sevenDayWorkConditionInfo(scope.row.deviceId)"
-                      type="text"
-                      size="medium"
-                      >七日工况分析</el-button
-                    >
-                  </span>
+              <!--region 数据列-->
+              <slot name="columnDataHeader">
+                <template v-for="(column, index) in columns">
+                  <el-table-column v-bind="column" :fixed="column.fixed">
+                    <template slot-scope="scope">
+                      <template v-if="!column.render">
+                        <template v-if="column.formatter">
+                          <span
+                            v-html="column.formatter(scope.row, column)"
+                          ></span>
+                        </template>
+                        <template v-else>
+                          <span>{{ scope.row[column.prop] }}</span>
+                        </template>
+                      </template>
+                      <template v-else>
+                        <expand-dom
+                          :column="column"
+                          :row="scope.row"
+                          :render="column.render"
+                          :index="index"
+                        ></expand-dom>
+                      </template>
+                    </template>
+                  </el-table-column>
                 </template>
-              </el-table-column>
+              </slot>
             </el-table>
           </div>
           <el-pagination
@@ -274,6 +248,7 @@ export default {
       deviceNameList: [], //设备名称信息
       deviceEquipmentNoList: [], //设备编号信息
       plateNoList: [], //车牌信息
+      // #region deviceMessageOptions
       deviceMessageOptions: [
         {
           //第一个搜索的条件类型
@@ -289,6 +264,7 @@ export default {
           label: "车牌号",
         },
       ],
+      // #endregion
       deviceMessage: "equipmentNo", //条件类型选择的值
       deviceInfo: [], // 选择的设备的信息
       deviceInfoOptions: [], // 对应条件搜索的数据
@@ -296,6 +272,7 @@ export default {
         new Date().getTime() - 3600 * 1000 * 24,
         new Date().getTime() - 3600 * 1000 * 24,
       ], //时间范围
+      // #region pickerOptions
       pickerOptions: {
         shortcuts: [
           {
@@ -327,6 +304,7 @@ export default {
           },
         ],
       },
+      // #endregion
       tableData: [],
       total: 0, //数据总量
       pageSize: 15, //每页数据数量
@@ -336,7 +314,184 @@ export default {
       workHours: 0.0, //工作时长
       workOils: 0.0, //工作油耗
       craneLoadCount: 0.0, //吊载次数
+
+      conditionDetails: false, //工况详情
+      detailsDeviceId: '',
+      columns: [],
+      columns1: [
+        // #region
+        {
+          prop: "deviceId",
+          label: "设备编号",
+          align: "center",
+          minWidth: 140,
+        },
+        {
+          prop: "equipmentType",
+          label: "设备类型",
+          align: "center",
+          minWidth: 140,
+        },
+        {
+          prop: "drivenDistance",
+          label: "行驶里程（km）",
+          align: "center",
+          minWidth: 140,
+        },
+        {
+          prop: "fuelConsumption",
+          label: "行驶油耗（L）",
+          align: "center",
+          minWidth: 140,
+        },
+        {
+          prop: "workTime",
+          label: "工作时长（h）",
+          align: "center",
+          minWidth: 130,
+        },
+        {
+          prop: "workingFuelConsumption",
+          label: "工作油耗（L）",
+          align: "center",
+          minWidth: 130,
+        },
+        {
+          prop: "liftingTimes",
+          label: "吊载次数",
+          align: "center",
+          minWidth: 130,
+        },
+        {
+          prop: "deviceOwnership",
+          label: "设备归属",
+          align: "center",
+          minWidth: 130,
+        },
+        {
+          prop: "lastLocation",
+          label: "最后定位位置",
+          align: "center",
+          minWidth: 180,
+        },
+        {
+          prop: "lastPositioningTime",
+          label: "最后定位时间",
+          align: "center",
+          minWidth: 160,
+        },
+        // #endregion
+        {
+          prop: "controller",
+          columnKey: "controller",
+          align: "center",
+          label: "操作",
+          fixed:"right",
+          minWidth: 150,
+          render: (h, params) => {
+            let detail;
+            detail = {
+              style: {
+                color: "red",
+                fontSize: "initial",
+                margin: "0 7px",
+                cursor: "pointer",
+              },
+              on: {
+                click: () => {
+                  this.conditionDetails = true;
+                  this.columns = this.columns2;
+                  this.currentPage = 1;
+                  this.detailsDeviceId = params.row.deviceId;
+                  this.$refs.conditionTable.doLayout();
+                  this.initDetails();
+                },
+              },
+            };
+
+            if (this.alarmHistory) {
+              return h("div", [h("span", detail)]);
+            } else {
+              return h("div", [h("span", detail, "详情")]);
+            }
+          },
+        },
+      ],
+      // #region columns2
+      columns2: [
+        {
+          prop: "statisticsDate",
+          label: "统计日期",
+          align: "center",
+          minWidth: 140,
+        },
+        {
+          prop: "drivenDistance",
+          label: "行驶里程（km）",
+          align: "center",
+          minWidth: 140,
+        },
+        {
+          prop: "fuelConsumption",
+          label: "行驶油耗（L）",
+          align: "center",
+          minWidth: 140,
+        },
+        {
+          prop: "workTime",
+          label: "工作时长（h）",
+          align: "center",
+          minWidth: 130,
+        },
+        {
+          prop: "workingFuelConsumption",
+          label: "工作油耗（L）",
+          align: "center",
+          minWidth: 130,
+        },
+        {
+          prop: "liftingTimes",
+          label: "吊载次数",
+          align: "center",
+          minWidth: 130,
+        },
+        {
+          prop: "lastLocation",
+          label: "最后定位位置",
+          align: "center",
+          minWidth: 180,
+        },
+        {
+          prop: "lastPositioningTime",
+          label: "最后定位时间",
+          align: "center",
+          minWidth: 160,
+        },
+      ],
+      // #endregion
     };
+  },
+  components: {
+    expandDom: {
+      functional: true,
+      props: {
+        row: Object,
+        render: Function,
+        index: Number,
+        column: {
+          type: Object,
+          default: null,
+        },
+      },
+      render: (h, ctx) => {
+        const params = {
+          row: ctx.props.row,
+          index: ctx.props.index,
+        };
+        if (ctx.props.column) params.column = ctx.props.column;
+        return ctx.props.render(h, params);
+      },
+    },
   },
   created() {
     this.initDeviceInfo();
@@ -411,7 +566,8 @@ export default {
      * 获取搜索条件的设备类型信息
      * */
     initDeviceInfo() {
-      this.loading = true;
+      // this.loading = true;
+      this.columns = this.columns1;
       this.$api.getqueryEquipmentsByPage(1, 99999).then((res) => {
         if (res.data.code === 200) {
           this.allDeviceInfo = [];
@@ -445,8 +601,12 @@ export default {
         }
       });
     },
+    initDetails() {
+      // this.loading = true;
+
+    },
     async workOtherInfo(equipment, pageNo) {
-      this.loading = true;
+      // this.loading = true;
       let startDate = dateFormat(this.chooseTime[0], "yyyy-MM-dd");
       let endDate = dateFormat(this.chooseTime[1], "yyyy-MM-dd");
       //统计数据的
@@ -458,6 +618,7 @@ export default {
         endDate,
         pageNo
       );
+      console.log('detailInfo',detailInfo)
 
       if (detailInfo.data.code === 200) {
         let data = detailInfo.data.data.rows;
@@ -650,6 +811,19 @@ export default {
      * */
     deviceDetailInfo(equipmentNo) {},
     /**
+     * 返回
+     * */
+    backOut() {
+      this.conditionDetails = false;
+      this.columns = this.columns1;
+      this.$nextTick(() => {
+        this.$refs.conditionTable.doLayout();
+        this.initDeviceInfo();
+      });
+      this.currentPage = 1;
+      this.detailsDeviceId = "";
+    },
+    /**
      * 详情
      * */
     sevenDayWorkConditionInfo(equipmentNo) {},
@@ -687,15 +861,27 @@ export default {
 
       .content {
         .countData {
+          position: relative;
           display: flex;
           justify-content: space-around;
           background: #2c2b30cc;
           padding: 20px;
           margin: 20px 0;
           border-radius: 10px;
+          .back {
+            // position: absolute;
+            // top: 20px;
+            // right: 20px;
+            background: #565559;
+            color: rgb(220, 223, 230) ;
+          }
+          .back:hover {
+            outline: 1px #ffffff solid;
+            color: rgb(255, 255, 255);
+          }
           div {
             font-size: 16px;
-            color: #F2CE91;
+            color: #f2ce91;
           }
 
           p {
