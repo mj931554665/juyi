@@ -75,7 +75,7 @@
             <div class="showData">
               <i style="color: #7f70f6" class="el-icon-s-unfold"></i>
               <p>设备总数</p>
-              <h4>{{ totalDevicesNum[0].amount }}</h4>
+              <h4>{{ totalDevicesNum }}</h4>
             </div>
             <div class="showData">
               <i style="color: #3ad4ff" class="el-icon-s-platform"></i>
@@ -171,7 +171,7 @@ export default {
       // 用户名
       userInfo: JSON.parse(localStorage.getItem("Login_userInfo")),
       // 设备总数
-      totalDevicesNum: {},
+      totalDevicesNum: 0,
       // 定位设备的数量
       locationStateNum: [],
       // 有监控终端的数量
@@ -182,7 +182,6 @@ export default {
     };
   },
   methods: {
-    
     // 获取设备列表数据
     getqueryEquipmentsByPage() {
       // 获取已定位的设备总数显示在地图上
@@ -201,7 +200,10 @@ export default {
     // 获取设备总数
     getTotalDevicesNum() {
       this.$api.getEquipmentAmountByType().then(val=>{
-        this.totalDevicesNum = val.data.data;
+        val.data.data.forEach(item=>{
+          this.totalDevicesNum +=item.amount
+        })
+        console.log('this.totalDevicesNum',this.totalDevicesNum)
       })
     },
     // 获取设备定位数
