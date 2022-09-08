@@ -9,54 +9,49 @@
 
     <div class="content">
       <div class="module">
-        <el-row :gutter="20" v-show="!conditionDetails">
-          <el-col :span="2" :offset="2" style="margin-right: -20px">
-            <el-select
-              v-model="deviceMessage"
-              placeholder="请选择"
-              size="medium"
-              @change="deviceMessageChange"
+        <div class="searchCondition" v-show="!conditionDetails">
+          <el-select
+            v-model="deviceMessage"
+            placeholder="请选择"
+            style="width: 100px"
+            size="small"
+            @change="deviceMessageChange"
+          >
+            <el-option
+              v-for="item in deviceMessageOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
             >
-              <el-option
-                v-for="item in deviceMessageOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </el-col>
-          <el-col :span="4">
-            <el-select
-              v-model="deviceInfo"
-              multiple
-              collapse-tags
-              filterable
-              placeholder="请选择"
-              size="medium"
-              style="width: 300px"
+            </el-option>
+          </el-select>
+          <el-select
+            v-model="deviceInfo"
+            multiple
+            collapse-tags
+            filterable
+            placeholder="请选择"
+            style="width: 200px; margin-right: 80px"
+            size="small"
+          >
+            <el-option
+              v-for="(item, index) in deviceInfoOptions"
+              :key="index"
+              :label="item"
+              :value="item"
             >
-              <el-option
-                v-for="(item, index) in deviceInfoOptions"
-                :key="index"
-                :label="item"
-                :value="item"
-              >
-              </el-option>
-            </el-select>
-          </el-col>
-          <el-col :span="1" style="width: 87px; margin: 9px 0 0 40px">
-            <div style="color: #909399">时间范围</div>
-          </el-col>
-          <el-col :span="5">
+            </el-option>
+          </el-select>
+          <div style="color: #909399">
+            时间范围
             <el-date-picker
               v-model="chooseTime"
               type="datetimerange"
               :editable="false"
               clearable
-              size="medium"
+              style="width: 280px; margin-right: 20px"
+              size="small"
               range-separator="-"
-              style="width: 280px"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
               :picker-options="pickerOptions"
@@ -64,31 +59,27 @@
               :format="'yyyy-MM-dd'"
             >
             </el-date-picker>
+          </div>
+          <el-col :span="7">
+            <el-button
+              type="primary"
+              style="background-color: #2c2b30cc; border: none"
+              size="medium"
+              icon="el-icon-search"
+              @click="foundInfByCondition"
+              >查询</el-button
+            >
+            <el-button
+              type="primary"
+              style="background-color: #2c2b30cc; border: none"
+              class="btnChangeColor"
+              size="medium"
+              icon="el-icon-download"
+              @click="downloadData"
+              >导出</el-button
+            >
           </el-col>
-          <el-col :span="5">
-            <el-col :span="7">
-              <el-button
-                type="primary"
-                style="background-color: #2c2b30; border: none"
-                size="medium"
-                icon="el-icon-search"
-                @click="foundInfByCondition"
-                >查询</el-button
-              >
-            </el-col>
-            <el-col :span="7">
-              <el-button
-                type="primary"
-                style="background-color: #2c2b30; border: none"
-                class="btnChangeColor"
-                size="medium"
-                icon="el-icon-download"
-                @click="downloadData"
-                >导出</el-button
-              >
-            </el-col>
-          </el-col>
-        </el-row>
+        </div>
         <div class="content">
           <div class="countData" v-show="!conditionDetails">
             <div>
@@ -126,34 +117,44 @@
             <div>
               <p>设备编号</p>
               <h4>
-                <span>21CC02008114</span>
+                <span>{{ detailsDeviceId }}</span>
               </h4>
             </div>
             <div>
               <p>统计时间</p>
               <h4>
-                <span>2022-08-31~2022-09-06</span>
+                <span>{{ statisticsTime }}</span>
               </h4>
             </div>
             <div>
               <p>行驶公里</p>
-              <h4><span>0.00</span> 公里</h4>
+              <h4>
+                <span>{{ intervalMileageStr }}</span> 公里
+              </h4>
             </div>
             <div>
               <p>行驶油耗</p>
-              <h4><span>0.00</span> 升</h4>
+              <h4>
+                <span>{{ runningOilTotalStr }}</span> 升
+              </h4>
             </div>
             <div>
               <p>工作时长</p>
-              <h4><span>79.80</span> 小时</h4>
+              <h4>
+                <span>{{ intervalCraneWorktimeStr }}</span> 小时
+              </h4>
             </div>
             <div>
               <p>工作油耗</p>
-              <h4><span>464.00</span> 升</h4>
+              <h4>
+                <span>{{ intervalOilStr }}</span> 升
+              </h4>
             </div>
             <div>
               <p>吊载次数</p>
-              <h4><span>2</span> 次</h4>
+              <h4>
+                <span>{{ intervalHoistingCountStr }}</span> 次
+              </h4>
             </div>
             <div>
               <el-button
@@ -221,7 +222,13 @@
             </el-table>
           </div>
           <el-pagination
-            style="text-align: center; margin-top: 20px"
+            v-show="!conditionDetails"
+            style="
+              height: 50px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            "
             @size-change="handleSizeChange"
             :current-page="currentPage"
             :page-size="pageSize"
@@ -238,12 +245,12 @@
 </template>
 <script>
 import Vue from "vue";
-import { dateFormat } from "@/utils/validate";
+import { dateFormat, getdiffdate } from "@/utils/validate";
 export default {
   data() {
     return {
       loading: false, //是否加载
-      tableHeight: window.innerHeight - 370,
+      tableHeight: window.innerHeight - 340,
       allDeviceInfo: [], //全部设备信息
       deviceNameList: [], //设备名称信息
       deviceEquipmentNoList: [], //设备编号信息
@@ -316,7 +323,13 @@ export default {
       craneLoadCount: 0.0, //吊载次数
 
       conditionDetails: false, //工况详情
-      detailsDeviceId: '',
+      detailsDeviceId: "", //设备编号
+      statisticsTime: "", //统计时间
+      intervalMileageStr: "", //行驶公里
+      runningOilTotalStr: "", //行驶油耗
+      intervalCraneWorktimeStr: "", //工作时长
+      intervalOilStr: "", //工作油耗
+      intervalHoistingCountStr: "", //吊载次数
       columns: [],
       columns1: [
         // #region
@@ -330,49 +343,71 @@ export default {
           prop: "equipmentType",
           label: "设备类型",
           align: "center",
-          minWidth: 140,
+          minWidth: 120,
         },
         {
           prop: "drivenDistance",
           label: "行驶里程（km）",
           align: "center",
-          minWidth: 140,
+          minWidth: 130,
         },
         {
           prop: "fuelConsumption",
           label: "行驶油耗（L）",
           align: "center",
-          minWidth: 140,
+          minWidth: 120,
         },
         {
           prop: "workTime",
           label: "工作时长（h）",
           align: "center",
-          minWidth: 130,
+          minWidth: 120,
         },
         {
           prop: "workingFuelConsumption",
           label: "工作油耗（L）",
           align: "center",
-          minWidth: 130,
+          minWidth: 120,
         },
         {
           prop: "liftingTimes",
           label: "吊载次数",
           align: "center",
-          minWidth: 130,
+          minWidth: 120,
         },
         {
           prop: "deviceOwnership",
           label: "设备归属",
           align: "center",
-          minWidth: 130,
+          minWidth: 120,
         },
         {
           prop: "lastLocation",
+          columnKey: "address",
           label: "最后定位位置",
           align: "center",
           minWidth: 180,
+          render: (h, params) => {
+            return h("div", [
+              h(
+                "span",
+                {
+                  style: {
+                    display: "inline-block",
+                    width: "100%",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    cursor: "pointer",
+                  },
+                  domProps: {
+                    title: params.row.lastLocation,
+                  },
+                },
+                params.row.lastLocation
+              ),
+            ]);
+          },
         },
         {
           prop: "lastPositioningTime",
@@ -386,7 +421,7 @@ export default {
           columnKey: "controller",
           align: "center",
           label: "操作",
-          fixed:"right",
+          fixed: "right",
           minWidth: 150,
           render: (h, params) => {
             let detail;
@@ -423,7 +458,7 @@ export default {
           prop: "statisticsDate",
           label: "统计日期",
           align: "center",
-          minWidth: 140,
+          minWidth: 120,
         },
         {
           prop: "drivenDistance",
@@ -457,9 +492,31 @@ export default {
         },
         {
           prop: "lastLocation",
+          columnKey: "address",
           label: "最后定位位置",
           align: "center",
           minWidth: 180,
+          render: (h, params) => {
+            return h("div", [
+              h(
+                "span",
+                {
+                  style: {
+                    display: "inline-block",
+                    width: "100%",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    cursor: "pointer",
+                  },
+                  domProps: {
+                    title: params.row.lastLocation,
+                  },
+                },
+                params.row.lastLocation
+              ),
+            ]);
+          },
         },
         {
           prop: "lastPositioningTime",
@@ -470,6 +527,11 @@ export default {
       ],
       // #endregion
     };
+  },
+  watch: {
+    conditionDetails(e) {
+      this.tableHeight = window.innerHeight - (e ? 240 : 340);
+    },
   },
   components: {
     expandDom: {
@@ -517,6 +579,7 @@ export default {
     cellStyle({ row, column, rowIndex, columnIndex }) {
       let style = {};
       style.borderColor = "#C0C0C0";
+      style.padding = "6px 0";
       return style;
     },
     /**
@@ -602,11 +665,87 @@ export default {
       });
     },
     initDetails() {
-      // this.loading = true;
+      this.loading = true;
+      let startDate = dateFormat(this.chooseTime[0], "yyyy-MM-dd");
+      let endDate = dateFormat(this.chooseTime[1], "yyyy-MM-dd");
+      this.statisticsTime = `${startDate}~${endDate}`;
+      let diffdate = getdiffdate(startDate, endDate);
+      //统计数据的
+      this.workStatisticalInfoDetails(this.detailsDeviceId, startDate, endDate);
+      this.tableData = [];
+      diffdate.forEach((startDateItem, index) => {
+        this.$api
+          .getWorkDetailInfoByEquipmentNo(
+            this.detailsDeviceId,
+            startDateItem,
+            startDateItem,
+            1,
+            this.pageSize
+          )
+          .then((res) => {
+            if (res.data.code === 200) {
+              let data = res.data.data.rows;
+              console.log("data", data[0]);
+              if (data[0]) {
+                let statisticsDate = startDateItem; //统计时间
+                let drivenDistance = data[0].intervalMileageStr; //行驶里程
+                let fuelConsumption = data[0].intervalRunOilStr; //行驶油耗
+                let workStr = data[0].intervalCraneWorktimeStr; //工作时长
+                let oliStr = data[0].intervalCraneOilcostStr; //工作油耗
+                let countStr = data[0].intervalHoistingCountStr; //吊载次数
 
+                let param = {
+                  statisticsDate: statisticsDate,
+                  drivenDistance: drivenDistance,
+                  fuelConsumption: fuelConsumption,
+                  workTime: workStr,
+                  workingFuelConsumption: oliStr,
+                  liftingTimes: countStr,
+                  lastLocation: "",
+                  lastPositioningTime: "",
+                };
+                Vue.set(this.tableData, index, param);
+                this.$api
+                  .getHistoryTrackDetail(
+                    startDateItem + " 00:00:00",
+                    startDateItem + " 23:59:59",
+                    this.detailsDeviceId
+                  )
+                  .then((res) => {
+                    if (res.data.code === 200) {
+                      let locationInfo = res.data.data.listPoint;
+                      console.log("locationInfo", locationInfo);
+                      if (locationInfo.length > 0) {
+                        let lastLocation = locationInfo.pop().position;
+                        let lastPositioningTime = locationInfo.pop().time;
+                        Vue.set(
+                          this.tableData[index],
+                          "lastLocation",
+                          lastLocation
+                        );
+                        Vue.set(
+                          this.tableData[index],
+                          "lastPositioningTime",
+                          lastPositioningTime
+                        );
+                      }
+                    } else {
+                      this.$message.error("接口出错，请联系维护人员");
+                    }
+                  })
+                  .catch((err) => {
+                    this.$message.error("接口出错，请联系维护人员");
+                  });
+              }
+            } else {
+              this.$message.error("接口出错，请联系维护人员");
+            }
+            this.loading = false;
+          });
+      });
     },
     async workOtherInfo(equipment, pageNo) {
-      // this.loading = true;
+      this.loading = true;
       let startDate = dateFormat(this.chooseTime[0], "yyyy-MM-dd");
       let endDate = dateFormat(this.chooseTime[1], "yyyy-MM-dd");
       //统计数据的
@@ -618,7 +757,6 @@ export default {
         endDate,
         pageNo
       );
-      console.log('detailInfo',detailInfo)
 
       if (detailInfo.data.code === 200) {
         let data = detailInfo.data.data.rows;
@@ -744,6 +882,26 @@ export default {
           this.$message.error("5接口出错，请联系维护人员");
         });
     },
+    workStatisticalInfoDetails(equipment, startDate, endDate) {
+      this.$api
+        .getWorkStatInfo(equipment, startDate, endDate)
+        .then((res) => {
+          if (res.data.code === 200) {
+            let data = res.data.data;
+            // 设备详细统计数据
+            this.intervalMileageStr = data.intervalMileageStr;
+            this.runningOilTotalStr = data.runningOilTotalStr;
+            this.intervalCraneWorktimeStr = data.intervalCraneWorktimeStr;
+            this.intervalOilStr = data.intervalOilStr;
+            this.intervalHoistingCountStr = data.intervalHoistingCountStr;
+          } else {
+            this.$message.error("4接口出错，请联系维护人员");
+          }
+        })
+        .catch((err) => {
+          this.$message.error("5接口出错，请联系维护人员");
+        });
+    },
     /**
      * 根据设备编码获取工况的详情信息
      * */
@@ -818,9 +976,12 @@ export default {
       this.columns = this.columns1;
       this.$nextTick(() => {
         this.$refs.conditionTable.doLayout();
-        this.initDeviceInfo();
+        let equipment = this.deviceEquipmentNoList.join(",");
+        this.workOtherInfo(equipment, 1);
+        // this.initDeviceInfo();
       });
       this.currentPage = 1;
+      this.pageSize = 15;
       this.detailsDeviceId = "";
     },
     /**
@@ -832,31 +993,38 @@ export default {
 </script>
 <style lang="less">
 .EquipmentCondition {
-  .el-breadcrumb {
-    font-weight: 600 !important;
-    color: #999;
-    font-size: 18px;
-    margin-left: 8px;
-  }
   .navbar {
     padding: 0 10px;
-    min-height: 56px;
+    min-height: 44px;
     overflow: hidden;
     position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: #f5f5f7;
+    .el-breadcrumb {
+      font-weight: 600 !important;
+      color: #999;
+      font-size: 16px;
+      margin-left: 8px;
+    }
   }
   // 内容区域
   .content {
+    min-width: 1200px;
     margin: 0 32px;
     .module {
       .header {
         display: flex;
         align-items: center;
-        /*justify-content: space-around;*/
+        /* justify-content: space-around; */
         margin: 0 20px;
+      }
+      .searchCondition {
+        margin: 0 32px;
+        display: flex;
+        align-items: center;
+        padding: 20px 0 10px 0;
       }
 
       .content {
@@ -865,27 +1033,28 @@ export default {
           display: flex;
           justify-content: space-around;
           background: #2c2b30cc;
-          padding: 20px;
-          margin: 20px 0;
+          padding: 15px;
+          margin: 10px 0;
           border-radius: 10px;
           .back {
             // position: absolute;
             // top: 20px;
             // right: 20px;
             background: #565559;
-            color: rgb(220, 223, 230) ;
+            color: rgb(220, 223, 230);
           }
           .back:hover {
             outline: 1px #ffffff solid;
             color: rgb(255, 255, 255);
           }
           div {
-            font-size: 16px;
+            font-size: 12px;
             color: #f2ce91;
           }
 
           p {
-            margin: 0 0 20px 0;
+            margin: 0 0 10px 0;
+            color: #ead4ae;
           }
 
           h4 {
