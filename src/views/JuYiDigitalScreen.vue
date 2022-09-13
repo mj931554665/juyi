@@ -13,11 +13,9 @@
       </div>
       <div class="showTime" style="display: flex">
         <span class="time" title="当前时间"></span>
-        <FuncBtn
-          :isScreen="true"
-          id="fullScreen"
-          title="全屏/退出全屏"
-        ></FuncBtn>
+        <div id="fullScreen" title="全屏/退出全屏" @click="fullScreen">
+          <i class="el-icon-full-screen"></i>
+        </div>
       </div>
     </header>
     <!-- 页面主体部分 -->
@@ -121,7 +119,7 @@
                 </el-radio-group>
                 <div class="videoBox">
                   <!-- <VideoArea>  -->
-                  <CstorLivePlayer slot="video" :src="videosrc" />
+                  <!-- <CstorLivePlayer slot="video" :src="videosrc" /> -->
                   <!-- </VideoArea> -->
                 </div>
               </div>
@@ -184,7 +182,7 @@
                     :interval="5000"
                     arrow="always"
                     indicator-position="outside"
-                    height="100px"
+                    :height="swiperHeight1"
                   >
                     <el-carousel-item>
                       <div class="dataArea">
@@ -325,10 +323,16 @@
                 </div>
               </div>
               <div>
-                <div class="title textFont16">
-                  <i class="el-icon-s-tools"></i>
-                  <span class="textColor">近七日油耗详情</span>
-                  <span style="float: right">总计：192L/49.4h</span>
+                <div class="title textFont16 weekoil">
+                  <div>
+                    <i class="el-icon-s-tools"></i>
+                    <span class="textColor">近七日油耗详情</span>
+                  </div>
+                  <span style="float: right"
+                    >总计：{{ weekAnalysisData.oilCost }}L/{{
+                      weekAnalysisData.workTime
+                    }}h</span
+                  >
                 </div>
                 <div class="splitLine"></div>
                 <div class="weekAnalysisData">
@@ -379,23 +383,38 @@
                 <div class="data">
                   <div class="item">
                     <div class="dot"></div>
-                    <div class="text">华东区：&nbsp;43%&nbsp;&nbsp;</div>
-                    <span>69</span>
+                    <div class="text">
+                      <label>华东区：</label>{{ deviceArea.east }}%
+                    </div>
+                    <span>{{ deviceArea.eastChina }}</span>
                   </div>
                   <div class="item">
                     <div class="dot"></div>
-                    <div class="text">华南区：&nbsp;27%&nbsp;&nbsp;</div>
-                    <span>43</span>
+                    <div class="text">
+                      <label>华南区：</label>{{ deviceArea.south }}%
+                    </div>
+                    <span>{{ deviceArea.southChina }}</span>
                   </div>
                   <div class="item">
                     <div class="dot"></div>
-                    <div class="text">华中区：&nbsp;17%&nbsp;&nbsp;</div>
-                    <span>28</span>
+                    <div class="text">
+                      <label>华中区：</label>{{ deviceArea.center }}%
+                    </div>
+                    <span>{{ deviceArea.centerChina }}</span>
                   </div>
                   <div class="item">
                     <div class="dot"></div>
-                    <div class="text">其他区：&nbsp;13%&nbsp;&nbsp;</div>
-                    <span>21</span>
+                    <div class="text">
+                      <label>华北区：</label>{{ deviceArea.north }}%
+                    </div>
+                    <span>{{ deviceArea.northChina }}</span>
+                  </div>
+                  <div class="item">
+                    <div class="dot"></div>
+                    <div class="text">
+                      <label>其他区：</label>{{ deviceArea.other }}%
+                    </div>
+                    <span>{{ deviceArea.otherChina }}</span>
                   </div>
                 </div>
               </div>
@@ -455,7 +474,7 @@
                 <span class="textColor">运输里程</span>
               </div>
               <div class="splitLine"></div>
-              <div class="area chart3">
+              <div class="area chart3" style="padding-top: 6px">
                 <div class="chart">
                   <EchartsComp
                     :options="chart4_option"
@@ -489,10 +508,10 @@
           <div class="rightBottom borderImg">
             <div class="content">
               <el-carousel
-                :autoplay="false"
+                :autoplay="true"
                 :interval="3000"
                 arrow="always"
-                height="150px"
+                :height="swiperHeight2"
               >
                 <el-carousel-item>
                   <div class="title textFont16">
@@ -613,7 +632,7 @@
 // 引入大屏地图
 import AMap from "@/components/AMap.vue";
 // 引入全屏按钮
-import FuncBtn from "@/components/FuncBtn.vue";
+import { fullScreen } from "@/utils/validate.js";
 // 引入图表组件
 import EchartsComp from "@/components/EchartsComponent.vue";
 // 引入实时监控组件
@@ -625,7 +644,6 @@ import mixin from "./mixin";
 export default {
   mixins: [mixin],
   components: {
-    FuncBtn,
     EchartsComp,
     VideoArea,
     CstorLivePlayer,
@@ -670,12 +688,56 @@ export default {
       oldChannel: 0,
       // 实时监控视频链接
       videosrc: "",
+      // 左边中间走马灯高度
+      swiperHeight1: `${window.innerHeight / 7}px`,
+      // 右下角走马灯高度
+      swiperHeight2: `${window.innerHeight / 5}px`,
+      // 全屏状态
+      ScreenStatus: false,
+      // 周工况数据（近七日油耗详情）
+      weekAnalysisData: {},
+      // 设备地区分布统计
+      deviceArea: {},
     };
+  },
+  created() {
+    document.title = "钜亿安全监控大屏";
+    (function () {
+      let t = null;
+      t = setTimeout(time, 1000); //開始运行
+      // clearTimeout(t); //清除定时器
+      function time() {
+        let dt = new Date();
+        let y = dt.getFullYear();
+        let mt = dt.getMonth() + 1;
+        let day = dt.getDate();
+        let h = dt.getHours(); //获取时
+        let m = dt.getMinutes(); //获取分
+        let s = dt.getSeconds(); //获取秒
+        document.querySelector(".time").innerHTML =
+          y + "-" + mt + "-" + day + " -" + h + ":" + m + ":" + s;
+        t = setTimeout(time, 1000); //设定定时器，循环运行
+      }
+    })();
+    this.initData();
+  },
+  mounted() {
+    window.addEventListener("resize", () => {
+      this.swiperHeight1 = `${window.innerHeight / 6}px`;
+      this.swiperHeight2 = `${window.innerHeight / 5}px`;
+    });
   },
   destroyed() {
     this.stopHeartBeat(this.oldChannel);
   },
   methods: {
+    // 全屏方法
+    fullScreen() {
+      this.ScreenStatus = fullScreen(this.ScreenStatus);
+      // alert(window.innerHeight);
+      // alert(window.innerHeight / 5);
+      this.swiperHeight2 = `${window.innerHeight / 5}px`;
+    },
     // 点击地图切换设备传入的值为 id,index（子传父
     getdeviceData(data) {
       this.checked(data[1]);
@@ -703,6 +765,8 @@ export default {
         } else {
           this.workConditionData = detail.workConditionData;
           // 周工作数据
+          // 赋值七日油耗详情数据
+          this.weekAnalysisData = detail.weekAnalysisData;
           // 赋值工况数据给图表
           this.chart1_option = this.$EchartsData.Schart1(
             detail.weekAnalysisData.details
@@ -729,18 +793,24 @@ export default {
             .getvideoPlay(this.checkDevice.equipmentNo, this.channel)
             .then((val) => {
               this.stopHeartBeat(this.oldChannel); //停止上一个视频的心跳
-              let data = val.data.data.split("|");
-              this.videosrc = data[1];
-              this.setHeartBeat(data[2], this.channel);
-              this.oldChannel = this.channel; //记录这一次的视频通道
+              if (val.data.data) {
+                let data = val.data.data.split("|");
+                this.videosrc = data[1];
+                this.setHeartBeat(data[2], this.channel);
+                this.oldChannel = this.channel; //记录这一次的视频通道
+              }
             });
         });
       }
     },
     initData() {
+      // 获取图表二数据
+      this.getDeviceType();
       this.$api.getcustomerScreen("1", "9999").then((val) => {
         // 给设备列表赋值
         this.deviceList = val.data.data;
+        // 设备地区分布处理
+        this.distributedArea(val.data.data);
         // 给设备数据赋值
         let checkDevice = this.deviceList[0];
         this.checkDevice = checkDevice;
@@ -751,40 +821,97 @@ export default {
           // 赋值工况数据
           let detail = val.data.data;
           this.workConditionData = detail.workConditionData;
+          // 赋值七日油耗详情数据
+          this.weekAnalysisData = detail.weekAnalysisData;
           // 赋值工况数据给图表
           this.chart1_option = this.$EchartsData.Schart1(
             detail.weekAnalysisData.details
-          );
-          // 赋值设备总数给图表二
-          this.chart2_option = this.$EchartsData.Schart2(
-            this.deviceList.length
           );
         });
 
         this.initVideo();
       });
     },
-  },
-  created() {
-    document.title = "钜亿安全监控大屏";
-    (function () {
-      let t = null;
-      t = setTimeout(time, 1000); //開始运行
-      // clearTimeout(t); //清除定时器
-      function time() {
-        let dt = new Date();
-        let y = dt.getFullYear();
-        let mt = dt.getMonth() + 1;
-        let day = dt.getDate();
-        let h = dt.getHours(); //获取时
-        let m = dt.getMinutes(); //获取分
-        let s = dt.getSeconds(); //获取秒
-        document.querySelector(".time").innerHTML =
-          y + "-" + mt + "-" + day + " -" + h + ":" + m + ":" + s;
-        t = setTimeout(time, 1000); //设定定时器，循环运行
-      }
-    })();
-    this.initData();
+    // 获取设备类型数据
+    getDeviceType() {
+      this.$api.getEquipmentAmountByType().then((val) => {
+        this.chart2_option = this.$EchartsData.Schart2(
+          val.data.data
+          );
+      });
+    },
+    // 设备地区分布
+    distributedArea(e) {
+      this.deviceArea.eastChina = //华东
+        this.deviceArea.east = //华东百分比
+        this.deviceArea.southChina = // 华南
+        this.deviceArea.south = //华南百分比
+        this.deviceArea.centerChina = //华中
+        this.deviceArea.center = //华中百分比
+        this.deviceArea.northChina = // 华北
+        this.deviceArea.north = // 华北百分比
+        this.deviceArea.otherChina = // 其他
+        this.deviceArea.other = // 其他百分比
+          0;
+      e.forEach((item) => {
+        let area = item.address;
+        if (
+          area.indexOf("山东省") > -1 ||
+          area.indexOf("江苏省") > -1 ||
+          area.indexOf("安徽省") > -1 ||
+          area.indexOf("浙江省") > -1 ||
+          area.indexOf("福建省") > -1 ||
+          area.indexOf("上海市") > -1
+        ) {
+          this.deviceArea.eastChina++;
+        } else if (
+          area.indexOf("广东省") > -1 ||
+          area.indexOf("广西壮族自治区") > -1 ||
+          area.indexOf("海南省") > -1
+        ) {
+          this.deviceArea.southChina++;
+        } else if (
+          area.indexOf("湖北省") > -1 ||
+          area.indexOf("湖南省") > -1 ||
+          area.indexOf("河南省") > -1 ||
+          area.indexOf("江西省") > -1
+        ) {
+          this.deviceArea.centerChina++;
+        } else if (
+          area.indexOf("北京") > -1 ||
+          area.indexOf("天津") > -1 ||
+          area.indexOf("河北") > -1 ||
+          area.indexOf("山西") > -1 ||
+          area.indexOf("内蒙古自治区") > -1
+        ) {
+          this.deviceArea.northChina++;
+        } else {
+          this.deviceArea.otherChina++;
+        }
+      });
+      this.deviceArea.east = (
+        (this.deviceArea.eastChina / e.length) *
+        100
+      ).toFixed(1);
+      this.deviceArea.south = (
+        (this.deviceArea.southChina / e.length) *
+        100
+      ).toFixed(1);
+      this.deviceArea.center = (
+        (this.deviceArea.centerChina / e.length) *
+        100
+      ).toFixed(1);
+      this.deviceArea.north = (
+        (this.deviceArea.northChina / e.length) *
+        100
+      ).toFixed(1);
+      this.deviceArea.other = (
+        (this.deviceArea.otherChina / e.length) *
+        100
+      ).toFixed(1);
+
+      console.log("area", this.deviceArea);
+    },
   },
 };
 </script>
@@ -792,7 +919,7 @@ export default {
 <style lang="less">
 .DigitalScreen {
   box-sizing: border-box;
-  font-size: 13.25px;
+  // font-size: 13.25px;
   color: rgb(0, 198, 255);
   min-width: 1280px;
   min-height: 620px;
@@ -825,12 +952,22 @@ export default {
   }
 
   #fullScreen {
+    padding: 0px 10px;
+    border-radius: 8px;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
     border: none;
     color: #50666e;
     background: none;
     height: auto;
     margin-left: 10px;
     font-size: 24px;
+
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.27), 0 0 40px rgba(0, 0, 0, 0.06);
   }
 
   ::-webkit-scrollbar {
@@ -852,7 +989,6 @@ export default {
   ::-webkit-scrollbar-thumb:hover {
     background-color: rgba(0, 168, 255, 0.3);
   }
-
 
   header {
     display: flex;
@@ -906,6 +1042,7 @@ export default {
     .showTime {
       height: 53px;
       display: flex;
+      font-size: 16px;
       align-items: center;
     }
   }
@@ -933,7 +1070,7 @@ export default {
 
     .textFont14,
     .textFont16 {
-      font-size: 12px;
+      font-size: 14px;
     }
 
     .splitLine {
@@ -948,6 +1085,10 @@ export default {
       display: flex;
       align-items: center;
     }
+    .weekoil {
+      display: flex;
+      justify-content: space-between;
+    }
 
     .title > i {
       font-size: 16px;
@@ -956,7 +1097,7 @@ export default {
     .leftTree {
       position: relative;
       padding: 8px 0 12px 14px;
-      width: 203px;
+      width: 13vw;
       height: calc(100% - 20px);
       z-index: 230;
       background: rgba(0, 0, 2, 0.8);
@@ -1045,7 +1186,7 @@ export default {
         position: relative;
         float: left;
         padding: 8px 0 12px 10px;
-        width: 357px;
+        width: 24vw;
         min-width: 320px;
         height: calc(100% - 20px);
         background: rgba(0, 0, 2, 0.8);
@@ -1069,6 +1210,7 @@ export default {
             }
 
             .textColor {
+              font-size: 16px;
               color: #adc8cd;
             }
 
@@ -1323,6 +1465,8 @@ export default {
             }
 
             .weekAnalysisData {
+              display: flex;
+              justify-content: center;
               height: 100%;
             }
 
@@ -1330,6 +1474,9 @@ export default {
               position: relative;
               font-size: 12px;
               height: calc(100% - 38px);
+              .el-carousel__indicators.el-carousel__indicators--horizontal.el-carousel__indicators--outside {
+                display: none;
+              }
 
               .el-carousel.el-carousel--horizontal {
                 top: calc(50% - 60px);
@@ -1390,9 +1537,9 @@ export default {
         position: relative;
         float: left;
         padding: 8px 12px;
-        height: 88px;
+        height: 12vh;
         z-index: 230;
-        width: 100%;
+        width: 60%;
         min-width: 340px;
         background: rgba(0, 0, 2, 0.8);
 
@@ -1415,6 +1562,7 @@ export default {
               }
 
               p {
+                font-size: 16px;
                 text-align: center;
               }
             }
@@ -1431,7 +1579,7 @@ export default {
         z-index: 230;
 
         .rightTop {
-          width: 304px;
+          width: 20vw;
           height: calc(75% - 10px);
           background-size: 4.8%;
 
@@ -1464,7 +1612,7 @@ export default {
                 color: #adc8cd;
                 display: flex;
                 flex-direction: column;
-                justify-content: space-around;
+                justify-content: space-between;
 
                 .item {
                   display: flex;
@@ -1479,11 +1627,16 @@ export default {
                   }
 
                   .text {
-                    width: 100px;
+                    display: flex;
+                    justify-content: space-evenly;
+                    width: 108px;
                   }
 
                   span {
+                    display: inline-block;
+                    width: 24px;
                     color: #00c6ff;
+                    text-align: right;
                   }
                 }
               }
@@ -1542,7 +1695,7 @@ export default {
               .data {
                 display: flex;
                 flex-direction: column;
-                justify-content: space-evenly;
+                justify-content: space-around;
                 color: #adc8cd;
 
                 .item {
@@ -1565,7 +1718,7 @@ export default {
 
         .rightBottom {
           margin-top: 10px;
-          width: 304px;
+          width: 20vw;
           height: calc(25% - 10px);
           background-size: 4.8%;
 
