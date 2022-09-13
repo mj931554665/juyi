@@ -110,10 +110,8 @@ export default {
       let deviceList = this.deviceList;
       // 数据进行foreach循环
       deviceList.forEach((item, key) => {
-        // 定义一个容器来装筛选后的数据
-        let device = item;
         // 解构赋值，获取到id，lng,lat
-        const { id, lng, lat } = device;
+        const { id, lng, lat } = item;
         // 判断有没有空的位置数据，把非空数据渲染到地图上
         if (id && lng && lat) {
           // 提取设备经纬度，为对象增加位置数组属性
@@ -122,17 +120,39 @@ export default {
           // 设置在线层级高于离线层级
           item.zIndex = item.onlineStatus == 1 ? 12 : 11;
           // 设置标记内容
-          item.content = `<div style="color: #fff;
-								font-size: 12px;
-								border: none;
-								min-width: 20px;
-								text-align: center;
-								padding: 3px 4px;
-                opacity: 0.8;
-								background: ${item.onlineStatus == 1 ? "#409EFF" : "#868686"};
-								border-radius: 8px;">${item.name}</div>
-								<img src="http://cp.juyiaqyy.com/images/juyiScreen/screen/device.png" style="width:25px;margin-left:3px;margin-top:10px;" alt="">
-								`;
+          item.content = `<div 
+          style="display:flex;
+          flex-direction:column;
+          align-items:center;">
+            <div style="color: #fff;
+                  font-size: 1.2em;
+                  border: none;
+                  min-width: 2em;
+                  text-align: center;
+                  padding: 0.3em 0.4em;
+                  opacity: 0.8;
+                  background: ${item.onlineStatus == 1 ? "#409EFF" : "#868686"};
+                  border-radius: 0.8em;">${item.name}</div>
+            <div 
+              style="width:0;height:0;
+              opacity: 0.7;
+              border-top:0.6em solid ${
+                item.onlineStatus == 1 ? "#409EFF" : "#868686"
+              };
+              border-right:solid 0.6em transparent;
+              border-left:solid 0.6em transparent;"></div>
+          </div>
+					<img src="http://cp.juyiaqyy.com/images/juyi/home/che.png" 
+               style="
+                  width:2.5em;
+                  margin-left:0.3em;
+                  margin-top:0.4em;
+                  border:0.2em solid ${
+                    item.onlineStatus == 1 ? "#409EFF" : "#868686"
+                  };
+                  border-radius:50%;
+                  background:#fff;" 
+          >`;
           // 构造点标记
           var marker = new AMap.Marker(item);
           // 为标记添加点击事件 // 切换设备信息
