@@ -241,7 +241,7 @@
               :height="tableHeight"
             >
               <!--region 选择框-->
-              <el-table-column type="selection" width="55" align="center" />
+              <!-- <el-table-column type="selection" width="55" align="center" /> -->
               <el-table-column
                 type="index"
                 width="50"

@@ -103,33 +103,33 @@
                 <P>累计工时</P>
               </div>
               <div class="datarow">
-                <div class="data">0</div>
-                <div class="data">8</div>
-                <div class="data">1</div>
-                <div class="data">7</div>
-                <div class="data">6</div>
-                <div class="data">5</div>
-                <div class="data">0</div>
+                <div class="data">{{ workTime[6] ? workTime[6] : 0 }}</div>
+                <div class="data">{{ workTime[5] ? workTime[5] : 0 }}</div>
+                <div class="data">{{ workTime[4] ? workTime[4] : 0 }}</div>
+                <div class="data">{{ workTime[3] ? workTime[3] : 0 }}</div>
+                <div class="data">{{ workTime[2] ? workTime[2] : 0 }}</div>
+                <div class="data">{{ workTime[1] ? workTime[1] : 0 }}</div>
+                <div class="data">{{ workTime[0] ? workTime[0] : 0 }}</div>
               </div>
               <!-- <span>h</span> -->
             </div>
             <div class="row">
               <div class="icon">
                 <i class="el-icon-news" style="color: #fca491"></i>
-                <P>起重总量</P>
+                <P>吨位总数</P>
               </div>
               <div class="datarow">
-                <div class="data">0</div>
-                <div class="data">0</div>
-                <div class="data">3</div>
-                <div class="data">0</div>
-                <div class="data">5</div>
-                <div class="data">6</div>
-                <div class="data">5</div>
+                <div class="data">{{ totalTonnage[6] ? totalTonnage[6] : 0 }}</div>
+                <div class="data">{{ totalTonnage[5] ? totalTonnage[5] : 0 }}</div>
+                <div class="data">{{ totalTonnage[4] ? totalTonnage[4] : 0 }}</div>
+                <div class="data">{{ totalTonnage[3] ? totalTonnage[3] : 0 }}</div>
+                <div class="data">{{ totalTonnage[2] ? totalTonnage[2] : 0 }}</div>
+                <div class="data">{{ totalTonnage[1] ? totalTonnage[1] : 0 }}</div>
+                <div class="data">{{ totalTonnage[0] ? totalTonnage[0] : 0 }}</div>
               </div>
               <!-- <span>T</span> -->
             </div>
-            <div class="row">
+            <!-- <div class="row">
               <div class="icon">
                 <i class="el-icon-stopwatch" style="color: #8ff9d0"></i>
                 <P>起重力矩</P>
@@ -143,10 +143,15 @@
                 <div class="data">3</div>
                 <div class="data">3</div>
               </div>
-              <!-- <span style="font-size: 12px;">T*<br />M</span> -->
-            </div>
+            </div> -->
           </div>
         </FloatCard>
+        <!-- <FloatCard>
+          <span slot="header">设备类型统计</span>
+          <div slot="content" class="deviceType">
+
+          </div>
+        </FloatCard> -->
       </div>
     </div>
   </div>
@@ -176,7 +181,12 @@ export default {
       hasVideoNum: 0,
       // 开工设备数量
       carStatusNum: 0,
+      // 有定位的设备列表
       deviceList: {},
+      // 所有设备工作时长总数
+      workTime: 0,
+      // 所有设备吨位总数
+      totalTonnage: 0,
     };
   },
   methods: {
@@ -186,6 +196,20 @@ export default {
       this.$api.getqueryEquipmentsByPage("0", "9999").then((val) => {
         this.deviceList = val.data.data;
         this.initData();
+      });
+      // 获取所有设备的累计工作时间
+      this.$api.getSelectList("", "", "", "", 1, 9999).then((res) => {
+        res.data.data.rows.forEach((item) => {
+          // 去除吨位的多余文字或者单位（获取设备吨位总数
+          let tonnage = item.modelLabel ? item.modelLabel : 0;
+          this.totalTonnage += parseInt(tonnage.replace(/[^\d]/g, ""));
+          // 获取所有设备的工作时长
+          this.workTime += parseInt(item.workTime ? item.workTime : 0);
+        });
+        // 反转字符串
+        this.workTime = this.workTime.toString().split("").reverse().join("");
+        this.totalTonnage = this.totalTonnage.toString().split("").reverse().join("");
+        // console.log('this.Tonnage',this.Tonnage)
       });
     },
     // 获取设备上线，风险，定位数据 函数

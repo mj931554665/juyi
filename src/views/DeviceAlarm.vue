@@ -303,6 +303,7 @@ export default {
         { id: 2, value: "已知晓" },
       ], //处理状态的选项信息
       chooseTime: [new Date().setHours(0, 0, 0), new Date().getTime()], //时间范围
+      // #region pickerOptions
       pickerOptions: {
         shortcuts: [
           {
@@ -334,7 +335,7 @@ export default {
           },
         ],
       },
-
+      // #endregion
       total: 0, //数据总量
       pageSize: 15, //每页数据数量
       currentPage: 1, //当前页码

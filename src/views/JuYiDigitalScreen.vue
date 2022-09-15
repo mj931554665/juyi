@@ -350,16 +350,16 @@
           <div class="centerTop borderImg">
             <div class="bigNumber">
               <div>
-                <h2>30565</h2>
+                <h2>{{ totalTonnage }}</h2>
                 <p>总起重总量（吨）</p>
               </div>
               <div>
-                <h2>817650</h2>
+                <h2>{{ workTime }}</h2>
                 <p>总工作时长（小时）</p>
               </div>
               <div>
-                <h2>192233</h2>
-                <p>总起重力矩（吨*米）</p>
+                <h2>{{ totalHoisting }}</h2>
+                <p>总吊载（起重）次数</p>
               </div>
             </div>
           </div>
@@ -698,6 +698,12 @@ export default {
       weekAnalysisData: {},
       // 设备地区分布统计
       deviceArea: {},
+      // 所有设备工作时长总数
+      workTime: "加载中...",
+      // 所有设备吨位总数
+      totalTonnage: "加载中...",
+      // 总吊载（起重）次数
+      totalHoisting: "加载中...",
     };
   },
   created() {
@@ -780,7 +786,7 @@ export default {
       if (this.checkDevice.videoStatus) {
         // 获取实时监控视频通道数据
         this.$api.getVehicleCode(this.checkDevice.equipmentNo).then((val) => {
-          console.log(val.data.data.length == 0, val.data.data);
+          // console.log(val.data.data.length == 0, val.data.data);
 
           let data = val.data.data[0];
           this.$api.getVideoChannelState(data.terminalId).then((val) => {
@@ -809,6 +815,9 @@ export default {
       this.$api.getcustomerScreen("1", "9999").then((val) => {
         // 给设备列表赋值
         this.deviceList = val.data.data;
+        // console.log("this.deviceList", this.deviceList);
+        // 设备统计数据
+        this.statisticalData(val.data.data);
         // 设备地区分布处理
         this.distributedArea(val.data.data);
         // 给设备数据赋值
@@ -835,9 +844,7 @@ export default {
     // 获取设备类型数据
     getDeviceType() {
       this.$api.getEquipmentAmountByType().then((val) => {
-        this.chart2_option = this.$EchartsData.Schart2(
-          val.data.data
-          );
+        this.chart2_option = this.$EchartsData.Schart2(val.data.data);
       });
     },
     // 设备地区分布
@@ -909,8 +916,34 @@ export default {
         (this.deviceArea.otherChina / e.length) *
         100
       ).toFixed(1);
-
-      console.log("area", this.deviceArea);
+    },
+    // 获取屏幕中间的统计数据
+    statisticalData(e) {
+      // 设置需要获取统计数据的这部编号
+      let vehicleCodes = "";
+      let totalTonnage = 0;
+      e.forEach((item) => {
+        // 去除吨位的多余文字或者单位（获取设备吨位总数
+        let tonnage = item.modelLabel ? item.modelLabel : 0;
+        totalTonnage += parseInt(tonnage.replace(/[^\d]/g, ""));
+        vehicleCodes += item.equipmentNo + ",";
+      });
+      this.totalTonnage = totalTonnage ? totalTonnage : 0;
+      // 获取当前日期
+      let date = new Date();
+      let endDate = `${date.getFullYear()}-${(date.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+      // 根据设备编号，公司创建日期，和当前日期获取整个统计数据
+      this.$api
+        .getWorkStatInfo(vehicleCodes, "2016-01-01", endDate)
+        .then((res) => {
+          // 赋值给data并且判断数据不为空
+          let workTime = res.data.data.intervalCraneWorktimeStr;
+          this.workTime = workTime ? parseInt(workTime) : 0;
+          let totalHoisting = res.data.data.intervalHoistingCountStr;
+          this.totalHoisting = totalHoisting ? totalHoisting : 0;
+        });
     },
   },
 };
@@ -1085,6 +1118,7 @@ export default {
       display: flex;
       align-items: center;
     }
+
     .weekoil {
       display: flex;
       justify-content: space-between;
@@ -1474,6 +1508,7 @@ export default {
               position: relative;
               font-size: 12px;
               height: calc(100% - 38px);
+
               .el-carousel__indicators.el-carousel__indicators--horizontal.el-carousel__indicators--outside {
                 display: none;
               }

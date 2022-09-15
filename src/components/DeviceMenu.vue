@@ -26,7 +26,7 @@ export default {
   name: "DeviceMenu",
   data() {
     return {
-      menuWidth:window.innerWidth*0.09,
+      menuWidth: window.innerWidth * 0.09,
       active: "list",
       routerInfo: {
         list: {
@@ -81,6 +81,9 @@ export default {
     }
     this.$router.push({
       path: this.routerInfo[this.active].url,
+      params: {
+        id: this.$route.query.id,
+      },
     });
   },
 };
