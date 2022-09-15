@@ -119,7 +119,7 @@
                 </el-radio-group>
                 <div class="videoBox">
                   <!-- <VideoArea>  -->
-                  <!-- <CstorLivePlayer slot="video" :src="videosrc" /> -->
+                  <CstorLivePlayer slot="video" :src="videosrc" />
                   <!-- </VideoArea> -->
                 </div>
               </div>

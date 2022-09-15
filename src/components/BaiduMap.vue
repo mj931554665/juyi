@@ -573,6 +573,7 @@ export default {
   created() {
     // 初始化页面数据(获取设备列表)
     this.inttData();
+    this.$api.refreshSession(this);
   },
   deactivated() {
   },

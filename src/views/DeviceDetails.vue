@@ -13,7 +13,7 @@
             <i class="el-icon-arrow-right"></i>
           </span>
           <div slot="content" class="module1">
-            <template v-if="false">
+            <template v-if="true">
               <div class="item-detail">
                 <div class="detail-line">
                   <el-radio-group
