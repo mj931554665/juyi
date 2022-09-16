@@ -1,11 +1,11 @@
-import request from '@/utils/loginRequest'
+import request from "@/utils/loginRequest";
 /* user login*/
 export function login(data) {
   return request({
-    url: '/login',
-    method: 'post',
-    data
-  })
+    url: "/login",
+    method: "post",
+    data,
+  });
 }
 /*
 // 分页
@@ -55,34 +55,34 @@ export function roleInfo() {
 /* 刷新访问页面token*/
 export function refreshToken(token) {
   return request({
-    url: '/refreshToken',
-    method: 'post',
-    token
-  })
+    url: "/refreshToken",
+    method: "post",
+    token,
+  });
 }
 
 /*给挤离线重新获取租起数据的token*/
 export function ZQToken(token) {
   return request({
-    url: '/refreshZQToken',
-    method: 'post',
-    token
-  })
+    url: "/loginZQToken",
+    method: "post",
+    token,
+  });
 }
 
 export function getInfo(token) {
   return request({
-    url: '/sys/user/info',
-    method: 'get',
-    token
-  })
+    url: "/sys/user/info",
+    method: "get",
+    token,
+  });
 }
 /* 退出登录*/
 export function logout() {
   return request({
-    url: '/logout',
-    method: 'post'
-  })
+    url: "/logout",
+    method: "post",
+  });
 }
 
 /**
@@ -90,10 +90,10 @@ export function logout() {
  * */
 export function fenceInfoSave(data) {
   return request({
-    url: '/api/fence/save',
-    method: 'post',
-    data: data
-  })
+    url: "/api/fence/save",
+    method: "post",
+    data: data,
+  });
 }
 
 /**
@@ -101,10 +101,10 @@ export function fenceInfoSave(data) {
  * */
 export function fencePageInfo(params) {
   return request({
-    url: '/api/fence/page',
-    method: 'get',
-    params
-  })
+    url: "/api/fence/page",
+    method: "get",
+    params,
+  });
 }
 
 /**
@@ -112,10 +112,10 @@ export function fencePageInfo(params) {
  * */
 export function fenceInfoUpdate(data) {
   return request({
-    url: '/api/fence/update',
-    method: 'post',
-    data: data
-  })
+    url: "/api/fence/update",
+    method: "post",
+    data: data,
+  });
 }
 
 /**
@@ -123,9 +123,9 @@ export function fenceInfoUpdate(data) {
  * */
 export function fenceInfoDelete(data) {
   return request({
-    url: '/api/fence/delete',
-    method: 'post',
+    url: "/api/fence/delete",
+    method: "post",
     // dataType: 'json',
-    data: data
-  })
+    data: data,
+  });
 }
