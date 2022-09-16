@@ -873,7 +873,7 @@ export default {
           this.deviceArea.eastChina++;
         } else if (
           area.indexOf("广东省") > -1 ||
-          area.indexOf("广西壮族自治区") > -1 ||
+          area.indexOf("广西") > -1 ||
           area.indexOf("海南省") > -1
         ) {
           this.deviceArea.southChina++;
@@ -892,7 +892,27 @@ export default {
           area.indexOf("内蒙古自治区") > -1
         ) {
           this.deviceArea.northChina++;
+        } else if (
+          // 华南 海域
+          Number(item.lng) < 117.108191 &&
+          Number(item.lng) > 107.938845 &&
+          Number(item.lat) < 23.615236 &&
+          Number(item.lat) > 17.673638
+        ) {
+          this.deviceArea.southChina++;
+        } else if (
+          // 华东 海域
+          Number(item.lng) < 125.9 &&
+          Number(item.lng) > 117.677939 &&
+          Number(item.lat) < 38.3 &&
+          Number(item.lat) > 21.7
+        ) {
+          this.deviceArea.eastChina++;
         } else {
+          console.log("item", item);
+          console.log("item.lng", item.lng);
+          // console.log("item.lat", item.lat);
+
           this.deviceArea.otherChina++;
         }
       });
@@ -961,13 +981,10 @@ export default {
   min-width: 1440px;
   letter-spacing: 1px;
 
-  // 去除百度logo
-  .anchorBL > a > img {
-    display: none;
-  }
-
-  .BMap_cpyCtrl.BMap_noprint.anchorBL {
-    display: none;
+  // 去除轮播图背景颜色
+  .el-carousel__arrow,
+  .el-carousel__arrow:hover {
+    background-color: rgba(255, 255, 255, 0);
   }
 
   .checked {
@@ -1220,7 +1237,7 @@ export default {
         position: relative;
         float: left;
         padding: 8px 0 12px 10px;
-        width: 24vw;
+        width: 20vw;
         min-width: 320px;
         height: calc(100% - 20px);
         background: rgba(0, 0, 2, 0.8);

@@ -6,16 +6,15 @@ import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
 import "./assets/css/restcss.css";
 import axios from "axios";
-import './assets/iconfont/iconfont.css'
+import "./assets/iconfont/iconfont.css";
 import api from "./api/request";
 Vue.prototype.$api = api;
-Vue.prototype.$axios=axios
+Vue.prototype.$axios = axios;
 
 import EchartsData from "./utils/EchartsData";
 Vue.prototype.$EchartsData = EchartsData;
 
 Vue.use(ElementUI);
-
 
 import VueAMap from "vue-amap"; //引入高德地图
 
@@ -38,11 +37,9 @@ VueAMap.initAMapApiLoader({
     "AMap.Geolocation", //定位控件，用来获取和展示用户主机所在的经纬度位置
     "AMap.MarkerClusterer", //点聚合插件
     "AMap.MoveAnimation", //动画插件
+    "AMap.Geocoder", //地理编码
   ],
 });
-
-
-
 
 import BaiduMap from "vue-baidu-map"; // 导入百度地图
 // 进行全局注册，一次性引入百度地图组件库的所有组件

@@ -63,6 +63,16 @@ export default {
       userInfo: JSON.parse(localStorage.getItem("Login_userInfo")),
     };
   },
+  // watch: {
+  //   '$route.path': function (newVal) {
+  //     console.log('newVal',newVal)
+  //     // 为了防止和原有的高亮更新操作冲突，这里只更新自己需要的路由
+  //     if (newVal === '/deviceManage') {
+  //       // 为 :default-active 绑定的值 activepath 重新赋值，从而实现菜单栏的高亮更新
+  //       this.activeIndex = newVal
+  //     }
+  //   }
+  // },
   methods: {
     deviceAdmin(info) {
       this.$router.push({

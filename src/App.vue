@@ -7,7 +7,11 @@
 </template>
 <script>
 export default {
-  created() {},
+  created() {
+    setInterval(() => {
+      this.$api.refreshSession(this);
+    }, 600000);
+  },
 };
 </script>
 <style lang="less">
