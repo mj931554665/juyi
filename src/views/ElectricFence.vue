@@ -11,7 +11,7 @@
           >
           </el-input>
           <div class="operate">
-            <el-button>删除</el-button>
+            <el-button @click="deleteInfo">删除</el-button>
             <el-button
               type="primary"
               @click="idShowAddFence = new_change = true"
@@ -25,6 +25,7 @@
             style="width: 100%"
             stripe
             height="620"
+            @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55" align="center" />
             <!--region 数据列-->
@@ -279,6 +280,7 @@ export default {
       Polygon: null, // 上一个多边形区域
       oldPolyEditor: null, // 上一个多边形编辑区域
       Marker: null, // 设备标记
+      selectRows: [] , //选中的
 
     };
   },
@@ -319,6 +321,24 @@ export default {
         this.total=res.data.total
         this.fenceList=res.data.list
       })
+    },
+    /**
+     * 删除数据
+     * */
+    deleteInfo(){
+      let ids = this.selectRows.map(row => {
+        return row.id;
+      });
+      fenceInfoDelete(ids).then(res=>{
+        this.$message.success(res.msg)
+        this.initData()
+      })
+    },
+    /**
+     * 复选框选中的
+     * */
+    handleSelectionChange(val) {
+      this.selectRows=val
     },
     // 选择设备
     selectChange(val) {
@@ -407,6 +427,9 @@ export default {
           Vue.set(this.model,'fenceParameterList',this.oldPolyEditor.bu[0])
           fenceInfoSave(this.model).then(res=>{
             this.$message.success(res.msg)
+            this.idShowAddFence = false;
+            this.currentPage=1
+            this.initData()
           })
         }else {
           console.log('error submit!!');
@@ -538,6 +561,7 @@ export default {
     padding-left: 14px !important;
   }
   .content {
+    height: calc(100% - 40px);
     background-color: #f6f6f6;
     display: flex;
     padding: 20px;

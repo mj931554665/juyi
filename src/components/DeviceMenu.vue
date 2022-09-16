@@ -7,6 +7,7 @@
       active-text-color="#ffd04b"
       :router="true"
       :default-active="active"
+      :style="`width:${menuWidth}px ;`"
     >
       <el-menu-item
         v-for="(item, index) of routerInfo"
@@ -25,6 +26,7 @@ export default {
   name: "DeviceMenu",
   data() {
     return {
+      menuWidth: window.innerWidth * 0.09,
       active: "list",
       routerInfo: {
         list: {
@@ -79,6 +81,9 @@ export default {
     }
     this.$router.push({
       path: this.routerInfo[this.active].url,
+      params: {
+        id: this.$route.query.id,
+      },
     });
   },
 };
@@ -87,7 +92,6 @@ export default {
 <style lang="less">
 .deviceMenu {
   .el-menu-vertical-demo:not(.el-menu--collapse) {
-    width: 180px;
     height: calc(100vh - 70px);
     overflow-y: auto;
     text-align: center;

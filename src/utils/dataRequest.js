@@ -17,7 +17,7 @@ const service = axios.create({
 
 // request interceptor
 service.interceptors.request.use(config =>{
-    // console.info('--------------------->>>> ',config)
+
     const url = config.url
     // Check whether the token validity period has expired.
     // If yes, the subsequent requests are saved and the request is revisited after the token is renewed
@@ -48,7 +48,7 @@ service.interceptors.response.use(
      * You can also judge the status by HTTP Status Code
      */
     response =>{
-        // console.info('-------------->>. ',response)
+
         const res = response.data
 
         // if the custom code is not 20000, it is judged as an error.

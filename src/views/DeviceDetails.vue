@@ -1,6 +1,5 @@
 <template>
   <div class="DeviceDetails">
-
     <div class="mainBox" v-if="isshow">
       <div class="column">
         <FloatCard :more="true">
@@ -14,37 +13,48 @@
             <i class="el-icon-arrow-right"></i>
           </span>
           <div slot="content" class="module1">
-            <div class="item-detail">
-              <div class="detail-line">
-                <el-radio-group 
-                v-model="channel"
-                @change="initVideo(equipmentNo)"
-                class="channel-content">
-                  <el-radio-button
-                    v-for="(aisle, index) in VideoChannelState.slice(0, 8)"
-                    :label="index + 1"
-                    :key="index"
-                    :class="aisle === '1' ? 'channel-disabled' : ''"
+            <template v-if="true">
+              <div class="item-detail">
+                <div class="detail-line">
+                  <el-radio-group
+                    v-model="channel"
+                    @change="initVideo(equipmentNo)"
+                    class="channel-content"
                   >
-                    <p
-                      v-if="false"
-                      class="dot"
-                      :style="
-                        'background:' + (aisle === '0' ? '#13ca40' : '#d8d8d8')
-                      "
-                    ></p>
-                    通道{{ index + 1 }}
-                  </el-radio-button>
-                </el-radio-group>
+                    <el-radio-button
+                      v-for="(aisle, index) in VideoChannelState.slice(0, 8)"
+                      :label="index + 1"
+                      :key="index"
+                      :class="aisle === '1' ? 'channel-disabled' : ''"
+                    >
+                      <p
+                        v-if="false"
+                        class="dot"
+                        :style="
+                          'background:' +
+                          (aisle === '0' ? '#13ca40' : '#d8d8d8')
+                        "
+                      ></p>
+                      通道{{ index + 1 }}
+                    </el-radio-button>
+                  </el-radio-group>
+                </div>
               </div>
-            </div>
 
-            <div class="videoBox">
-              <div
-                style="height: 100%; width: 100%; background-color: red"
-              >
-              <CstorLivePlayer :src="videosrc"></CstorLivePlayer>
+              <div class="videoBox">
+                <div style="height: 100%; width: 100%; background-color: red">
+                  <CstorLivePlayer :src="videosrc"></CstorLivePlayer>
+                </div>
               </div>
+            </template>
+            <div class="noVideo" v-else>
+              <div>
+                <el-empty image="../assets/images/kzuqi/noVideoOnline.png"></el-empty>
+              </div>
+              <!-- <div v-else>
+                <div class="hasVideo"></div>
+                <p>未检测到天眼硬件，请联系项目组安装</p>
+              </div> -->
             </div>
           </div>
         </FloatCard>
@@ -52,7 +62,7 @@
           <span slot="header">设备数据</span>
           <div slot="content" class="module2">
             <el-tabs v-model="module2" @tab-click="handleClick">
-              <el-tab-pane label="近7日油耗详情" name="first">
+              <el-tab-pane label="近7日油耗详情" name="first" class="container">
                 <p>
                   总计：{{ deviceDetails.baseInfo.weekOilCost }}&nbsp;L /
                   {{ deviceDetails.baseInfo.weekWorkTime }}&nbsp;h
@@ -460,14 +470,14 @@ export default {
   components: {
     FloatCard,
     EchartsComp,
-    CstorLivePlayer
+    CstorLivePlayer,
   },
   data() {
     return {
       // 整个页面是否显示（未获取到数据就暂时不显示
       isshow: false,
       // 设备实时工况数据
-      deviceDetails:{},
+      deviceDetails: {},
       //----工况信息部分--------------------------
       // 模块二tab页标识数据
       module2: "first",
@@ -479,7 +489,7 @@ export default {
       chart2: {},
       //----实时视频部分--------------------------
       // 设备编号值
-      equipmentNo:'',
+      equipmentNo: "",
       // 获取到的实时监控通道信息
       VideoChannelState: [],
       //用户选中的通道
@@ -489,22 +499,26 @@ export default {
       videosrc: "",
     };
   },
+  props: {
+    id: {},
+  },
   computed: {
     // 传入的设备id值，如没有就使用默认设备id值
     id() {
-      let id
-      if(this.$route.params.id){
-        id=this.$route.params.id
-        sessionStorage.setItem('equipmentId', JSON.stringify(this.$route.params.id))
-      }else{
-        id=JSON.parse(sessionStorage.getItem('equipmentId'))
+      let id;
+      if (this.$route.params.id) {
+        id = this.$route.params.id;
+        sessionStorage.setItem("equipmentId", JSON.stringify(this.$route.params.id)
+        );
+      } else {
+        id = JSON.parse(sessionStorage.getItem("equipmentId"));
       }
       return id ? id : "c1e221866ab84ae28aeb89f975a667c4";
     },
   },
-  destroyed(){
-    this.stopHeartBeat(this.oldChannel)
-    sessionStorage.removeItem('equipmentId')
+  destroyed() {
+    this.stopHeartBeat(this.oldChannel);
+    sessionStorage.removeItem("equipmentId");
   },
   created() {
     // 获取设备信息
@@ -522,7 +536,7 @@ export default {
           let data = val.data[0].split(",").map(Number);
           // 通道信息赋值给data数据在页面显示状态
           this.VideoChannelState = data;
-          console.log('this.VideoChannelState',this.VideoChannelState)
+          console.log("this.VideoChannelState", this.VideoChannelState);
         });
       });
     },
@@ -549,14 +563,16 @@ export default {
       });
     },
     // elementui切换tab页函数，勿删
-    handleClick(tab, event) {},
+    handleClick(tab, event){
+
+    },
     // 获取设备详细工况信息
     getDeviceDetails() {
       detailWithWorkConditionData(this.id).then((res) => {
         let data = res.data;
         // 赋值设备实时工况数据
         this.deviceDetails = data;
-        console.log("data", data);
+        // console.log("data", data);
         // 获取到数据之后显示页面
         this.isshow = true;
         // 为第一个图表（近7日数据）传入设备数据，把返回的图表配置信息赋值
@@ -573,12 +589,12 @@ export default {
     },
     // 切换路由
     routerChange(path) {
-      this.stopHeartBeat(this.oldChannel)
+      this.stopHeartBeat(this.oldChannel);
       this.$router.push({
         name: path,
         params: {
           equipmentNo: this.equipmentNo,
-          id:this.id
+          id: this.id,
         },
       });
     },
@@ -587,340 +603,405 @@ export default {
 </script>
 
 <style lang="less">
-// @import "@/assets/test/font/iconfont.css";/
-.mainBox {
-  display: flex;
-  min-width: 1024px;
-  max-width: 1920px;
-  margin: 10px auto;
-  padding: 10px 35px 0;
-  .column {
-    .el-tabs__active-bar.is-top {
-      background-color: #f2ce91;
-    }
-    .el-tabs__item.is-top.is-active {
-      color: #f2ce91;
-    }
-    .el-tabs__item.is-top:hover {
-      color: #f2ce91;
-    }
-    flex: 6;
-    .module1 {
-      height: 320px;
-      .detail-line {
-        position: relative;
-        height: 100px;
-        z-index: 9;
+.DeviceDetails {
+  font-size: 1.6em;
+  height: calc(100vh - 80px);
+  .mainBox {
+    display: flex;
+    min-width: 1024px;
+    max-width: 1920px;
+    margin: 10px auto;
+    padding: 10px 35px 0;
+    .column {
+      .el-tabs__active-bar.is-top {
+        background-color: #f2ce91;
+      }
+      .el-tabs__item.is-top.is-active {
+        color: #f2ce91;
+      }
+      .el-tabs__item.is-top:hover {
+        color: #f2ce91;
+      }
+      flex: 6;
+      .module1 {
+        height: 320px;
+        .detail-line {
+          position: relative;
+          height: 100px;
+          z-index: 9;
 
-        .channel-content {
-          z-index: 50;
-          width: 100%;
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: space-between;
-          height: 40px;
-          overflow: hidden;
-          background-color: #fff0;
-          .el-radio-button__inner {
-            position: relative;
-            width: 80%;
-            height: 25px;
-            margin: 5px 10px;
-            line-height: 25.6px;
-            color: #999;
-            background: #fff;
-            border: 1px solid #d8d8d8;
-            border-radius: 3.2px;
-            cursor: pointer;
-            font-size: 12px;
+          .channel-content {
+            z-index: 50;
+            width: 100%;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: none;
-            .dot {
-              position: absolute;
-              top: 8px;
-              left: 4px;
-              display: block;
-              margin: 2.4px;
-              content: "";
-              width: 4px;
-              height: 4px;
-              background: #13ca40;
-              border-radius: 50%;
+            flex-wrap: wrap;
+            // justify-content: space-between;
+            height: 74px;
+            overflow: hidden;
+            background-color: #fff0;
+            .el-radio-button__inner {
+              position: relative;
+              width: 80%;
+              height: 25px;
+              margin: 5px 10px;
+              line-height: 25.6px;
+              color: #999;
+              background: #fff;
+              border: 1px solid #d8d8d8;
+              border-radius: 3.2px;
+              cursor: pointer;
+              font-size: 12px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              box-shadow: none;
+              .dot {
+                position: absolute;
+                top: 8px;
+                left: 4px;
+                display: block;
+                margin: 2.4px;
+                content: "";
+                width: 4px;
+                height: 4px;
+                background: #13ca40;
+                border-radius: 50%;
+              }
+            }
+            .el-radio-button__inner:hover {
+              border-color: #f2ce91;
+              color: #f2ce91;
             }
           }
-          .el-radio-button__inner:hover {
-            border-color: #f2ce91;
-            color: #f2ce91;
+          .is-active {
+            .el-radio-button__inner {
+              background: #fcf5e9;
+              color: #fbb134;
+            }
+          }
+          .channel-content:hover {
+            // overflow: auto !important;
+            height: 74px !important;
           }
         }
-        .is-active {
-          .el-radio-button__inner {
-            background: #fcf5e9;
-            color: #fbb134;
-          }
-        }
-        .channel-content:hover {
-          overflow: auto !important;
-          height: 74px !important;
-        }
-      }
-      .videoBox {
-        position: relative;
-        top: -60px;
-        height: calc(100% - 40px);
-      }
-    }
-    .module2 {
-      height: 270px;
-      .content {
-        height: 204px;
-        width: 376px;
-      }
-      .dataArea {
-        margin-top: 20px;
-        position: relative;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-around;
-
-        .panel {
+        .videoBox {
           position: relative;
-          width: 90px;
-          height: 54px;
-          margin: 6px;
-          border: 1px solid #000;
-          text-align: center;
+          top: -25px;
+          height: calc(100% - 74px);
+        }
+        .noVideo {
+          height: 55%;
           display: flex;
           flex-direction: column;
           justify-content: center;
-          background: url("@/assets/images/digitalScreen/line\(1\).png")
-            rgba(255, 255, 255, 0.13);
+          align-items: center;
 
-          &::before {
-            content: "";
-            position: absolute;
-            top: -6px;
-            left: -6px;
-            width: 100%;
-            border-left: 1px solid #000;
-            border-top: 1px solid #000;
+          .videoStatus,
+          .hasVideo {
+            margin: 0 auto;
+            width: 170px;
+            height: 90px;
+            background-size: 100%;
+            background-repeat: no-repeat;
           }
 
-          &::after {
-            content: "";
-            position: absolute;
-            top: -6px;
-            left: -6px;
-            width: 10px;
-            height: 5px;
-            border-left: 1px solid #000;
-            border-top: 1px solid #000;
+          .videoStatus {
+            background-image: url("@/assets/images/kzuqi/noVideoOnline.png");
           }
 
-          h6 {
-            font-size: 20px;
+          .hasVideo {
+            width: 150px;
+            height: 100px;
+            margin-bottom: 20px;
+            background-image: url("@/assets/images/kzuqi/noVideo.png");
+          }
+
+          p {
+            text-align: center;
+            color: rgba(173, 200, 205, 0.6);
+            font-size: 12px;
+          }
+        }
+      }
+      .module2 {
+        height: 270px;
+        .container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          p {
+            width: 80%;
+          }
+          .content {
+            height: 204px;
+            width: 376px;
+          }
+        }
+        .dataArea {
+          margin-top: 20px;
+          position: relative;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-around;
+
+          .panel {
+            position: relative;
+            width: 90px;
+            height: 54px;
+            margin: 6px;
+            border: 1px solid #000;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: url("@/assets/images/digitalScreen/line\(1\).png")
+              rgba(255, 255, 255, 0.13);
+
+            &::before {
+              content: "";
+              position: absolute;
+              top: -6px;
+              left: -6px;
+              width: 100%;
+              border-left: 1px solid #000;
+              border-top: 1px solid #000;
+            }
 
             &::after {
               content: "";
               position: absolute;
-              bottom: -1px;
-              right: -1px;
-
-              border-left: 10px solid transparent;
-              border-right: 10px solid #333;
-              border-top: 10px solid transparent;
-              width: 0;
-              height: 0;
+              top: -6px;
+              left: -6px;
+              width: 10px;
+              height: 5px;
+              border-left: 1px solid #000;
+              border-top: 1px solid #000;
             }
 
-            span {
-              font-size: 10px;
-            }
-          }
+            h6 {
+              font-size: 20px;
 
-          p {
-            margin-top: 5px;
-            font-size: 12px;
-            color: #000;
-          }
-        }
-      }
-    }
-    .module3 {
-      height: 320px;
-      .devicePic {
-        display: flex;
-        justify-content: center;
-        text-align: center;
-        border-bottom: 1px dashed gray;
-        .ldd {
-          position: relative;
-          width: 380px;
-          height: 254px;
-          background: url("@/assets/test/ldd3.png") no-repeat;
-          background-size: contain;
-          font-size: 14px;
-          > div {
-            font-size: 12px;
-          }
-          .fuelMeter {
-            position: absolute;
-            top: 186px;
-            left: 274px;
-            .oilPercentage {
-              width: 120px;
-              height: 80px;
-              z-index: 99;
+              &::after {
+                content: "";
+                position: absolute;
+                bottom: -1px;
+                right: -1px;
+
+                border-left: 10px solid transparent;
+                border-right: 10px solid #333;
+                border-top: 10px solid transparent;
+                width: 0;
+                height: 0;
+              }
+
+              span {
+                font-size: 10px;
+              }
             }
-            span {
-              position: absolute;
+
+            p {
+              margin-top: 5px;
               font-size: 12px;
-              top: 25px;
-              left: 50%;
-              transform: translatex(-50%);
+              color: #000;
             }
           }
-          .mainHookRatios {
-            position: absolute;
-            top: 14px;
-            left: 60px;
-            color: #fff;
-          }
-          .mainHookRatedWeight {
-            position: absolute;
-            top: 79px;
-            left: 22px;
-            color: #818181;
-            width: 33px;
-          }
-          .mainHookActualWeight {
-            position: absolute;
-            top: 79px;
-            left: 60px;
-            color: #818181;
-            width: 33px;
-          }
-          .mainHookRadius {
-            position: absolute;
-            width: 50px;
-            top: 130px;
-            left: 44px;
-            color: #fff;
-          }
-          .enginSpeed {
-            position: absolute;
-            width: 57px;
-            top: 179px;
-            left: 39px;
-            color: #000;
-          }
-          .totalEnginWorkTim {
-            position: absolute;
-            width: 57px;
-            top: 204px;
-            left: 39px;
-            color: #000;
-          }
-          .torquePercent {
-            position: absolute;
-            top: 12px;
-            left: 176px;
-            color: #818181;
-          }
-          .windSpeed {
-            position: absolute;
-            top: 39px;
-            left: 158px;
-            color: #818181;
-          }
-          .unknownData1 {
-            position: absolute;
-            top: 72px;
-            left: 142px;
-            color: #818181;
-          }
-          .unknownData2 {
-            position: absolute;
-            top: 139px;
-            left: 106px;
-            color: #818181;
-          }
-          .mainHookAngle {
-            position: absolute;
-            top: 206px;
-            left: 228px;
-            color: #818181;
-          }
-          .slaveHookRatios {
-            position: absolute;
-            top: 14px;
-            right: 44px;
-            color: #fff;
-          }
-          .slaveHookRatedWeight {
-            position: absolute;
-            top: 79px;
-            right: 57px;
-            color: #818181;
-            width: 33px;
-          }
-          .slaveHookActualWeight {
-            position: absolute;
-            top: 79px;
-            right: 19px;
-            color: #818181;
-            width: 33px;
-          }
-          .slaveHookRadius {
-            position: absolute;
-            width: 50px;
-            top: 130px;
-            right: 18px;
-            color: #fff;
-          }
-          .slaveHookAngle {
-            position: absolute;
-            width: 50px;
-            top: 168px;
-            right: 18px;
-            color: #fff;
-          }
         }
       }
-      .device_location {
-        text-align: center;
-        color: #142628;
-        // height: 61px;
-        .position {
-          font-size: 14px;
+      .module3 {
+        height: 320px;
+        .devicePic {
           display: flex;
-          align-items: center;
-          height: 31px;
-          margin-top: 6px;
+          justify-content: center;
+          text-align: center;
+          border-bottom: 1px dashed gray;
+          .ldd {
+            position: relative;
+            width: 380px;
+            height: 254px;
+            background: url("@/assets/test/ldd3.png") no-repeat;
+            background-size: contain;
+            font-size: 14px;
+            > div {
+              font-size: 12px;
+            }
+            .fuelMeter {
+              position: absolute;
+              top: 186px;
+              left: 274px;
+              .oilPercentage {
+                width: 120px;
+                height: 80px;
+                z-index: 99;
+              }
+              span {
+                position: absolute;
+                font-size: 12px;
+                top: 25px;
+                left: 50%;
+                transform: translatex(-50%);
+              }
+            }
+            .mainHookRatios {
+              position: absolute;
+              top: 14px;
+              left: 60px;
+              color: #fff;
+            }
+            .mainHookRatedWeight {
+              position: absolute;
+              top: 79px;
+              left: 22px;
+              color: #818181;
+              width: 33px;
+            }
+            .mainHookActualWeight {
+              position: absolute;
+              top: 79px;
+              left: 60px;
+              color: #818181;
+              width: 33px;
+            }
+            .mainHookRadius {
+              position: absolute;
+              width: 50px;
+              top: 130px;
+              left: 44px;
+              color: #fff;
+            }
+            .enginSpeed {
+              position: absolute;
+              width: 57px;
+              top: 179px;
+              left: 39px;
+              color: #000;
+            }
+            .totalEnginWorkTim {
+              position: absolute;
+              width: 57px;
+              top: 204px;
+              left: 39px;
+              color: #000;
+            }
+            .torquePercent {
+              position: absolute;
+              top: 12px;
+              left: 176px;
+              color: #818181;
+            }
+            .windSpeed {
+              position: absolute;
+              top: 39px;
+              left: 158px;
+              color: #818181;
+            }
+            .unknownData1 {
+              position: absolute;
+              top: 72px;
+              left: 142px;
+              color: #818181;
+            }
+            .unknownData2 {
+              position: absolute;
+              top: 139px;
+              left: 106px;
+              color: #818181;
+            }
+            .mainHookAngle {
+              position: absolute;
+              top: 206px;
+              left: 228px;
+              color: #818181;
+            }
+            .slaveHookRatios {
+              position: absolute;
+              top: 14px;
+              right: 44px;
+              color: #fff;
+            }
+            .slaveHookRatedWeight {
+              position: absolute;
+              top: 79px;
+              right: 57px;
+              color: #818181;
+              width: 33px;
+            }
+            .slaveHookActualWeight {
+              position: absolute;
+              top: 79px;
+              right: 19px;
+              color: #818181;
+              width: 33px;
+            }
+            .slaveHookRadius {
+              position: absolute;
+              width: 50px;
+              top: 130px;
+              right: 18px;
+              color: #fff;
+            }
+            .slaveHookAngle {
+              position: absolute;
+              width: 50px;
+              top: 168px;
+              right: 18px;
+              color: #fff;
+            }
+          }
         }
-        p {
-          margin-top: 3px;
+        .device_location {
+          text-align: center;
+          color: #142628;
+          // height: 61px;
+          .position {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            height: 31px;
+            margin-top: 6px;
+          }
+          p {
+            margin-top: 3px;
+          }
         }
       }
-    }
-    .module4 {
-      height: 270px;
-      .title {
-        display: flex;
-        justify-content: space-between;
-        font-size: 25px;
-        padding-bottom: 20px;
+      .module4 {
+        height: 270px;
+        .title {
+          display: flex;
+          justify-content: space-between;
+          font-size: 25px;
+          padding-bottom: 20px;
 
-        span {
-          font-size: 16px;
+          span {
+            font-size: 16px;
+          }
+
+          border-bottom: 1px dashed gray;
+        }
+        .switch {
+          .switchContent {
+            display: flex;
+            flex-wrap: wrap;
+
+            div {
+              width: 170px;
+              margin-top: 20px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              .switchStatus {
+                margin-right: 30px;
+                background: #d0d0d0;
+                display: inline-block;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+              }
+            }
+          }
         }
 
-        border-bottom: 1px dashed gray;
-      }
-      .switch {
-        .switchContent {
+        .alarms {
           display: flex;
           flex-wrap: wrap;
 
@@ -930,9 +1011,17 @@ export default {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            .switchStatus {
+            .alarmStatusRed {
               margin-right: 30px;
-              background: #d0d0d0;
+              background: red;
+              display: inline-block;
+              width: 10px;
+              height: 10px;
+              border-radius: 50%;
+            }
+            .alarmStatusGreen {
+              margin-right: 30px;
+              background: #35ff03;
               display: inline-block;
               width: 10px;
               height: 10px;
@@ -941,76 +1030,47 @@ export default {
           }
         }
       }
-
-      .alarms {
-        display: flex;
-        flex-wrap: wrap;
-
-        div {
-          width: 170px;
-          margin-top: 20px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          .alarmStatusRed {
-            margin-right: 30px;
-            background: red;
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-          }
-          .alarmStatusGreen {
-            margin-right: 30px;
-            background: #35ff03;
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
+      .module5 {
+        height: 320px;
+        .detail {
+          // height: 100%;
+          p {
+            padding: 24px 10px 0 10px;
           }
         }
       }
-    }
-    .module5 {
-      height: 320px;
-      .detail {
-        // height: 100%;
-        p {
-          padding: 24px 10px 0 10px;
-        }
-      }
-    }
-    .module6 {
-      height: 255px;
-      .detail-line {
-        height: 100%;
-        padding-bottom: 26px;
-        .riskEvent {
-          display: flex;
-          background-color: #f3f3f3;
-          border-radius: 5px;
-          margin-top: 15px;
-          cursor: pointer;
-          i {
-            font-size: 55px;
-            padding: 5px;
-            margin-right: 30px;
-          }
-          div {
+      .module6 {
+        height: 255px;
+        .detail-line {
+          height: 100%;
+          padding-bottom: 26px;
+          .riskEvent {
             display: flex;
-            flex-direction: column;
-            text-align: center;
-            align-items: center;
-            justify-content: center;
+            background-color: #f3f3f3;
+            border-radius: 5px;
+            margin-top: 15px;
+            cursor: pointer;
+            i {
+              font-size: 55px;
+              padding: 5px;
+              margin-right: 30px;
+            }
+            div {
+              display: flex;
+              flex-direction: column;
+              text-align: center;
+              align-items: center;
+              justify-content: center;
+            }
           }
         }
       }
     }
-  }
-  .column:nth-child(2) {
-    flex: 8;
-    margin: 0 10px 0;
-    height: 100%;
+    .column:nth-child(2) {
+      flex: 8;
+      margin: 0 10px 0;
+      height: 100%;
+    }
   }
 }
 </style>

@@ -96,7 +96,7 @@ export default {
     },
     getCaptcha(){
       this.loginForm.uuid= this.idGen()
-      this.captchaPath="http://192.168.0.103:8081/renren-admin/captcha?uuid="+this.loginForm.uuid
+      this.captchaPath=process.env.VUE_APP_LOGIN_BASE_API+"/captcha?uuid="+this.loginForm.uuid
     },
     /*async login() {
 

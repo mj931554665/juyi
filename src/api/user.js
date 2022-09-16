@@ -99,11 +99,11 @@ export function fenceInfoSave(data) {
 /**
  * 电子围栏信息分页
  * */
-export function fencePageInfo(data) {
+export function fencePageInfo(params) {
   return request({
     url: '/api/fence/page',
     method: 'get',
-    data
+    params
   })
 }
 
@@ -125,6 +125,7 @@ export function fenceInfoDelete(data) {
   return request({
     url: '/api/fence/delete',
     method: 'post',
+    // dataType: 'json',
     data: data
   })
 }

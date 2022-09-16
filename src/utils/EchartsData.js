@@ -1,6 +1,6 @@
 import * as echarts from "echarts";
 export default {
-  // 数据大屏图表配置数据-------------------------------------------------------------------------------------------------------------------------------------------
+  // #region 数据大屏图表配置数据-------------------------------------------------------------------------------------------------------------------------------------------
   // 近7日工况信息表
   Schart1(value) {
     // 声明图表x,Y轴初始变量
@@ -9,7 +9,7 @@ export default {
     let dataY = [];
     // 对数据进行遍历，提取日期数据并转换格式
     if (value === null) {
-      dataX = dataY1 = dataY =[0,0,0,0,0,0,0];
+      dataX = dataY1 = dataY = [0, 0, 0, 0, 0, 0, 0];
     } else {
       value.forEach((item) => {
         // 近七日耗油量
@@ -160,6 +160,45 @@ export default {
   },
   // 页面四个圆形图表的配置数据
   Schart2(value) {
+    /* const obj = {
+      name: "Bobo",
+      job: " Master",
+      number: 1234,
+    };
+    const renameKeys = (keysMap, obj) => {
+      console.log('Object.keys(obj)',Object.keys(obj))
+      let asd = Object.keys(obj).reduce((acc, key) => {
+        // console.log('12333',{[keysMap[key] || key]: obj[key]});
+        // return acc
+        // console.log("keysMap", keysMap);
+        // console.log("obj", obj);
+        console.log("acc", acc);
+        console.log("key", key);
+      });
+      console.log('asd',asd)
+    };
+    console.log(
+      "====================",
+      renameKeys(
+        {
+          name: " firstName",
+          number: " id",
+        },
+        obj
+      )
+    ); */
+    //{ job: 'Master', id: 1234, Las tName: ' Bobo ' }
+
+    let arr = [],
+    total = 0;
+    value.forEach((item) => {
+      total += item.amount;
+      let obj = {
+        value: item.amount,
+        name: item.typeLabel,
+      };
+      arr.push(obj);
+    });
     let option = {
       tooltip: {
         trigger: "item",
@@ -175,20 +214,20 @@ export default {
       },
       series: [
         {
-          name: "履带吊",
+          name: "设备类型",
           type: "pie",
           radius: ["70%", "80%"],
           avoidLabelOverlap: false,
-          color: "#75d059",
+          // color: "#75d059",
           label: {
             color: "#05afe0",
-            formatter: "{c}",
+            formatter: `${total}`,
             show: true,
             fontSize: "16",
             fontWeight: "bold",
             position: "center",
           },
-          data: [{ value: value, name: "履带吊" }],
+          data: arr,
         },
       ],
     };
@@ -267,7 +306,8 @@ export default {
     };
     return option;
   },
-  // 设备详情图表配置数据-------------------------------------------------------------------------------------------------------------------------------------------
+  // #endregion
+  // #region 设备详情图表配置数据-------------------------------------------------------------------------------------------------------------------------------------------
   // 近7日工况信息表
   // 模块二工作时长图表
   Dchart1(value) {
@@ -283,9 +323,7 @@ export default {
       dataY.push(item.workTime);
       if (item.dataDate.slice(4, 8)[0] == 0) {
         // 截取拼接字符
-        dataX.push(
-          item.dataDate.slice(5, 6) + "/" + item.dataDate.slice(6, 8)
-        );
+        dataX.push(item.dataDate.slice(5, 6) + "/" + item.dataDate.slice(6, 8));
       } else {
         dataX.push(
           item.dataDate.slice(4, 6) + "月" + item.dataDate.slice(6, 8)
@@ -428,7 +466,6 @@ export default {
           data: dataY,
         },
       ],
-
     };
     return option;
   },
@@ -539,4 +576,5 @@ export default {
     };
     return option;
   },
-}
+  // #endregion
+};

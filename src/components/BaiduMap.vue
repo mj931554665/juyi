@@ -22,17 +22,21 @@
             @click="lookDetail(marker)"
           >
             <bm-label
-              :content="markerLabel(marker)"
+              :content="`<div style='color: #fff;
+                font-size:12px;
+                border:none;
+                min-width:20px;
+                padding:3px 4px;
+                background:#409EFF;
+                border-radius:8px;
+                text-align:center;
+                z-index:1;
+                ${markerLabel(marker).length>4?'transform: translate(-30%);':''}
+                '>${markerLabel(marker)}</div>`"
               :labelStyle="{
-                color: '#fff',
-                fontSize: '12px',
                 border: 'none',
-                minWidth: '20px',
-                textAlign: 'center',
-                padding: '3px 4px',
-                background: '#409EFF',
-                borderRadius: '8px',
-                zIndex: '1',
+                background:'none',
+                zIndex:'1'
               }"
               :offset="{ width: 6, height: -25 }"
             />
@@ -45,7 +49,7 @@
           @open="infoWindowOpen"
         >
           <div class="info-window">
-            <Popups :hasVideo="deviceInfo.hasVideo" :id="deviceInfo.id">
+            <Popups :hasVideo="deviceInfo.videoStatus" :id="deviceInfo.id">
               <span slot="name">{{ deviceInfo.name }}</span>
               <span slot="equipmentNo">{{ deviceInfo.equipmentNo }}</span>
               <span slot="locationTime">{{ deviceInfo.locationTime }}</span>
@@ -91,7 +95,7 @@
         <div>
           <div class="operation">
             <el-popover
-              placement="right"
+              placement="bottom"
               width="300"
               trigger="click"
               title="显示"
@@ -164,13 +168,10 @@
         </div>
       </div>
     </el-card>
-    <TableInfo></TableInfo>
   </div>
 </template>
 
 <script>
-// 引入右侧悬浮卡片组件
-import TableInfo from "@/components/TableInfo.vue";
 // 引入设备信息弹窗组件
 import Popups from "@/components/Popups.vue";
 // 引入聚合点组件（vue-baidu-map自带）
@@ -182,7 +183,6 @@ export default {
   components: {
     BmlMarkerClusterer,
     Popups,
-    TableInfo,
   },
   data() {
     return {
@@ -432,15 +432,21 @@ export default {
       this.centerPoint.lng = 120;
       this.centerPoint.lat = 36;
     },
+    // 初始化页面数据
+    initData() {
     // 获取设备列表数据
-    getQueryEquipmentsByPage() {
       // 获取已定位的设备总数显示在地图上
       let params={
         pageNum:0,
         pageSize:9999
       }
       queryEquipmentsByPage(params).then((val) => {
-        this.deviceList = val.data;
+        this.deviceList = val.data.rows;
+        // 校准定位偏差位置
+        this.deviceList.forEach(item=>{
+          item.lat=0.0056 + Number(item.lat);
+          item.lng=0.0066 + Number(item.lng);
+        })
         // 渲染地图上面的数据
         this.renderMap();
       });
@@ -448,8 +454,7 @@ export default {
     // 渲染地图上面的数据
     renderMap() {
       // 获取到设备列表数据
-      console.log(this.deviceList);
-      let deviceList = this.deviceList.rows;
+      let deviceList = this.deviceList;
       // 数据进行foreach循环
       deviceList.forEach((item, key) => {
         // 定义一个容器来装筛选后的数据
@@ -464,7 +469,7 @@ export default {
           if (item.hasVideo == 1) {
             count++;
           }
-          console.log("count", count);
+          // console.log("count", count);
           this.C_onlineStatus.forEach((onlineStatus) => {
             // 和筛选的值进行比对，满足条件的才渲染出来
             if (item.onlineStatusLabel == onlineStatus) {
@@ -503,11 +508,13 @@ export default {
     //点击设备图标出现信息窗
     //打开设备信息窗口
     lookDetail(item) {
-      console.log(item);
+      // console.log(item);
       // 设置点击标签置顶的id判断值
       this.markerTop = item.id;
       let lng = Number(item.lng);
       let lat = Number(item.lat);
+      // console.log('lng',lng)
+      // console.log('lat',lat)
       // 调用百度地图的中心点方法,把点击的设备点设为地图中心
       this.Map.panTo(new BMap.Point(lng, lat));
       // 设置信息窗口打开的位置和设备图标位置一致
@@ -554,7 +561,6 @@ export default {
     markerLabel(item) {
       switch (this.targetDisplayName) {
         case "图标+设备名称":
-          this.markerLabelStyle = this.markerLabelStyle2;
           return item.name;
         case "仅图标":
           for (var key in this.markerLabelStyle) {
@@ -562,10 +568,8 @@ export default {
           }
           return "&nbsp;";
         case "图标+设备编号":
-          this.markerLabelStyle = this.markerLabelStyle2;
           return item.equipmentNo;
         case "图标+车牌号":
-          this.markerLabelStyle = this.markerLabelStyle2;
           return item.plateNo ? item.plateNo : "暂无车牌号";
         default:
           break;
@@ -574,31 +578,18 @@ export default {
     },
   },
   created() {
-    // 获取设备列表
-    this.getQueryEquipmentsByPage();
-
+    // 初始化页面数据(获取设备列表)
+    this.initData();
     // this.$api.refreshSession(this);
-    // let that = this;
-    // (function () {
-    //   let event = setTimeout(refresh, 1000);
-
-    //   Vue.set(that.timeEvent,channel,event)
-    //   function refresh() {
-    //     that.$api.refreshSession(that);
-    //     event = setTimeout(refresh, 1000); //设定定时器，循环运行
-    //     Vue.set(that.refreshEvent, event);
-    //   }
-    // })();
   },
   deactivated() {
-    // console.log('this.refreshEvent',this.refreshEvent);
-    // clearTimeout(this.refreshEvent); //清除定时器
   },
 };
 </script>
 
 <style lang="less">
 .baiduMap {
+  font-size: 16px;
   .cardStyle {
     position: relative;
     border: none;
@@ -715,6 +706,13 @@ export default {
 }
 // 筛选具体区域样式
 #baiduMapFilter {
+
+  .el-radio-button__orig-radio:checked+.el-radio-button__inner{
+    box-shadow: none !important;
+  }
+  .el-checkbox-button.is-focus .el-checkbox-button__inner{
+    border: 1px solid #dcdfe6 !important;
+  }
   h4 {
     margin: 10px 0;
     font-size: 16px;

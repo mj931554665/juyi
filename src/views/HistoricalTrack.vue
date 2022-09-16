@@ -14,25 +14,34 @@
         ></el-amap>
         <div class="trackCtrollWarp">
           <el-row type="flex" align="middle">
-            <el-col class="left" :span="4">轨迹里程：{{ mileageStr }}km</el-col>
+            <el-col class="left" :span="4"
+              >轨迹里程：{{ (totalDistance / 1000).toFixed(2) }}km</el-col
+            >
             <el-col class="right" :span="20">
               <i
                 class="el-icon-video-play"
-                v-show="isPlay"
+                v-show="!isPlay"
                 @click="trackPlay()"
               ></i>
               <i
                 class="el-icon-video-pause"
-                v-show="!isPlay"
+                v-show="isPlay"
                 @click="trackPause()"
               ></i>
-              <div class="stop" @click="startTrack">
+              <div class="stop" @click="startTrack()">
                 <i class="el-icon-video-pause"> <i class="rotate"></i></i>
               </div>
               <i class="el-icon-d-arrow-left" @click="reduceSpeed"></i>
-              <el-slider v-model="trackSlider" height="8"></el-slider>
+              <el-slider
+                @change="sliderChange()"
+                v-model="trackSlider"
+                :max="totalSteps"
+                :step="1"
+                :format-tooltip="formatTooltip"
+                height="8"
+              ></el-slider>
               <i class="el-icon-d-arrow-right" @click="addSpeed"></i>
-              <span>暂停中... 速度X1</span>
+              <span>{{ isPlay ? "播放" : "暂停" }}中... 速度X{{ speed }}</span>
             </el-col>
           </el-row>
         </div>
@@ -103,13 +112,19 @@
               <el-row type="flex" align="middle">
                 <el-col :span="6">速度大于</el-col>
                 <el-col :span="6"
-                  ><el-input v-model="speedInput"></el-input
+                  ><el-input
+                    v-model="speedInput"
+                    maxlength="4"
+                    minlength="1"
+                    oninput="value=value.replace(/[^0-9.]/g,'')"
+                  >
+                    <span slot="suffix"></span></el-input
                 ></el-col>
                 <el-col :span="1"></el-col>
                 <el-col :span="11">km/h</el-col>
               </el-row>
               <el-row type="flex" justify="space-between">
-                <el-col :span="20">速度大于50时突出显示</el-col>
+                <el-col :span="20">速度大于{{ speedInput }}时突出显示</el-col>
                 <el-col :span="4">
                   <el-switch
                     v-model="speedValue"
@@ -197,7 +212,7 @@ import { AMapManager } from "vue-amap";
 const amapManager = new AMapManager();
 import TrackTable from "@/components/TrackTable.vue";
 import { dateFormat } from "@/utils/validate";
-import {selectList} from "@/api/zqData";
+import {selectList,historyTrackDetail} from "@/api/zqData";
 
 export default {
   components: {
@@ -206,7 +221,7 @@ export default {
   props: {
     equipmentNo: {
       type: String,
-      default: "CC0400CC0003",
+      default: "CC0260CC0802",
     },
   },
   data() {
@@ -241,16 +256,71 @@ export default {
       mileageStr: "", // 轨迹里程
       trackSlider: 0,
       trackLine: [],
-      isPlay: true,
+      isPlay: false,
       isStartPlay: false,
       //动态控制小车移动速度
       speed: 1,
+      totalSteps: 0, // 进度条总步数
+      totalDistance: 0, // 经纬度路径的实际长度。单位：米
+      Times: "",
+      totalTime: "",
+      trackSliderChange: 0, //进度条改变时的进度条数
     };
   },
   created() {
     this.initDeviceInfo();
   },
   methods: {
+    initDeviceInfo() {
+      let params={
+        equipmentNo: '',
+        name: '',
+        plateNo: '',
+        types: [],
+        pageNum: 1,
+        pageSize: 9999
+      }
+      // 获取设备列表
+      selectList(params).then((res) => {
+        // console.log("设备列表", res.data);
+        this.deviceList = res.data.rows;
+      });
+      let startDate = dateFormat(this.start, "yyyy-MM-dd HH:mm:ss");
+      let endDate = dateFormat(this.end, "yyyy-MM-dd HH:mm:ss");
+      //获取设备轨迹信息
+      let params2={
+        startDate: startDate,
+        endDate: endDate,
+        vehicleCode: this.deviceActive,
+      }
+      historyTrackDetail(params2).then((res) => {
+          let data = res.data;
+          console.log("res", data);
+          // 设置地图中心点
+          this.mapCenter = [
+            data.centerPointLongtitude,
+            data.centerPointLatitude,
+          ];
+          // 获取轨迹列表并渲染表格
+          this.TrackList = data.listPoint; // 轨迹点列表
+          this.totalSteps = data.listPoint.length; // 进度条总步数
+          this.mileageStr = data.mileageStr; // 轨迹里程
+          // 获取轨迹经纬度在地图上进行渲染
+          let lineArr = [];
+          data.listPoint.forEach((item) => {
+            lineArr.push([item.longitude, item.latitude]);
+          });
+          this.trackLine = lineArr;
+          this.startTrack();
+
+          // 总时间
+          let dis = AMap.GeometryUtil.distanceOfLine(this.lineArr); // 总路程⽶
+          this.Times = parseInt((dis / 1000 / 200) * 60 * 60); // 计算总时间
+
+          // console.log("dis", dis);
+          // console.log("this.Times", this.Times);
+        });
+    },
     startTrack() {
       let map = amapManager.getMap();
       map.clearMap();
@@ -285,70 +355,103 @@ export default {
         strokeWeight: 6, //线宽
       });
 
-      //经过轨迹的更新
-      marker.on("moving", function (e) {
-        passedPolyline.setPath(e.passedPath);
-      });
       // 轨迹走完更新按钮状态
       marker.on("movealong", () => {
-        console.log("asdawsd");
-        this.isPlay = true;
+        this.isPlay = false;
         this.isStartPlay = false;
       });
+      this.isPlay = false;
+      this.isStartPlay = false;
 
       // 自动适配视图
       map.setFitView([polyline], false, [60, 60, 60, 60]);
       this.marker = marker;
       this.lineArr = lineArr;
+
+      // 经过轨迹的更新&进度条更新
+      // 利用高德地图自带的经纬度路径获取总距离
+      let dis = (this.totalDistance = AMap.GeometryUtil.distanceOfLine(
+        this.lineArr
+      ));
+      // 点标记移动事件监听
+      marker.on("moving", (e) => {
+        // 计算进度条对应的位置值
+        this.trackSlider =
+          this.trackSliderChange +
+          parseInt(
+            (AMap.GeometryUtil.distanceOfLine(e.passedPath) / dis) *
+              this.totalSteps
+          );
+        // 改变已经走过的路线颜色
+        // passedPolyline.setPath(e.passedPath);
+      });
+    },
+    markerMoveAlong() {
+      // 开始沿坐标移动
+      //计算需要回放的GPS路径
+      var replayPath = [];
+      for (var i = this.trackSlider; i < this.lineArr.length; i++) {
+        replayPath.push(
+          new AMap.LngLat(this.lineArr[i].lng, this.lineArr[i].lat)
+        );
+      }
+      this.marker.moveAlong(replayPath, 200, (e) => {
+        // e 是 当前小汽车 在路径中的比值
+        // 路径是由多个坐标组成, e 不是整个路径的比值
+        // e 是每两个坐标点之间的比值 从0 到 1
+        // return 返回的值 就是改变小汽车在路径上的比值 ,比如现在走了一半(e为0.5),这时候return 0.8 那小车就会移动到 0.8的位置上,视觉上小车移动速度就变快了,但是不能超过1 超过1 就 跑出路径了
+        return e * this.speed > 1 ? 1 : e * this.speed;
+      });
     },
     trackPlay() {
-      this.isPlay = false;
+      this.isPlay = true;
       if (!this.isStartPlay) {
-        // 开始沿坐标移动
-        this.marker.moveAlong(this.lineArr, 200, (e)=> {
-          // e 是 当前小汽车 在路径中的比值
-          // 路径是由多个坐标组成, e 不是整个路径的比值
-          // e 是每两个坐标点之间的比值 从0 到 1
-          // return 返回的值 就是改变小汽车在路径上的比值 ,比如现在走了一半(e为0.5),这时候return 0.8 那小车就会移动到 0.8的位置上,视觉上小车移动速度就变快了,但是不能超过1 超过1 就 跑出路径了
-          return e * this.speed > 1 ? 1 : e * this.speed;
-        });
+        this.markerMoveAlong();
         this.isStartPlay = true;
       } else {
         this.marker.resumeMove();
       }
     },
     trackPause() {
-      this.isPlay = true;
+      this.isPlay = false;
       // 暂停沿坐标移动
       this.marker.pauseMove();
     },
     addSpeed() {
-      this.speed +=this.speed
-      // this.changeSpeed()
+      if (this.speed === 16) return;
+      //改变小车移动速度,这里要注意 需要暂停 再继续 不然会有小车倒退的问题出现
+      this.marker.pauseMove();
+      this.speed += this.speed;
+      if (!this.isStartPlay) return;
+      this.marker.resumeMove();
     },
-    reduceSpeed() {
-      this.speed-=this.speed
-      // this.changeSpeed()
+    formatTooltip(val) {
+      // 进度条对应的设备移动距离，保留两位（数据根据经纬度点位判定）
+      return (
+        (((val / this.totalSteps) * this.totalDistance) / 1000).toFixed(2) +
+        " km"
+      );
     },
-    changeSpeed() {
+    sliderChange() {
       // this.marker.pauseMove();
-      // //改变小车移动速度,这里要注意 需要暂停 再继续 不然会有小车倒退的问题出现
-      // this.speed = this.speed === 2 ? 1 : 2;
-      // this.marker.resumeMove();
-    },
-    initDeviceInfo() {
-      // 获取设备列表
-      let params={
-        equipmentNo: '',
-        name: '',
-        plateNo: '',
-        types: [],
-        pageNum: 1,
-        pageSize: 9999
+      if (this.marker) {
+        this.marker.stopMove();
       }
-      selectList(params).then((res) => {
+      this.marker.setPosition(
+        new AMap.LngLat(
+          this.lineArr[this.trackSlider].lng,
+          this.lineArr[this.trackSlider].lat
+        )
+      );
+      this.isPlay = false;
+      this.isStartPlay = false;
+      this.trackSliderChange = this.trackSlider;
+    },
+   /* initDeviceInfo() {
+      // 获取设备列表
+      this.$api.getSelectList("", "", "", "", 1, 9999).then((res) => {
         // console.log("设备列表", res.data);
-        this.deviceList = res.data.rows;
+        this.deviceList = res.data.data.rows;
       });
       let startDate = dateFormat(this.start, "yyyy-MM-dd HH:mm:ss");
       let endDate = dateFormat(this.end, "yyyy-MM-dd HH:mm:ss");
@@ -374,7 +477,7 @@ export default {
           this.trackLine = lineArr;
           this.startTrack();
         });
-    },
+    },*/
     selectChange() {
       console.log("this.deviceActive", this.deviceActive);
     },
@@ -417,8 +520,10 @@ export default {
         .el-row {
           height: 100%;
           .left {
+            width: 160px;
             font-size: 12px;
             font-weight: 400;
+            padding-left: 10px;
             color: #fff;
           }
           .right {
@@ -447,6 +552,7 @@ export default {
             }
             i {
               margin: 0 5px;
+              cursor: pointer;
             }
             i:hover {
               color: rgb(255, 255, 255);

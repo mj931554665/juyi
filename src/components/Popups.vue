@@ -2,11 +2,9 @@
   <div class="popups">
     <p class="name">
       <slot name="name"></slot>
-      <!-- &nbsp;<i class="el-icon-location-outline"></i>&nbsp;<i class="el-icon-video-camera"></i> -->
     </p>
     <div class="rectangle">
       <div class="panel" @click="deviceAdmin('detail')">
-        <!--routerChange('deviceDetails') -->
         <span>设备详情</span>
         <p>查看</p>
         <div class="panel-footer"></div>
@@ -39,7 +37,6 @@
         >
         </slot>
         <span class="data">
-          <slot name="powerTypeLable"></slot>
           <slot name="carStatusLabel"></slot>
           <slot name="modelLabel"></slot>
         </span>
@@ -56,9 +53,6 @@
       </p>
     </div>
     <div class="someInfo">
-      <!-- <div>
-        定位状态：<span><slot name="locationState"></slot></span>
-      </div> -->
       <div style="display: flex; width: 100%">项目名称：<span>test</span></div>
       <div>操作人员：<span>test</span></div>
       <div>项目时长：<span>test</span></div>
@@ -73,11 +67,9 @@ export default {
     deviceAdmin(info) {
       this.$router.push({
         path: "/deviceManage",
-        params: {
-          id: this.id,
-        },
         query: {
           where: info,
+          id: this.id,
         },
       });
     },
@@ -199,6 +191,7 @@ export default {
     border-bottom: 1px gray dotted;
     .equipmentNo {
       position: relative;
+      display: flex;
       .data {
         position: absolute;
         right: 0px;

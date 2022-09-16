@@ -1,9 +1,9 @@
 import Axios from "axios";
 //引入，配置axios
 const axios = Axios.create({
-  baseURL:' /cp_api',
-  withCredentials: true,  // 允许请求携带 cookie
-})
+  baseURL: "/cp_api",
+  withCredentials: true, // 允许请求携带 cookie
+});
 
 export default {
   // 实时刷新判断用户是否账号在线
@@ -40,7 +40,7 @@ export default {
   getOnLineStatus() {
     return axios.get("/equipment/getOnlineEquipmentAmountByRiskLevel");
   },
-  // 2.14——设备总数
+  // 2.14——各设备类型数
   getEquipmentAmountByType() {
     return axios.get("/equipment/getEquipmentAmountByType");
   },

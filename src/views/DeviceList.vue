@@ -241,7 +241,7 @@
               :height="tableHeight"
             >
               <!--region 选择框-->
-              <el-table-column type="selection" width="55" align="center" />
+              <!-- <el-table-column type="selection" width="55" align="center" /> -->
               <el-table-column
                 type="index"
                 width="50"
@@ -559,6 +559,7 @@ export default {
                 style: {
                   fontSize: "18px",
                   cursor: "pointer",
+                  margin: "0 15px",
                   color: "red",
                 },
                 domProps: {
@@ -677,6 +678,7 @@ export default {
                 style: {
                   fontSize: "18px",
                   cursor: "pointer",
+                  margin: "0 15px",
                   color: "red",
                 },
                 domProps: {
