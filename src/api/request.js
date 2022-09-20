@@ -216,4 +216,9 @@ export default {
 
     return axios.post("/drivingData/download/list", formData);
   },
+  // 设备详情页最新设备风险信息获取
+  getnewAlarm(id,time){
+    // id为设备id，time为时间戳
+    return axios.get(`/equipment/getEquipmentRiskAmountByRiskLevel/${id}?t=${time}`)
+  }
 };
