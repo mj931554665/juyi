@@ -80,7 +80,10 @@ export function selectList(data) {
         url: '/equipment/selectList',
         method: 'post',
         dataType: 'json',
-        data: data,
+        data: qs.stringify(data),
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        }
     })
 }
 /**
