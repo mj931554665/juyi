@@ -7,7 +7,7 @@
       active-text-color="#ffd04b"
       :router="true"
       :default-active="active"
-      :style="`width:${menuWidth}px ;`"
+      :style="`width:${menuWidth}px;min-width:140px;`"
     >
       <el-menu-item
         v-for="(item, index) of routerInfo"
@@ -35,18 +35,18 @@ export default {
           icon: "el-icon-tickets",
           name: "设备列表",
         },
-        detail: {
-          index: "detail",
-          url: "/deviceManage/deviceDetails",
-          icon: "el-icon-more-outline",
-          name: "设备详情",
-        },
-        real: {
-          index: "real",
-          url: "/deviceManage/realTimeMonitoring",
-          icon: "el-icon-video-camera",
-          name: "设备监控",
-        },
+        // detail: {
+        //   index: "detail",
+        //   url: "/deviceManage/deviceDetails",
+        //   icon: "el-icon-more-outline",
+        //   name: "设备详情",
+        // },
+        // real: {
+        //   index: "real",
+        //   url: "/deviceManage/realTimeMonitoring",
+        //   icon: "el-icon-video-camera",
+        //   name: "设备监控",
+        // },
         history: {
           index: "history",
           url: "/deviceManage/historicalTrack",
@@ -79,10 +79,11 @@ export default {
     if (this.$route.query.where) {
       this.active = this.$route.query.where;
     }
+    let deviceInfo = this.$route.query.deviceInfo;
     this.$router.push({
       path: this.routerInfo[this.active].url,
-      params: {
-        id: this.$route.query.id,
+      query: {
+        deviceInfo: deviceInfo,
       },
     });
   },

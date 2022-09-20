@@ -11,7 +11,7 @@
       </div>
       <div
         class="panel"
-        v-if="hasVideo"
+        v-if="deviceInfo.hasVideo"
         @click="deviceAdmin('real')"
       >
         <span>视频监控</span>
@@ -62,25 +62,17 @@
 
 <script>
 export default {
-  props: ["hasVideo", "id"],
+  props: ["deviceInfo"],
   methods: {
     deviceAdmin(info) {
       this.$router.push({
         path: "/deviceManage",
         query: {
           where: info,
-          id: this.id,
+          deviceInfo: this.deviceInfo,
         },
       });
     },
-    // routerChange(path) {
-    //   this.$router.push({
-    //     name: path,
-    //     params: {
-    //       id: this.id,
-    //     },
-    //   });
-    // },
   },
 };
 </script>
