@@ -8,12 +8,13 @@
             slot="more"
             class="moreContent"
             @click="routerChange('realTimeMonitoring')"
+            v-if="showVideo"
           >
             更多
             <i class="el-icon-arrow-right"></i>
           </span>
           <div slot="content" class="module1">
-            <template v-if="true">
+            <template v-if="showVideo">
               <div class="item-detail">
                 <div class="detail-line">
                   <el-radio-group
@@ -47,15 +48,11 @@
                 </div>
               </div>
             </template>
-            <div class="noVideo" v-else>
-              <div>
-                <el-empty image="../assets/images/kzuqi/noVideoOnline.png"></el-empty>
-              </div>
-              <!-- <div v-else>
-                <div class="hasVideo"></div>
-                <p>未检测到天眼硬件，请联系项目组安装</p>
-              </div> -->
-            </div>
+            <el-empty
+              style="height: 320px"
+              v-else
+              description="未安装视频终端或视频终端不在线"
+            ></el-empty>
           </div>
         </FloatCard>
         <FloatCard>
@@ -63,65 +60,79 @@
           <div slot="content" class="module2">
             <el-tabs v-model="module2" @tab-click="handleClick">
               <el-tab-pane label="近7日油耗详情" name="first" class="container">
-                <p>
-                  总计：{{ deviceDetails.baseInfo.weekOilCost }}&nbsp;L /
-                  {{ deviceDetails.baseInfo.weekWorkTime }}&nbsp;h
-                </p>
-                <div class="content">
-                  <EchartsComp :options="chart1"></EchartsComp>
-                  <!-- <div class="chart loadCurve"></div> -->
-                </div>
+                <template v-if="deviceDetails.weekAnalysisData">
+                  <p>
+                    总计：{{ deviceDetails.baseInfo.weekOilCost }}&nbsp;L /
+                    {{ deviceDetails.baseInfo.weekWorkTime }}&nbsp;h
+                  </p>
+                  <div class="content">
+                    <EchartsComp :options="chart1"></EchartsComp>
+                    <!-- <div class="chart loadCurve"></div> -->
+                  </div>
+                </template>
+                <el-empty
+                  style="height: 180px; width: 376px"
+                  v-else
+                  description=" "
+                ></el-empty>
               </el-tab-pane>
               <el-tab-pane label="累计数据" name="second">
-                <p>累计数据</p>
-                <div class="dataArea">
-                  <div class="panel">
-                    <h6>
-                      {{ deviceDetails.workConditionData.totalOilCost
-                      }}<span>&nbsp;L</span>
-                    </h6>
-                    <p>发动机总油耗</p>
+                <template v-if="deviceDetails.workConditionData">
+                  <p>累计数据</p>
+                  <div class="dataArea">
+                    <div class="panel">
+                      <h6>
+                        {{ deviceDetails.workConditionData.totalOilCost
+                        }}<span>&nbsp;L</span>
+                      </h6>
+                      <p>发动机总油耗</p>
+                    </div>
+                    <div class="panel">
+                      <h6>
+                        {{ deviceDetails.workConditionData.totalEnginWorkTime
+                        }}<span>&nbsp;h</span>
+                      </h6>
+                      <p>累计工作时长</p>
+                    </div>
+                    <div class="panel">
+                      <h6>
+                        {{ deviceDetails.workConditionData.onTime
+                        }}<span>&nbsp;h</span>
+                      </h6>
+                      <p>累计开机时长</p>
+                    </div>
+                    <div class="panel">
+                      <h6>
+                        {{ deviceDetails.workConditionData.workQuantity
+                        }}<span>&nbsp;次</span>
+                      </h6>
+                      <p>累计吊载次数</p>
+                    </div>
+                    <div class="panel">
+                      <h6>
+                        {{ deviceDetails.weekAnalysisData.overLoadWorkQuantity
+                        }}<span>&nbsp;次</span>
+                      </h6>
+                      <p>累计超载次数</p>
+                    </div>
+                    <div class="panel">
+                      <h6>
+                        {{
+                          deviceDetails.workConditionData.storageBatteryVoltage
+                            ? deviceDetails.workConditionData
+                                .storageBatteryVoltage
+                            : "--"
+                        }}<span>&nbsp;V</span>
+                      </h6>
+                      <p>蓄电池电压</p>
+                    </div>
                   </div>
-                  <div class="panel">
-                    <h6>
-                      {{ deviceDetails.workConditionData.totalEnginWorkTime
-                      }}<span>&nbsp;h</span>
-                    </h6>
-                    <p>累计工作时长</p>
-                  </div>
-                  <div class="panel">
-                    <h6>
-                      {{ deviceDetails.workConditionData.onTime
-                      }}<span>&nbsp;h</span>
-                    </h6>
-                    <p>累计开机时长</p>
-                  </div>
-                  <div class="panel">
-                    <h6>
-                      {{ deviceDetails.workConditionData.workQuantity
-                      }}<span>&nbsp;次</span>
-                    </h6>
-                    <p>累计吊载次数</p>
-                  </div>
-                  <div class="panel">
-                    <h6>
-                      {{ deviceDetails.weekAnalysisData.overLoadWorkQuantity
-                      }}<span>&nbsp;次</span>
-                    </h6>
-                    <p>累计超载次数</p>
-                  </div>
-                  <div class="panel">
-                    <h6>
-                      {{
-                        deviceDetails.workConditionData.storageBatteryVoltage
-                          ? deviceDetails.workConditionData
-                              .storageBatteryVoltage
-                          : "--"
-                      }}<span>&nbsp;V</span>
-                    </h6>
-                    <p>蓄电池电压</p>
-                  </div>
-                </div>
+                </template>
+                <el-empty
+                  style="height: 180px; width: 376px"
+                  v-else
+                  description=" "
+                ></el-empty>
               </el-tab-pane>
             </el-tabs>
           </div>
@@ -131,7 +142,7 @@
         <FloatCard>
           <span slot="header">设备实时工况</span>
           <div slot="content" class="module3">
-            <div class="devicePic">
+            <div class="devicePic" v-if="deviceDetails.workConditionData">
               <div class="ldd">
                 <div class="mainHookRatios" title="主钩倍率">
                   {{ deviceDetails.workConditionData.mainHookRatios }}
@@ -192,6 +203,11 @@
                 </div>
               </div>
             </div>
+            <el-empty
+              style="height: 254px"
+              v-else
+              description="此设备无工况数据"
+            ></el-empty>
             <div class="device_location">
               <p class="position">
                 <label>
@@ -206,7 +222,9 @@
               <p>
                 <i class="el-icon-time"></i>
                 工况时间：{{
-                  deviceDetails.workConditionData.workingConditionTime
+                  deviceDetails.workConditionData
+                    ? deviceDetails.workConditionData.workingConditionTime
+                    : "--"
                 }}
               </p>
             </div>
@@ -219,13 +237,16 @@
               v-model="module4"
               @tab-click="handleClick"
               style="padding-left: 20px"
+              v-if="deviceDetails.workConditionData"
             >
               <el-tab-pane label="开关量" name="first">
                 <div class="switch">
                   <p class="title">
                     <span
                       >更新时间：{{
-                        deviceDetails.weekAnalysisData.dataUpdateTime
+                        deviceDetails.weekAnalysisData
+                          ? deviceDetails.weekAnalysisData.dataUpdateTime
+                          : "--"
                       }}</span
                     >
                   </p>
@@ -351,6 +372,11 @@
                 </div>
               </el-tab-pane>
             </el-tabs>
+            <el-empty
+              style="height: 270px"
+              v-else
+              description="此设备无状态信息"
+            ></el-empty>
           </div>
         </FloatCard>
       </div>
@@ -416,34 +442,30 @@
         </FloatCard>
         <FloatCard :more="true">
           <span slot="header">风险事件统计</span>
-          <span
-            slot="more"
-            class="moreContent"
-            @click="routerChange('deviceAlarm')"
-          >
+          <span slot="more" class="moreContent" @click="goAlarm('all')">
             更多
             <i class="el-icon-arrow-right"></i>
           </span>
           <div slot="content" class="module6">
             <div class="detail-line">
-              <div class="riskEvent r1">
+              <div class="riskEvent r1" @click="goAlarm('height')">
                 <i style="color: #ff4620" class="el-icon-warning"></i>
                 <div>
-                  <h6>0</h6>
+                  <h6>{{ highRisk }}</h6>
                   <p>高风险事件</p>
                 </div>
               </div>
-              <div class="riskEvent r2">
+              <div class="riskEvent r2" @click="goAlarm('medium')">
                 <i style="color: #ff9a00" class="el-icon-warning"></i>
                 <div>
-                  <h6>0</h6>
+                  <h6>{{ mediumRisk }}</h6>
                   <p>中风险事件</p>
                 </div>
               </div>
-              <div class="riskEvent r3">
+              <div class="riskEvent r3" @click="goAlarm('low')">
                 <i style="color: #fbc800" class="el-icon-warning"></i>
                 <div>
-                  <h6>0</h6>
+                  <h6>{{ lowRisk }}</h6>
                   <p>低风险事件</p>
                 </div>
               </div>
@@ -495,10 +517,12 @@ export default {
       oldChannel: 0,
       // 实时监控视频链接
       videosrc: "",
+      showVideo: false,
+      // 高中低风险事件数
+      highRisk: 0,
+      mediumRisk: 0,
+      lowRisk: 0,
     };
-  },
-  props: {
-    id: {},
   },
   computed: {
     // 传入的设备id值，如没有就使用默认设备id值
@@ -506,22 +530,16 @@ export default {
       let id;
       if (this.$route.params.id) {
         id = this.$route.params.id;
-        sessionStorage.setItem(
-          "equipmentId",
-          JSON.stringify(this.$route.params.id)
-        );
-      } else {
-        id = JSON.parse(sessionStorage.getItem("equipmentId"));
+      } else if (this.$route.query.deviceInfo) {
+        id = this.$route.query.deviceInfo.id;
       }
       return id ? id : "c1e221866ab84ae28aeb89f975a667c4";
     },
   },
   destroyed() {
     this.stopHeartBeat(this.oldChannel);
-    sessionStorage.removeItem("equipmentId");
   },
-  created(e) {
-    console.log('this.$route.params.id',this.$route.params.id)
+  created() {
     // 获取设备信息
     this.getDeviceDetails();
   },
@@ -531,13 +549,16 @@ export default {
         let data = val.data.data[0];
         // 赋值获取到的数据
         this.VideoCarByVehicleCode = data;
-        // console.log("VideoCarByVehicleCode", data);
+        if (data == undefined) {
+          return;
+        }
         this.$api.getVideoChannelState(data.terminalId).then((val) => {
+          this.showVideo = true;
           // 把通道信息分割成数组
           let data = val.data.data[0].split(",").map(Number);
           // 通道信息赋值给data数据在页面显示状态
           this.VideoChannelState = data;
-          console.log("this.VideoChannelState", this.VideoChannelState);
+          // console.log("this.VideoChannelState", this.VideoChannelState);
         });
       });
     },
@@ -545,6 +566,9 @@ export default {
     initVideo(equipmentNo) {
       this.$api.getvideoPlay(equipmentNo, this.channel).then((val) => {
         this.stopHeartBeat(this.oldChannel); //停止上一个视频的心跳
+        if (val.data.data == null) {
+          return;
+        }
         let data = val.data.data.split("|");
         this.videosrc = data[1];
         this.setHeartBeat(data[2], this.channel);
@@ -555,23 +579,37 @@ export default {
     handleClick(tab, event) {},
     // 获取设备详细工况信息
     getDeviceDetails() {
+      // 获取设备详情
       this.$api.getDetailWithWorkConditionData(this.id).then((res) => {
         let data = res.data.data;
         // 赋值设备实时工况数据
         this.deviceDetails = data;
-        // console.log("data", data);
         // 获取到数据之后显示页面
         this.isshow = true;
         // 为第一个图表（近7日数据）传入设备数据，把返回的图表配置信息赋值
-        this.chart1 = this.$EchartsData.Dchart1(data.weekAnalysisData.details);
+        if (data.weekAnalysisData) {
+          this.chart1 = this.$EchartsData.Dchart1(
+            data.weekAnalysisData.details
+          );
+        }
         // 为第二个图表（油量百分比）传入设备数据，把返回的图表配置信息赋值
-        this.chart2 = this.$EchartsData.Dchart2(
-          data.workConditionData.remainingOilPercent
-        );
+        if (data.workConditionData) {
+          this.chart2 = this.$EchartsData.Dchart2(
+            data.workConditionData.remainingOilPercent
+          );
+        }
         this.equipmentNo = data.baseInfo.equipmentNo;
         // this.equipmentNo='CC0260CB5362'
         this.initChannel(this.equipmentNo);
         this.initVideo(this.equipmentNo);
+      });
+      // 获取设备近期风险信息
+      let time = new Date().getTime();
+      this.$api.getnewAlarm(this.id, time).then((res) => {
+        let data = res.data.data;
+        this.lowRisk = data[2].amount;
+        this.mediumRisk = data[1].amount;
+        this.highRisk = data[0].amount;
       });
     },
     // 切换路由
@@ -582,6 +620,15 @@ export default {
         params: {
           equipmentNo: this.equipmentNo,
           id: this.id,
+        },
+      });
+    },
+    goAlarm(riskLevel) {
+      this.$router.push({
+        name: "deviceAlarm",
+        params: {
+          deviceDetails: this.deviceDetails,
+          riskLevel: riskLevel,
         },
       });
     },
@@ -726,6 +773,7 @@ export default {
         }
         .dataArea {
           margin-top: 20px;
+          min-width: 376px;
           position: relative;
           display: flex;
           flex-wrap: wrap;
@@ -733,7 +781,7 @@ export default {
 
           .panel {
             position: relative;
-            width: 90px;
+            width: 29%;
             height: 54px;
             margin: 6px;
             border: 1px solid #000;
@@ -1048,6 +1096,11 @@ export default {
               text-align: center;
               align-items: center;
               justify-content: center;
+              h6 {
+                font-size: 18px;
+                font-weight: 700;
+                padding-bottom: 5px;
+              }
             }
           }
         }

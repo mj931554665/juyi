@@ -290,6 +290,7 @@ export default {
       equipmentNo: [],
       equipmentNoOptions: {}, //设备编号的选项信息
       plateNo: [],
+      initTerminalId: [],
       plateNoOptions: {}, //车牌号的选项信息
       alarmType: "0",
       alarmTypeOptions: {}, //风险类型的选项信息
@@ -620,9 +621,44 @@ export default {
     },
   },
   created() {
+    if (
+      this.$route.params.deviceDetails ||
+      this.$route.query.deviceInfo ||
+      this.$route.params.deviceInfo
+    ) {
+      console.log("in");
+      let data;
+      if (this.$route.params.deviceDetails) {
+        data = this.$route.params.deviceDetails.baseInfo;
+        this.activeName = this.$route.params.riskLevel;
+      } else if (this.$route.params.deviceInfo) {
+        data = this.$route.params.deviceInfo;
+        console.log("data", data);
+        this.activeName = "all";
+      } else if (this.$route.query.deviceInfo) {
+        data = this.$route.query.deviceInfo;
+        this.activeName = "all";
+      }
+
+      this.currentPage = 1;
+      this.deviceName = [data.name];
+      this.equipmentNo = [data.equipmentNo];
+      this.initTerminalId = [data.terminalId];
+
+      if (this.activeName === "all") {
+        this.alarmLevel = "";
+      } else if (this.activeName === "height") {
+        this.alarmLevel = 3;
+      } else if (this.activeName === "medium") {
+        this.alarmLevel = 2;
+      } else {
+        this.alarmLevel = 1;
+      }
+    }
     this.initAlarmData();
     this.initSearchData();
   },
+  mounted() {},
   methods: {
     /*表头样式*/
     headerCellStyle({ row, column, rowIndex, columnIndex }) {
@@ -639,7 +675,9 @@ export default {
      * tabs切换
      * */
     handleClick(tab, event) {
-      this.activeName = tab.name;
+      if (tab) {
+        this.activeName = tab.name;
+      }
       if (this.activeName === "all") {
         this.alarmLevel = "";
       } else if (this.activeName === "height") {
@@ -724,7 +762,8 @@ export default {
       let endDate = dateFormat(this.chooseTime[1], "yyyy-MM-dd HH:mm:ss");
       let terminalIds = this.deviceName
         .concat(this.equipmentNo)
-        .concat(this.plateNo);
+        .concat(this.plateNo)
+        .concat(this.initTerminalId);
 
       let params = {
         equipemtId: this.equipmentId, //设备Id
@@ -739,7 +778,6 @@ export default {
         pageNum: this.currentPage,
         pageSize: this.pageSize,
       };
-
       this.$api.getEquipmentAlarmList(params).then((res) => {
         if (res.data.code === 200) {
           this.tableData = res.data.data.rows;
