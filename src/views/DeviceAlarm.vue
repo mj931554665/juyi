@@ -904,6 +904,8 @@ export default {
 // 导航栏
 .deviceAlarm {
   margin: 0 10px;
+  min-width: 1200px;
+  overflow: hidden;
 
   .el-breadcrumb {
     font-size: 16px;

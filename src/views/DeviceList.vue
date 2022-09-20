@@ -852,6 +852,7 @@ export default {
 </script>
 <style lang="less">
 .deviceList {
+  min-width: 1200px;
   .el-breadcrumb {
     font-size: 16px;
   }

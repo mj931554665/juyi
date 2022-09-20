@@ -46,9 +46,7 @@
     <div class="user">
       <i class="el-icon-s-custom"></i>
       <div class="username">
-        {{
-          userInfo.user.userName ? userInfo.user.userName : "noUserName"
-        }}
+        {{ userInfo.user.userName ? userInfo.user.userName : "noUserName" }}
       </div>
     </div>
   </div>
@@ -58,21 +56,34 @@ export default {
   data() {
     return {
       isCollapse: true,
-      activeIndex: "",
+      activeIndex: "1",
       // 用户名
       userInfo: JSON.parse(localStorage.getItem("Login_userInfo")),
     };
   },
-  // watch: {
-  //   '$route.path': function (newVal) {
-  //     console.log('newVal',newVal)
-  //     // 为了防止和原有的高亮更新操作冲突，这里只更新自己需要的路由
-  //     if (newVal === '/deviceManage') {
-  //       // 为 :default-active 绑定的值 activepath 重新赋值，从而实现菜单栏的高亮更新
-  //       this.activeIndex = newVal
-  //     }
-  //   }
-  // },
+  watch: {
+    "$route.name": function (newVal) {
+      // console.log("newVal", newVal);
+      // alert(newVal)
+      // 为了防止和原有的高亮更新操作冲突，这里只更新自己需要的路由
+      if (
+        newVal == "deviceList" ||
+        newVal == "deviceDetails" ||
+        newVal == "realTimeMonitoring" ||
+        newVal == "deviceManage"
+      ) {
+        console.log("2-1");
+        // 为 :default-active 绑定的值 activepath 重新赋值，从而实现菜单栏的高亮更新
+        this.activeIndex = "2-1";
+      } else if (newVal == "historicalTrack") {
+        console.log("2-4");
+        this.activeIndex = "2-4";
+      } else if (newVal == "deviceAlarm") {
+        console.log("2-5");
+        this.activeIndex = "2-5";
+      }
+    },
+  },
   methods: {
     deviceAdmin(info) {
       this.$router.push({
@@ -89,20 +100,17 @@ export default {
       window.open(routeLink.href, "_blank");
     },
     handleSelect(key, keyPath) {
-      console.log(key, keyPath);
+      // console.log(key, keyPath);
     },
     handleOpen(key, keyPath) {
-      console.log(key, keyPath);
+      // console.log(key, keyPath);
     },
     handleClose(key, keyPath) {
-      console.log(key, keyPath);
+      // console.log(key, keyPath);
     },
     sideChange() {
       this.isCollapse = !this.isCollapse;
-      console.log(this.isCollapse);
       localStorage.setItem("isCollapse", this.isCollapse);
-      console.log(this.isCollapse);
-      console.log(111);
       // localStorage.setItems('isCollapse',this.isCollapse)
     },
   },
@@ -112,6 +120,9 @@ export default {
     } else if (localStorage.getItem("isCollapse") == "false") {
       this.isCollapse = false;
     }
+    // setInterval(() => {
+    //   console.log('this.activeIndex',this.activeIndex)
+    // }, 1000);
   },
 };
 </script>
@@ -124,6 +135,8 @@ export default {
   font-weight: bold;
   display: flex;
   background: #2c2b30;
+  min-width: 1200px;
+  overflow: hidden;
   // border-bottom: solid 10px #f2ce90;
   .logo {
     width: 170px;

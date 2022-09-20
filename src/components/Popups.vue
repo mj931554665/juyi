@@ -18,14 +18,15 @@
         <p>实时</p>
         <div class="panel-footer"></div>
       </div>
-      <div class="panel" @click="deviceAdmin('alarm')">
-        <span>风险事件</span>
-        <p>查询</p>
-        <div class="panel-footer"></div>
-      </div>
       <div class="panel" @click="deviceAdmin('history')">
         <span>历史轨迹</span>
         <p>信息</p>
+        <div class="panel-footer"></div>
+      </div>
+      <div class="panel" @click="deviceAdmin('alarm')">
+        <!-- <span>风险事件</span> -->
+        <span>设备报警</span>
+        <p>查询</p>
         <div class="panel-footer"></div>
       </div>
     </div>

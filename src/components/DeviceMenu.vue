@@ -11,6 +11,7 @@
     >
       <el-menu-item
         v-for="(item, index) of routerInfo"
+        v-if="item.show"
         :key="index"
         :index="item.index"
         :route="item.url"
@@ -34,30 +35,35 @@ export default {
           url: "/deviceManage/deviceList",
           icon: "el-icon-tickets",
           name: "设备列表",
+          show: true,
         },
-        // detail: {
-        //   index: "detail",
-        //   url: "/deviceManage/deviceDetails",
-        //   icon: "el-icon-more-outline",
-        //   name: "设备详情",
-        // },
-        // real: {
-        //   index: "real",
-        //   url: "/deviceManage/realTimeMonitoring",
-        //   icon: "el-icon-video-camera",
-        //   name: "设备监控",
-        // },
+        detail: {
+          index: "detail",
+          url: "/deviceManage/deviceDetails",
+          icon: "el-icon-more-outline",
+          name: "设备详情",
+          show: false,
+        },
+        real: {
+          index: "real",
+          url: "/deviceManage/realTimeMonitoring",
+          icon: "el-icon-video-camera",
+          name: "设备监控",
+          show: false,
+        },
         history: {
           index: "history",
           url: "/deviceManage/historicalTrack",
           icon: "el-icon-film",
           name: "历史轨迹",
+          show: true,
         },
         alarm: {
           index: "alarm",
           url: "/deviceManage/deviceAlarm",
           icon: "el-icon-aim",
           name: "设备报警",
+          show: true,
         },
       },
     };
@@ -67,6 +73,7 @@ export default {
       handler(newVal, oldVal) {
         if (newVal !== undefined) {
           this.active = this.$route.query.where;
+          console.log('this.$route.query.where',this.$route.query.where)
           this.$router.push({
             path: this.routerInfo[this.active].url,
           });

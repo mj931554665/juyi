@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-container>
+    <el-container style="overflow: hidden;">
       <el-header height="100" style="padding: 0">
         <NavbarVue />
       </el-header>

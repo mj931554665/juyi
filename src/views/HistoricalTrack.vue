@@ -298,6 +298,8 @@ export default {
         this.deviceActive = this.$route.query.deviceInfo.equipmentNo;
       } else if (this.$route.params.equipmentNo) {
         this.deviceActive = this.$route.params.equipmentNo;
+      }else{
+        this.deviceActive = this.deviceList[0].equipmentNo;
       }
       this.initDeviceInfo();
     });
@@ -311,6 +313,7 @@ export default {
         .getHistoryTrackDetail(startDate, endDate, this.deviceActive)
         .then((res) => {
           let data = res.data.data;
+          if (data.listPoint.length==0) return;
           this.mileageStr = data.mileageStr; // 轨迹里程
           // 获取轨迹列表并渲染表格
           this.TrackList = data.listPoint; // 轨迹点列表
@@ -333,7 +336,6 @@ export default {
     startTrack() {
       /* ----------------------实例初始化部分---------------------- */
       map.clearMap();
-      if (this.listPoint.length == 0) return;
       // 轨迹点
       let [...lineArr] = this.listPoint;
       this.lineArr = lineArr;
