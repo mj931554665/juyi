@@ -63,9 +63,6 @@ export default {
         this.renderMap();
       });
     },
-    qwe() {
-      alert(123);
-    },
     renderMap() {
       let _this = this;
       // 获取到设备列表数据

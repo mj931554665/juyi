@@ -481,7 +481,7 @@ export default {
           align: "center",
           label: "操作",
           fixed: "right",
-          minWidth: 150,
+          minWidth: 160,
           render: (h, params) => {
             let detail, real, history, alarm;
             let hasVideo = params.row.hasVideo;
@@ -525,7 +525,7 @@ export default {
                       this.$router.push({
                         name: "realTimeMonitoring",
                         params: {
-                          equipmentNo: params.row.equipmentNo,
+                          deviceInfo: params.row,
                         },
                       });
                     }
@@ -572,7 +572,7 @@ export default {
                     this.$router.push({
                       name: "deviceAlarm",
                       params: {
-                        equipmentId: params.row.id,
+                        deviceInfo: params.row,
                       },
                     });
                   },
@@ -685,7 +685,12 @@ export default {
                   title: "收藏",
                 },
               };
-              return h("div", [h("i", detail), h("i", real), h("i", history), h("i", alarm)]);
+              return h("div", [
+                h("i", detail),
+                h("i", real),
+                h("i", history),
+                h("i", alarm),
+              ]);
             }
           },
         },
@@ -847,6 +852,7 @@ export default {
 </script>
 <style lang="less">
 .deviceList {
+  min-width: 1200px;
   .el-breadcrumb {
     font-size: 16px;
   }

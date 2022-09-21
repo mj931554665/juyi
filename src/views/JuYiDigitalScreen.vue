@@ -961,6 +961,7 @@ export default {
         totalTonnage += parseInt(tonnage.replace(/[^\d]/g, ""));
         vehicleCodes += item.equipmentNo + ",";
       });
+      vehicleCodes = vehicleCodes.slice(0,vehicleCodes.length-1);
       this.totalTonnage = totalTonnage ? totalTonnage : 0;
       // 获取当前日期
       let date = new Date();

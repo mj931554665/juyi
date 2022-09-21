@@ -22,12 +22,12 @@
         <el-menu-item index="2-1" @click="deviceAdmin('list')"
           >设备列表</el-menu-item
         >
-        <el-menu-item index="2-2" @click="deviceAdmin('detail')"
+        <!-- <el-menu-item index="2-2" @click="deviceAdmin('detail')"
           >设备详情</el-menu-item
         >
         <el-menu-item index="2-3" @click="deviceAdmin('real')"
           >实时监控</el-menu-item
-        >
+        > -->
         <el-menu-item index="2-4" @click="deviceAdmin('history')"
           >历史轨迹</el-menu-item
         >
@@ -59,7 +59,7 @@ export default {
   data() {
     return {
       isCollapse: true,
-      activeIndex: "",
+      activeIndex: "1",
       // 用户名
       // userInfo: JSON.parse(localStorage.getItem("Login_userInfo")),
     };
@@ -68,6 +68,29 @@ export default {
     ...mapGetters([
       'name'
     ])
+  },
+  watch: {
+    "$route.name": function (newVal) {
+      // console.log("newVal", newVal);
+      // alert(newVal)
+      // 为了防止和原有的高亮更新操作冲突，这里只更新自己需要的路由
+      if (
+        newVal == "deviceList" ||
+        newVal == "deviceDetails" ||
+        newVal == "realTimeMonitoring" ||
+        newVal == "deviceManage"
+      ) {
+        console.log("2-1");
+        // 为 :default-active 绑定的值 activepath 重新赋值，从而实现菜单栏的高亮更新
+        this.activeIndex = "2-1";
+      } else if (newVal == "historicalTrack") {
+        console.log("2-4");
+        this.activeIndex = "2-4";
+      } else if (newVal == "deviceAlarm") {
+        console.log("2-5");
+        this.activeIndex = "2-5";
+      }
+    },
   },
   methods: {
     deviceAdmin(info) {
@@ -85,20 +108,17 @@ export default {
       window.open(routeLink.href, "_blank");
     },
     handleSelect(key, keyPath) {
-      console.log(key, keyPath);
+      // console.log(key, keyPath);
     },
     handleOpen(key, keyPath) {
-      console.log(key, keyPath);
+      // console.log(key, keyPath);
     },
     handleClose(key, keyPath) {
-      console.log(key, keyPath);
+      // console.log(key, keyPath);
     },
     sideChange() {
       this.isCollapse = !this.isCollapse;
-      console.log(this.isCollapse);
       localStorage.setItem("isCollapse", this.isCollapse);
-      console.log(this.isCollapse);
-      console.log(111);
       // localStorage.setItems('isCollapse',this.isCollapse)
     },
   },
@@ -108,6 +128,9 @@ export default {
     } else if (localStorage.getItem("isCollapse") == "false") {
       this.isCollapse = false;
     }
+    // setInterval(() => {
+    //   console.log('this.activeIndex',this.activeIndex)
+    // }, 1000);
   },
 };
 </script>
@@ -120,6 +143,8 @@ export default {
   font-weight: bold;
   display: flex;
   background: #2c2b30;
+  min-width: 1200px;
+  overflow: hidden;
   // border-bottom: solid 10px #f2ce90;
   .logo {
     width: 170px;

@@ -39,13 +39,12 @@
   export default {
   mounted() {
     this.$nextTick(() => {
-      // 根据浏览器高度设置初始高度
-      this.heights =
-        window.innerHeight - this.$refs.refsTable.$el.offsetTop - 220;
+      console.log("this.$refs", this.$refs);
+      // 根据浏览器高度设置初始高度  - this.$refs.refsTable.$el.offsetTop
+      this.heights = window.innerHeight - 220;
       // 监听浏览器高度变化，修改表格高度
       window.onresize = () => {
-        this.heights =
-          window.innerHeight - this.$refs.refsTable.$el.offsetTop - 220;
+        this.heights = window.innerHeight - 220;
       };
     });
   },

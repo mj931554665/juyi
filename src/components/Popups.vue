@@ -11,21 +11,22 @@
       </div>
       <div
         class="panel"
-        v-if="hasVideo"
+        v-if="deviceInfo.hasVideo"
         @click="deviceAdmin('real')"
       >
         <span>视频监控</span>
         <p>实时</p>
         <div class="panel-footer"></div>
       </div>
-      <div class="panel" @click="deviceAdmin('alarm')">
-        <span>风险事件</span>
-        <p>查询</p>
-        <div class="panel-footer"></div>
-      </div>
       <div class="panel" @click="deviceAdmin('history')">
         <span>历史轨迹</span>
         <p>信息</p>
+        <div class="panel-footer"></div>
+      </div>
+      <div class="panel" @click="deviceAdmin('alarm')">
+        <!-- <span>风险事件</span> -->
+        <span>设备报警</span>
+        <p>查询</p>
         <div class="panel-footer"></div>
       </div>
     </div>
@@ -62,25 +63,17 @@
 
 <script>
 export default {
-  props: ["hasVideo", "id"],
+  props: ["deviceInfo"],
   methods: {
     deviceAdmin(info) {
       this.$router.push({
         path: "/deviceManage",
         query: {
           where: info,
-          id: this.id,
+          deviceInfo: this.deviceInfo,
         },
       });
     },
-    // routerChange(path) {
-    //   this.$router.push({
-    //     name: path,
-    //     params: {
-    //       id: this.id,
-    //     },
-    //   });
-    // },
   },
 };
 </script>

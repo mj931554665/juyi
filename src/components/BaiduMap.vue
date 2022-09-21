@@ -49,7 +49,7 @@
           @open="infoWindowOpen"
         >
           <div class="info-window">
-            <Popups :hasVideo="deviceInfo.videoStatus" :id="deviceInfo.id">
+            <Popups :deviceInfo="deviceInfo">
               <span slot="name">{{ deviceInfo.name }}</span>
               <span slot="equipmentNo">{{ deviceInfo.equipmentNo }}</span>
               <span slot="locationTime">{{ deviceInfo.locationTime }}</span>

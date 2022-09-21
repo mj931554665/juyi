@@ -3,19 +3,37 @@
     <div class="module1">
       <div class="controls">
         <div class="splitScreen">
-          <span class="iconfont al-icona-7Ayifenping" title="一分屏" @click="splitScreenChange(1)"
-            :class="splitScreen === 1 ? 'active' : ''"></span>
-          <span class="iconfont al-icona-7Dsifenping" title="四分屏" @click="splitScreenChange(4)"
-            :class="splitScreen === 4 ? 'active' : ''"></span>
-          <span class="iconfont al-icona-7Iyijiawufenping" title="六分屏" @click="splitScreenChange(6)"
-            :class="splitScreen === 6 ? 'active' : ''"></span>
-          <span class="iconfont al-icona-7Jyijiaqifenping" title="八分屏" @click="splitScreenChange(8)"
-            :class="splitScreen === 8 ? 'active' : ''"></span>
+          <span
+            class="iconfont al-icona-7Ayifenping"
+            title="一分屏"
+            @click="splitScreenChange(1)"
+            :class="splitScreen === 1 ? 'active' : ''"
+          ></span>
+          <span
+            class="iconfont al-icona-7Dsifenping"
+            title="四分屏"
+            @click="splitScreenChange(4)"
+            :class="splitScreen === 4 ? 'active' : ''"
+          ></span>
+          <span
+            class="iconfont al-icona-7Iyijiawufenping"
+            title="六分屏"
+            @click="splitScreenChange(6)"
+            :class="splitScreen === 6 ? 'active' : ''"
+          ></span>
+          <span
+            class="iconfont al-icona-7Jyijiaqifenping"
+            title="八分屏"
+            @click="splitScreenChange(8)"
+            :class="splitScreen === 8 ? 'active' : ''"
+          ></span>
         </div>
         <p>
           <i class="el-icon-location-outline"></i>
           {{
-              Object.keys(this.deviceDetails).length ? deviceDetails.baseInfo.address : "--"
+            Object.keys(this.deviceDetails).length
+              ? deviceDetails.baseInfo.address
+              : "--"
           }}
         </p>
       </div>
@@ -53,34 +71,40 @@
         <div slot="content" class="detail">
           <p>
             设备名称：&nbsp;{{
-                Object.keys(this.deviceDetails).length ? deviceDetails.baseInfo.name : "--"
+              Object.keys(this.deviceDetails).length
+                ? deviceDetails.baseInfo.name
+                : "--"
             }}
           </p>
           <p>
             设备类型：&nbsp;{{
-                Object.keys(this.deviceDetails).length ? deviceDetails.baseInfo.typeLabel : "--"
+              Object.keys(this.deviceDetails).length
+                ? deviceDetails.baseInfo.typeLabel
+                : "--"
             }}
           </p>
           <p>设备编号：&nbsp;{{ vehicleCodes ? vehicleCodes : "--" }}</p>
           <p>
             设备型号：&nbsp;{{
-                Object.keys(this.deviceDetails).length ? deviceDetails.baseInfo.modelLabel : "--"
+              Object.keys(this.deviceDetails).length
+                ? deviceDetails.baseInfo.modelLabel
+                : "--"
             }}
           </p>
           <p>
             动力类型：&nbsp;{{
-                Object.keys(this.deviceDetails).length
-                  ? deviceDetails.baseInfo.powerTypeLable
-                  : "--"
+              Object.keys(this.deviceDetails).length
+                ? deviceDetails.baseInfo.powerTypeLable
+                : "--"
             }}
           </p>
           <p>
             定位状态：&nbsp;{{
-                Object.keys(this.deviceDetails).length
-                  ? deviceDetails.baseInfo.locationState
-                    ? "已定位"
-                    : "未定位"
-                  : "--"
+              Object.keys(this.deviceDetails).length
+                ? deviceDetails.baseInfo.locationState
+                  ? "已定位"
+                  : "未定位"
+                : "--"
             }}
           </p>
         </div>
@@ -89,9 +113,18 @@
         <span slot="header">视频通道</span>
         <div slot="content" class="block">
           <el-checkbox-group v-model="channel" class="channel-content">
-            <el-checkbox-button @change="changeChannel($event, index + 1)"
-              v-for="(aisle, index) in VideoChannelState.slice(0, 8)" :label="index + 1" :key="index">
-              <p v-if="false" class="dot" :style="'background:' + (aisle === '0' ? '#13ca40' : '#d8d8d8')"></p>
+            <el-checkbox-button
+              style="width: 25%"
+              @change="changeChannel($event, index + 1)"
+              v-for="(aisle, index) in VideoChannelState.slice(0, 8)"
+              :label="index + 1"
+              :key="index"
+            >
+              <p
+                v-if="false"
+                class="dot"
+                :style="'background:' + (aisle === '0' ? '#13ca40' : '#d8d8d8')"
+              ></p>
               通道{{ index + 1 }}
             </el-checkbox-button>
           </el-checkbox-group>
@@ -120,26 +153,30 @@ export default {
   computed: {
     // 传入的设备编号
     vehicleCodes() {
-      let equipmentNo
-      if(this.$route.params.equipmentNo){
-        equipmentNo=this.$route.params.equipmentNo
-        sessionStorage.setItem('equipmentNo', JSON.stringify(this.$route.params.equipmentNo))
-      }else{
-        equipmentNo=JSON.parse(sessionStorage.getItem('equipmentNo'))
+      let equipmentNo;
+      if (this.$route.params.equipmentNo) {
+        equipmentNo = this.$route.params.equipmentNo;
+        // sessionStorage.setItem('equipmentNo', JSON.stringify(this.$route.params.equipmentNo))
+      } else if (this.$route.params.deviceInfo) {
+        equipmentNo = this.$route.params.deviceInfo.equipmentNo;
+      } else if (this.$route.query.deviceInfo) {
+        equipmentNo = this.$route.query.deviceInfo.equipmentNo;
       }
       return equipmentNo ? equipmentNo : "CC0260CB5362";
     },
     // 设备工况数据详情
     equipmentId() {
-      let equipmentId
-      if(this.$route.params.id){
-        equipmentId=this.$route.params.id
-        sessionStorage.setItem('equipmentId', JSON.stringify(this.$route.params.id))
-      }else{
-        equipmentId=JSON.parse(sessionStorage.getItem('equipmentId'))
+      let equipmentId;
+      console.log("this.$route.query", this.$route.query);
+      if (this.$route.params.id) {
+        equipmentId = this.$route.params.id;
+      } else if (this.$route.params.deviceInfo) {
+        equipmentId = this.$route.params.deviceInfo.id;
+      } else if (this.$route.query.deviceInfo) {
+        equipmentId = this.$route.query.deviceInfo.id;
       }
       return equipmentId ? equipmentId : "c1e221866ab84ae28aeb89f975a667c4";
-    }
+    },
   },
   data() {
     return {
@@ -153,28 +190,29 @@ export default {
       channel: [1],
       // 视频地址数组
       videoSrc: [],
-      screenClass: 'oneScreen',
-      deviceDetails: '' //设备详情信息
+      screenClass: "oneScreen",
+      deviceDetails: "", //设备详情信息
     };
   },
   watch: {
     splitScreen(v) {
       if (v === 1) {
-        this.screenClass = 'oneScreen'
+        this.screenClass = "oneScreen";
       } else if (v === 4) {
-        this.screenClass = 'fourScreen'
+        this.screenClass = "fourScreen";
       } else if (v === 6) {
-        this.screenClass = 'sixScreen'
+        this.screenClass = "sixScreen";
       } else if (v === 8) {
-        this.screenClass = 'eightScreen'
+        this.screenClass = "eightScreen";
       }
-    }
+    },
   },
-  destroyed() { //页面关闭
+  destroyed() {
+    //页面关闭
     for (let index of this.channel) {
-      this.stopHeartBeat(index)
-      --index
-      let refInfo = this.$refs['screen' + index]
+      this.stopHeartBeat(index);
+      --index;
+      let refInfo = this.$refs["screen" + index];
       // alert(index)
       // if (refInfo[0]) {
       //   alert(index)
@@ -190,19 +228,19 @@ export default {
   },
   methods: {
     splitScreenChange(index) {
-      this.splitScreen = index
-      let length = this.channel.length
+      this.splitScreen = index;
+      let length = this.channel.length;
       if (length > index) {
-        let k = this.channel.splice(index, length)
+        let k = this.channel.splice(index, length);
         for (let i of k) {
-          this.stopHeartBeat(i)
+          this.stopHeartBeat(i);
         }
       }
     },
     selectAll() {
       this.splitScreen = 8;
       this.channel = [1, 2, 3, 4, 5, 6, 7, 8];
-      for(let index of this.channel){
+      for (let index of this.channel) {
         this.initVideoSrc(index);
       }
     },
@@ -210,25 +248,26 @@ export default {
      * 切换通道
      * */
     changeChannel(v, index) {
-      let maxChannel = Math.max.apply(null, this.channel)
+      let maxChannel = Math.max.apply(null, this.channel);
       if (maxChannel <= 1) {
-        this.splitScreen = 1
+        this.splitScreen = 1;
       } else if (maxChannel > 1 && maxChannel < 5) {
-        this.splitScreen = 4
+        this.splitScreen = 4;
       } else if (maxChannel >= 5 && maxChannel < 7) {
-        this.splitScreen = 6
+        this.splitScreen = 6;
       } else {
-        this.splitScreen = 8
+        this.splitScreen = 8;
       }
-      if (v) { //选中的
-        this.initVideoSrc(index)
+      if (v) {
+        //选中的
+        this.initVideoSrc(index);
       } else {
-        this.stopHeartBeat(index)
+        this.stopHeartBeat(index);
 
-        --index
-        let refInfo = this.$refs['screen' + index]
+        --index;
+        let refInfo = this.$refs["screen" + index];
         if (refInfo[0]) {
-          refInfo[0].stop() //视频终止
+          refInfo[0].stop(); //视频终止
         }
       }
     },
@@ -258,7 +297,7 @@ export default {
           // 赋值设备实时工况数据
           this.deviceDetails = res.data
         }
-      })
+      });
     },
     /**
      * 连接对应的视频通道
@@ -280,10 +319,10 @@ export default {
         let data = val.data.split("|");
         this.setHeartBeat(data[2], index);
 
-        --index
-        let refInfo = this.$refs['screen' + index]
+        --index;
+        let refInfo = this.$refs["screen" + index];
         if (refInfo[0]) {
-          refInfo[0].play(data[1]) //视频启动开始
+          refInfo[0].play(data[1]); //视频启动开始
         }
       });
     },
@@ -296,11 +335,13 @@ export default {
 
 .RealTimeMonitoring {
   box-sizing: border-box;
+  min-width: 1280px;
   min-height: calc(100vh - 70px);
   display: flex;
   padding: 40px;
+  font-size: 16px;
 
-  .FloatCard-item-header>span:before {
+  .FloatCard-item-header > span:before {
     content: "";
     display: inline-block;
     width: 6px;
@@ -340,7 +381,7 @@ export default {
     .content {
       height: calc(100% - 30px);
 
-      >div {
+      > div {
         height: 100%;
 
         .VideoArea {
@@ -414,12 +455,11 @@ export default {
         width: 100%;
         display: flex;
         flex-wrap: wrap;
-        justify-content: space-between;
 
         .el-checkbox-button {
           .el-checkbox-button__inner {
             position: relative;
-            width: 76px;
+            // width: 76px;
             height: 25px;
             margin: 10px 10px;
             line-height: 25.6px;

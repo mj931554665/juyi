@@ -82,7 +82,7 @@
               <p>监控设备</p>
               <h4>{{ hasVideoNum }}</h4>
             </div>
-            <div class="showData">
+            <div class="showData" v-if="locationStateNum.length">
               <i style="color: #fd6d4c" class="el-icon-location"></i>
               <p>定位设备</p>
               <h4>{{ locationStateNum[0].amount }}</h4>

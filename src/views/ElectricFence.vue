@@ -14,7 +14,7 @@
             <el-button @click="deleteInfo">删除</el-button>
             <el-button
               type="primary"
-              @click="idShowAddFence = new_change = true"
+              @click="addFenceInfo"
               >新增</el-button
             >
           </div>
@@ -24,7 +24,7 @@
             :data="fenceList"
             style="width: 100%"
             stripe
-            height="620"
+            :height="heights"
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55" align="center" />
@@ -158,6 +158,17 @@ import {selectList} from "@/api/zqData";
 import {fenceInfoSave,fencePageInfo,fenceInfoUpdate,fenceInfoDelete} from "@/api/user";
 
 export default {
+  mounted() {
+    this.$nextTick(() => {
+      console.log("this.$refs", this.$refs);
+      // 根据浏览器高度设置初始高度  - this.$refs.refsTable.$el.offsetTop
+      this.heights = window.innerHeight - 360;
+      // 监听浏览器高度变化，修改表格高度
+      window.onresize = () => {
+        this.heights = window.innerHeight - 360;
+      };
+    });
+  },
   data() {
     return {
       model:{
@@ -267,11 +278,6 @@ export default {
       // 修改的围栏信息
       fenceChange: null,
       // 新增围栏相关---------------------------------------------
-      // 点击保存错误提示的文字
-      errMsg1: "",
-      errMsg2: "",
-      errMsg3: "",
-      errMsg4: "",
       // 是否是新增围栏还是修改围栏
       new_change: true,
       idShowAddFence: false, // 是否显示添加围栏卡片
@@ -281,7 +287,9 @@ export default {
       oldPolyEditor: null, // 上一个多边形编辑区域
       Marker: null, // 设备标记
       selectRows: [] , //选中的
-
+      controllerUrl:'save', //记录保存信息的方式
+      renewalId: '',
+      heights: 0,// 表格高度
     };
   },
   components: {
@@ -388,7 +396,6 @@ export default {
         },
         scale
       );
-
       //创建多边形实例
       let polygon = (this.Polygon = new AMap.Polygon({
         path: path,
@@ -410,7 +417,6 @@ export default {
         polygon
       ));
 
-      // console.info('---------------->>> ',this.oldPolyEditor)
       polyEditor.open(); // 开始编辑多边形对象
 
     },
@@ -425,12 +431,42 @@ export default {
      this.$refs.fenceForm.validate(valid => {
         if(valid){
           Vue.set(this.model,'fenceParameterList',this.oldPolyEditor.bu[0])
-          fenceInfoSave(this.model).then(res=>{
-            this.$message.success(res.msg)
-            this.idShowAddFence = false;
-            this.currentPage=1
-            this.initData()
-          })
+          if(this.controllerUrl==='save'){
+            fenceInfoSave(this.model).then(res=>{
+              this.$message.success(res.msg)
+              this.idShowAddFence = false;
+              this.model={
+                definitionType:'0', //类型：0.自定义类型
+                fenceName: '', //围栏名称
+                fenceType: '', //围栏类型
+                equipmentNo: '', //设备编码
+                warnStatusList: [], //报警设置
+                fenceParameterList: [], //围栏的参数列表
+                startUse: '0', //是否启用: 0.否 1.是
+              }
+              this.currentPage=1
+              this.initData()
+            })
+          }else if(this.controllerUrl==='update'){
+            Vue.set(this.model,'id',this.renewalId)
+            fenceInfoUpdate(this.model).then(res=>{
+              this.$message.success(res.msg)
+              this.idShowAddFence = false;
+              this.model={
+                definitionType:'0', //类型：0.自定义类型
+                fenceName: '', //围栏名称
+                fenceType: '', //围栏类型
+                equipmentNo: '', //设备编码
+                warnStatusList: [], //报警设置
+                fenceParameterList: [], //围栏的参数列表
+                startUse: '0', //是否启用: 0.否 1.是
+              }
+              this.currentPage=1
+              this.initData()
+              // map.clearMap();
+            })
+          }
+
         }else {
           console.log('error submit!!');
           return false;
@@ -439,18 +475,16 @@ export default {
     },
     // 查看围栏详情
     fenceDetails(val) {
-      // this.fenceChange = val.$index;
-      // let e = val.row;
+      this.controllerUrl='update'
       this.new_change = false; // 设置状态为修改围栏状态
        this.clearForm(); // 清空表单及地图
-      // console.log("e", e);
-      // console.info('------------------>>> ',val)
       // 显示新增围栏的卡牌
       this.idShowAddFence = true;
+      this.renewalId=val.id
       this.model={
         definitionType:'0', //类型：0.自定义类型
         fenceName: val.fenceName, //围栏名称
-        fenceType: val.fenceType, //围栏类型
+        fenceType: val.fenceType.toString(), //围栏类型
         equipmentNo: val.equipmentNo, //设备编码
         warnStatusList: val.warnStatusList, //报警设置
         fenceParameterList: val.fenceParameterList, //围栏的参数列表
@@ -466,11 +500,17 @@ export default {
         content: this.icon,
         position: [this.deviceValue.lng, this.deviceValue.lat],
       });
+
       map.add(marker);
       map.setFitView([marker], false, [60, 60, 60, 60]);
 
+      let pathInfo=[]
+      val.fenceParameterList.forEach(item=>{
+        let arr=[Number(item.lng),Number(item.lat)]
+        pathInfo.push(arr)
+      })
       let polygon = (this.Polygon = new AMap.Polygon({
-        path: val.fenceParameterList,
+        path: pathInfo,
         strokeColor: "#43A5FA",
         strokeWeight: 4,
         strokeOpacity: 0.8,
@@ -489,7 +529,6 @@ export default {
         poly,
         polygon
       ));
-      // console.info('--------------->>> ',this.oldPolyEditor)
       // 开始编辑对象
       polyEditor.open();
     },
@@ -498,10 +537,27 @@ export default {
       this.currentPage = 1;
       this.initData();
     },
+    /*添加设备围栏信息*/
+    addFenceInfo(){
+      this.idShowAddFence = this.new_change = true;
+        // this.deviceValue = "";
+        // this.deviceActive = "";
+        // this.controllerUrl='save'
+      // 使用clearMap方法删除所有覆盖物
+      map.clearMap();
+    },
     //清空表单及地图覆盖物
     clearForm() {
       this.idShowAddFence = false;
-      // this.model={}
+      this.model={
+        definitionType:'0', //类型：0.自定义类型
+        fenceName: '', //围栏名称
+        fenceType: '', //围栏类型
+        equipmentNo: '', //设备编码
+        warnStatusList: [], //报警设置
+        fenceParameterList: [], //围栏的参数列表
+        startUse: '0', //是否启用: 0.否 1.是
+      }
       // 使用clearMap方法删除所有覆盖物
       map.clearMap();
     },
