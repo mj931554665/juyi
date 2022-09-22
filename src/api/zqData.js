@@ -266,3 +266,13 @@ export function drivingDataDownload(data) {
         }
     })
 }
+/**
+ * 设备详情页最新设备风险信息获取
+ * */
+export function newAlarm(id,time){
+    return request({
+        url: '/equipment/getEquipmentRiskAmountByRiskLevel/'+id+'?t='+time,
+        method: 'get',
+
+    })
+}

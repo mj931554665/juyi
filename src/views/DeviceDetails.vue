@@ -485,7 +485,7 @@ import EchartsComp from "@/components/EchartsComponent.vue";
 import CstorLivePlayer from "cstor-live-player";
 import "cstor-live-player/dist/cstor-live-player.css";
 import mixin from "../utils/mixin";
-import {detailWithWorkConditionData,vehicleCode,videoChannelState,videoPlay} from "@/api/zqData";
+import {detailWithWorkConditionData,vehicleCode,videoChannelState,videoPlay,newAlarm} from "@/api/zqData";
 
 export default {
   mixins: [mixin],
@@ -620,8 +620,8 @@ export default {
       });
       // 获取设备近期风险信息
       let time = new Date().getTime();
-      this.$api.getnewAlarm(this.id, time).then((res) => {
-        let data = res.data.data;
+      newAlarm(this.id, time).then((res) => {
+        let data = res.data;
         this.lowRisk = data[2].amount;
         this.mediumRisk = data[1].amount;
         this.highRisk = data[0].amount;
