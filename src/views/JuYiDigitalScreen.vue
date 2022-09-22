@@ -700,11 +700,11 @@ export default {
       // 设备地区分布统计
       deviceArea: {},
       // 所有设备工作时长总数
-      workTime: "加载中...",
+      workTime: localStorage.getItem("Screen_workTime") | "加载中...",
       // 所有设备吨位总数
       totalTonnage: "加载中...",
       // 总吊载（起重）次数
-      totalHoisting: "加载中...",
+      totalHoisting: localStorage.getItem("Screen_totalHoisting") | "加载中...",
     };
   },
   created() {
@@ -922,10 +922,6 @@ export default {
         ) {
           this.deviceArea.eastChina++;
         } else {
-          console.log("item", item);
-          console.log("item.lng", item.lng);
-          // console.log("item.lat", item.lat);
-
           this.deviceArea.otherChina++;
         }
       });
@@ -978,8 +974,16 @@ export default {
           // 赋值给data并且判断数据不为空
           let workTime = res.data.intervalCraneWorktimeStr;
           this.workTime = workTime ? parseInt(workTime) : 0;
+          localStorage.setItem(
+            "Screen_workTime",
+            JSON.stringify(this.workTime)
+          );
           let totalHoisting = res.data.intervalHoistingCountStr;
-          this.totalHoisting = totalHoisting ? totalHoisting : 0;
+          this.totalHoisting = totalHoisting ? parseInt(totalHoisting) : 0;
+          localStorage.setItem(
+            "Screen_totalHoisting",
+            JSON.stringify(this.totalHoisting)
+          );
         });
     },
   },
