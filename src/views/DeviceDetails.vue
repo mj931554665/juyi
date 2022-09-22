@@ -580,7 +580,7 @@ export default {
       }
       videoPlay(params).then(val => {
         this.stopHeartBeat(this.oldChannel) //停止上一个视频的心跳
-        if (val.data.data == null) {
+        if (val.data == null) {
           return;
         }
         let data = val.data.split("|");
