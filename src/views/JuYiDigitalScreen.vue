@@ -641,7 +641,9 @@ import VideoArea from "@/components/VideoArea.vue";
 import CstorLivePlayer from "cstor-live-player";
 import "cstor-live-player/dist/cstor-live-player.css";
 import mixin from "../utils/mixin";
-import {customerScreen,detailWithWorkConditionData,vehicleCode,videoChannelState,videoPlay,workStatInfo,equipmentAmountByType} from "@/api/zqData";
+import {detailWithWorkConditionData,vehicleCode,videoChannelState,videoPlay,workStatInfo} from "@/api/zqData";
+import {equipmentAmountByType,customerScreen} from "@/api/jyData";
+
 export default {
   mixins: [mixin],
   components: {
@@ -787,7 +789,7 @@ export default {
       if (this.checkDevice.videoStatus) {
         // 获取实时监控视频通道数据
         vehicleCode({vehicleCodes:this.checkDevice.equipmentNo}).then((val) => {
-          console.log(val.data.length == 0, val.data);
+          // console.log(val.data.length == 0, val.data);
 
           let data = val.data[0];
           videoChannelState({terminalId:data.terminalId}).then((res) => {
@@ -821,11 +823,8 @@ export default {
     initData() {
       // 获取图表二数据
       this.getDeviceType();
-      let params={
-        pageNum:1,
-        pageSize:9999
-      }
-      customerScreen(params).then((val) => {
+
+      customerScreen().then((val) => {
         // 给设备列表赋值
         this.deviceList = val.data;
         // console.log("this.deviceList", this.deviceList);

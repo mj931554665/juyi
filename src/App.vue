@@ -8,9 +8,9 @@
 <script>
 export default {
   created() {
-    setInterval(() => {
+    /*setInterval(() => {
       this.$api.refreshSession(this);
-    }, 600000);
+    }, 600000);*/
   },
 };
 </script>

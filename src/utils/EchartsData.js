@@ -192,9 +192,9 @@ export default {
     let arr = [],
     total = 0;
     value.forEach((item) => {
-      total += item.amount;
+      total += Number(item.amount);
       let obj = {
-        value: item.amount,
+        value: Number(item.amount),
         name: item.typeLabel,
       };
       arr.push(obj);

@@ -48,11 +48,9 @@ service.interceptors.response.use(
      * You can also judge the status by HTTP Status Code
      */
     response =>{
-
         const res = response.data
-
         // if the custom code is not 20000, it is judged as an error.
-        if (res.type) {
+        if (res.type||!res.hasOwnProperty("code")) {
             return response
         }
         if(res.code !==200){
@@ -65,7 +63,7 @@ service.interceptors.response.use(
                 return Promise.reject(new Error(res.message || 'Error'))
             }else if(res.code===401){
                 return new Promise((resolve, reject) => {
-                    watch.checkStatus(response.config, getLoginToken(), resolve, reject,'zq')
+                    watch.checkStatus(response.config, getDataToken(), resolve, reject,'zq')
                 })
             } else{
                 Message({

@@ -94,7 +94,7 @@
                   v-for="(item, index) of deviceModelList"
                   :key="index"
                   :label="item"
-                  :value="item"
+                  :value="index"
                 >
                 </el-option>
               </el-select>
@@ -299,7 +299,7 @@
 </template>
 <script>
 import Vue from "vue";
-import {selectList} from "@/api/zqData";
+import {selectList} from "@/api/jyData";
 
 export default {
   data() {
@@ -318,7 +318,7 @@ export default {
         4: "平板车",
       },
       modelLabel: [], //设备型号
-      deviceModelList: [],
+      deviceModelList: {},
       leaseStatus: "", //租赁状态
       leaseList: {
         1: "闲置",
@@ -741,15 +741,16 @@ export default {
         pageSize: 9999
       }
       selectList(params).then((res) => {
-          if (res.code === 200) {
-            this.deviceModelList = [];
+          if (res.code === 200|| res.code===0) {
+            this.deviceModelList = {};
             this.permissionList = {};
-            let data = res.data.rows;
+            let data = res.data.list||res.data.rows;
             for (let info of data) {
               //设备型号
-              let model = info.modelLabel;
-              if (!this.deviceModelList.includes(model)) {
-                this.deviceModelList.push(model);
+              let model = info.model;
+              let modelKey = Object.keys(this.deviceModelList);
+              if (!modelKey.includes(model)) {
+                Vue.set(this.deviceModelList, model, info.modelLabel);
               }
               //权限类型
               let permission = info.permissionType;
@@ -774,18 +775,19 @@ export default {
         equipmentNo: this.equipmentNo,
         name: this.name,
         plateNo: this.plateNo,
+        models: this.modelLabel,
         types: this.types,
         pageNum: pageNo,
         pageSize: pageSize
       }
       selectList(params).then((res) => {
-          if (res.code === 200) {
+          if (res.code ===200 ||res.code===0) {
             let deviceList = res.data;
             this.total = deviceList.total;
             this.pages = deviceList.pages;
             this.pageSize = deviceList.pageSize;
             this.pageNum = deviceList.pageNum;
-            this.deviceList = deviceList.rows;
+            this.deviceList = deviceList.list||deviceList.rows;
             this.loading = false;
           } else {
             this.$message.error("接口出错，请联系维护人员");

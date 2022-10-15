@@ -12,6 +12,8 @@ const service = axios.create({
     timeout: 20000 // request timeout
 })
 
+let wsroot = 'ws://'+location.host+'/login_api';
+
 // request interceptor
 service.interceptors.request.use(config =>{
     const url = config.url
@@ -80,3 +82,4 @@ function randomString(len) {
 }
 
 export default service
+export {wsroot}

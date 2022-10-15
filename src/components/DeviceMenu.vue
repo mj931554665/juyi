@@ -73,7 +73,7 @@ export default {
       handler(newVal, oldVal) {
         if (newVal !== undefined) {
           this.active = this.$route.query.where;
-          console.log('this.$route.query.where',this.$route.query.where)
+          // console.log('this.$route.query.where',this.$route.query.where)
           this.$router.push({
             path: this.routerInfo[this.active].url,
           });

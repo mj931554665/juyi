@@ -16,7 +16,7 @@
 </template>
 
 <script>
-  import {queryEquipmentsByPage} from "@/api/zqData";
+  import {queryEquipmentsByPage} from "@/api/jyData";
 
   let map = null; // 地图实例
 export default {
@@ -33,7 +33,7 @@ export default {
       events: {
         init(e) {
           map = e;
-          console.log("map", map);
+          // console.log("map", map);
         },
       },
       // 地图插件引入
@@ -58,7 +58,7 @@ export default {
         pageSize:9999
       }
       queryEquipmentsByPage(params).then((val) => {
-        this.deviceList = val.data.rows;
+        this.deviceList = val.data.list;
         // 渲染地图上面的数据
         this.renderMap();
       });

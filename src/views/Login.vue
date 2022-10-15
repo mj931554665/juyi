@@ -117,6 +117,7 @@ export default {
             if(res.code === 200){
               this.$router.push({ path: this.redirect || '/' })
             }else{
+              this.getCaptcha()
               this.$message({
                 type: 'error',
                 message: res.msg

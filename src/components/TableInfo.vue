@@ -159,7 +159,8 @@
 <script>
 import FloatCard from "@/components/FloatCard.vue";
 import {mapGetters} from 'vuex'
-import {onLineStatus,equipmentAmountByType,equipmentAmountByLocated,queryEquipmentsByPage,selectList} from "@/api/zqData";
+// import {selectList} from "@/api/zqData";
+import {onLineStatus,equipmentAmountByType,equipmentAmountByLocated,queryEquipmentsByPage,customerScreen} from "@/api/jyData";
 
 export default {
   name: "TableInfo",
@@ -209,17 +210,11 @@ export default {
         this.deviceList = val.data;
         this.initData();
       });
-      let params={
-        equipmentNo: '',
-        name: '',
-        plateNo: '',
-        types: [],
-        pageNum: 1,
-        pageSize: 9999
-      }
+
       // 获取所有设备的累计工作时间
-      selectList(params).then((res) => {
-        res.data.rows.forEach((item) => {
+      customerScreen().then((res) => {
+        res.data.forEach((item) => {
+
           // 去除吨位的多余文字或者单位（获取设备吨位总数
           let tonnage = item.modelLabel ? item.modelLabel : 0;
           this.totalTonnage += parseInt(tonnage.replace(/[^\d]/g, ""));
@@ -243,7 +238,7 @@ export default {
     getTotalDevicesNum() {
       equipmentAmountByType().then(val=>{
         val.data.forEach((item) => {
-          this.totalDevicesNum += item.amount;
+          this.totalDevicesNum += Number(item.amount);
         });
       })
     },
@@ -276,7 +271,7 @@ export default {
     },
     // 初始化第二张卡片的数据
     initData() {
-      let deviceList = this.deviceList.rows;
+      let deviceList = this.deviceList.list;
       let hasVideoNum = 0,
         carStatusNum = 0;
       deviceList.forEach((item, key) => {

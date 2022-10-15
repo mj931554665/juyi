@@ -529,13 +529,13 @@ export default {
   computed: {
     // 传入的设备id值，如没有就使用默认设备id值
     id() {
-      let id;
+      let id='';
       if (this.$route.params.id) {
         id = this.$route.params.id;
       } else if (this.$route.query.deviceInfo) {
         id = this.$route.query.deviceInfo.id;
       }
-      return id ? id : "c1e221866ab84ae28aeb89f975a667c4";
+      return id ;
     },
   },
   destroyed() {

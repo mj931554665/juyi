@@ -37,17 +37,17 @@ export default {
   },
   // 保持登录状态接口
   // 2.12——获取设备在线状态接口
-  getOnLineStatus() {
-    return axios.get("/equipment/getOnlineEquipmentAmountByRiskLevel");
-  },
+  // getOnLineStatus() {
+  //   return axios.get("/equipment/getOnlineEquipmentAmountByRiskLevel");
+  // },
   // 2.14——各设备类型数
   getEquipmentAmountByType() {
     return axios.get("/equipment/getEquipmentAmountByType");
   },
   // 2.15——定位设备数量
-  getEquipmentAmountByLocated() {
+ /* getEquipmentAmountByLocated() {
     return axios.get("/equipment/getEquipmentAmountByLocated");
-  },
+  },*/
   // 2.3-设备列表(有地图定位) 新
   getqueryEquipmentsByPage(pageNum, pageSize) {
     let formData = new FormData();

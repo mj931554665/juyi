@@ -34,12 +34,12 @@
   </div>
 </template>
 <script>
-  import {historyTrackDetail} from "@/api/zqData";
+  // import {historyTrackDetail} from "@/api/zqData";
 
   export default {
   mounted() {
     this.$nextTick(() => {
-      console.log("this.$refs", this.$refs);
+      // console.log("this.$refs", this.$refs);
       // 根据浏览器高度设置初始高度  - this.$refs.refsTable.$el.offsetTop
       this.heights = window.innerHeight - 220;
       // 监听浏览器高度变化，修改表格高度
@@ -62,15 +62,15 @@
     };
   },
   created() {
-    let params={
+    /*let params={
       startDate: '2022-06-08 00:00:00',
       endDate: '2022-06-08 23:59:59',
       vehicleCode: 'CC0260CB5352',
     }
     historyTrackDetail(params).then((res) => {
-        console.log("res.data", res.data.listPoint);
+        // console.log("res.data", res.data.listPoint);
         this.tableData = res.data.listPoint;
-      });
+      });*/
   },
   methods: {
     //每页条数改变时触发 选择一页显示多少行

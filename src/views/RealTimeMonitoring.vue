@@ -153,21 +153,19 @@ export default {
   computed: {
     // 传入的设备编号
     vehicleCodes() {
-      let equipmentNo;
+      let equipmentNo='';
       if (this.$route.params.equipmentNo) {
         equipmentNo = this.$route.params.equipmentNo;
-        // sessionStorage.setItem('equipmentNo', JSON.stringify(this.$route.params.equipmentNo))
       } else if (this.$route.params.deviceInfo) {
         equipmentNo = this.$route.params.deviceInfo.equipmentNo;
       } else if (this.$route.query.deviceInfo) {
         equipmentNo = this.$route.query.deviceInfo.equipmentNo;
       }
-      return equipmentNo ? equipmentNo : "CC0260CB5362";
+      return equipmentNo ;
     },
     // 设备工况数据详情
     equipmentId() {
-      let equipmentId;
-      console.log("this.$route.query", this.$route.query);
+      let equipmentId='';
       if (this.$route.params.id) {
         equipmentId = this.$route.params.id;
       } else if (this.$route.params.deviceInfo) {
@@ -175,7 +173,7 @@ export default {
       } else if (this.$route.query.deviceInfo) {
         equipmentId = this.$route.query.deviceInfo.id;
       }
-      return equipmentId ? equipmentId : "c1e221866ab84ae28aeb89f975a667c4";
+      return equipmentId ;
     },
   },
   data() {
@@ -224,7 +222,6 @@ export default {
     this.initChannel();
     this.initVideoSrc(1);
     this.initEquipmentDetail(this.equipmentId);
-    // console.log(Object.keys(this.deviceDetails).length ? "1" : "2");
   },
   methods: {
     splitScreenChange(index) {

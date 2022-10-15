@@ -81,46 +81,14 @@
           </el-col>
         </div>
         <div class="content">
-          <div class="countData" v-show="!conditionDetails">
-            <div>
-              <p>行驶里程</p>
-              <h4>
-                <span>{{ roadHaul }}</span> 公里
-              </h4>
-            </div>
-            <div>
-              <p>行驶油耗</p>
-              <h4>
-                <span>{{ travelOil }}</span> 升
-              </h4>
-            </div>
-            <div>
-              <p>工作时长</p>
-              <h4>
-                <span>{{ workHours }}</span> 小时
-              </h4>
-            </div>
-            <div>
-              <p>工作油耗</p>
-              <h4>
-                <span>{{ workOils }}</span> 升
-              </h4>
-            </div>
-            <div>
-              <p>吊载次数</p>
-              <h4>
-                <span>{{ craneLoadCount }}</span> 次
-              </h4>
-            </div>
-          </div>
-          <div class="countData" v-show="conditionDetails">
-            <div>
+          <div class="countData" >
+            <div v-if="conditionDetails">
               <p>设备编号</p>
               <h4>
                 <span>{{ detailsDeviceId }}</span>
               </h4>
             </div>
-            <div>
+            <div v-if="conditionDetails">
               <p>统计时间</p>
               <h4>
                 <span>{{ statisticsTime }}</span>
@@ -246,7 +214,8 @@
 <script>
 import Vue from "vue";
 import { dateFormat, getdiffdate } from "@/utils/validate";
-import {queryEquipmentsByPage,historyTrackDetail,equipmentBusinessNameByNo,workStatInfo,workDetailInfoByEquipmentNo,drivingDataDownload} from "@/api/zqData";
+import {historyTrackDetail,equipmentBusinessNameByNo,workStatInfo,workDetailInfoByEquipmentNo,drivingDataDownload} from "@/api/zqData";
+import {queryEquipmentsByPage} from "@/api/jyData";
 
 export default {
   data() {
@@ -318,20 +287,15 @@ export default {
       total: 0, //数据总量
       pageSize: 15, //每页数据数量
       currentPage: 1, //当前页码
-      roadHaul: 0.0, // 行驶里程
-      travelOil: 0.0, //行驶油耗
-      workHours: 0.0, //工作时长
-      workOils: 0.0, //工作油耗
-      craneLoadCount: 0.0, //吊载次数
 
       conditionDetails: false, //工况详情
       detailsDeviceId: "", //设备编号
       statisticsTime: "", //统计时间
-      intervalMileageStr: "", //行驶公里
-      runningOilTotalStr: "", //行驶油耗
-      intervalCraneWorktimeStr: "", //工作时长
-      intervalOilStr: "", //工作油耗
-      intervalHoistingCountStr: "", //吊载次数
+      intervalMileageStr: "0.0", //行驶公里
+      runningOilTotalStr: "0.0", //行驶油耗
+      intervalCraneWorktimeStr: "0.0", //工作时长
+      intervalOilStr: "0.0", //工作油耗
+      intervalHoistingCountStr: "0", //吊载次数
       columns: [],
       columns1: [
         // #region
@@ -625,12 +589,12 @@ export default {
         pageSize:9999
       }
       queryEquipmentsByPage(params).then((res) => {
-        if (res.code === 200) {
+        if (res.code === 200||res.code ===0) {
           this.allDeviceInfo = [];
           this.deviceNameList = [];
           this.deviceEquipmentNoList = [];
           this.plateNoList = [];
-          let data = res.data.rows;
+          let data = res.data.list;
           for (let info of data) {
             let name = info.name; //设备名称
             let equipmentNo = info.equipmentNo; //设备编码
@@ -658,6 +622,10 @@ export default {
       });
     },
     initDetails() {
+      if(!this.chooseTime){
+        this.$message.warning("请选择时间范围")
+        return
+      }
       this.loading = true;
       let startDate = dateFormat(this.chooseTime[0], "yyyy-MM-dd");
       let endDate = dateFormat(this.chooseTime[1], "yyyy-MM-dd");
@@ -677,7 +645,7 @@ export default {
         workDetailInfoByEquipmentNo(params).then((res) => {
             if (res.code === 200) {
               let data = res.data.rows;
-              console.log("data", data[0]);
+              // console.log("data", data[0]);
               if (data[0]) {
                 let statisticsDate = startDateItem; //统计时间
                 let drivenDistance = data[0].intervalMileageStr; //行驶里程
@@ -705,34 +673,38 @@ export default {
                 historyTrackDetail(params).then((res) => {
                     if (res.code === 200) {
                       let locationInfo = res.data.listPoint;
-                      console.log("locationInfo", locationInfo);
+                      // console.log("locationInfo", locationInfo);
                       if (locationInfo.length > 0) {
                         let lastLocation = locationInfo.pop().position;
                         let lastPositioningTime = locationInfo.pop().time;
                         Vue.set(this.tableData[index], "lastLocation", lastLocation);
                         Vue.set(this.tableData[index], "lastPositioningTime", lastPositioningTime);
                       }
-                    } else {
+                    } /*else {
                       this.$message.error("接口出错，请联系维护人员");
-                    }
+                    }*/
                   })
                   .catch((err) => {
                     this.$message.error("接口出错，请联系维护人员");
                   });
               }
-            } else {
+            }/* else {
               this.$message.error("接口出错，请联系维护人员");
-            }
+            }*/
             this.loading = false;
           });
       });
     },
     async workOtherInfo(equipment, pageNo) {
+      if(!this.chooseTime){
+        this.$message.warning("请选择时间范围")
+        return
+      }
       this.loading = true;
       let startDate = dateFormat(this.chooseTime[0], "yyyy-MM-dd");
       let endDate = dateFormat(this.chooseTime[1], "yyyy-MM-dd");
       //统计数据的
-      this.workStatisticalInfo(equipment, startDate, endDate);
+      this.workStatisticalInfoDetails(equipment, startDate, endDate);
       //设备行程，油况等基础信息
       let detailInfo = await this.workDetailInfo(
         equipment,
@@ -795,16 +767,17 @@ export default {
                     }
                   }
                 }
-              } else {
+              }/* else {
                 this.$message.error("1接口出错，请联系维护人员");
-              }
+              }*/
             })
             .catch((err) => {
               this.$message.error("2接口出错，请联系维护人员");
             });
         }
       } else {
-        this.$message.error("3接口出错，请联系维护人员");
+        this.workOtherInfo(equipment,pageNo)
+        // this.$message.error("3接口出错，请联系维护人员");
       }
     },
     /**
@@ -847,26 +820,6 @@ export default {
     /**
      * 根据设备编码获取工况的统计数据
      * */
-    workStatisticalInfo(equipment, startDate, endDate) {
-      let params={
-        vehicleCodes: equipment,
-        startTime: startDate,
-        endTime: endDate
-      }
-      workStatInfo(params).then((res) => {
-          if (res.code === 200) {
-            let data = res.data;
-            this.workOils = data.intervalCraneOilcost;
-            this.workHours = data.intervalCraneWorktimeStr;
-            this.craneLoadCount = data.intervalHoistingCount;
-          } else {
-            this.$message.error("4接口出错，请联系维护人员");
-          }
-        })
-        .catch((err) => {
-          this.$message.error("5接口出错，请联系维护人员");
-        });
-    },
     workStatisticalInfoDetails(equipment, startDate, endDate) {
       let params={
         vehicleCodes: equipment,
@@ -882,9 +835,9 @@ export default {
             this.intervalCraneWorktimeStr = data.intervalCraneWorktimeStr;
             this.intervalOilStr = data.intervalOilStr;
             this.intervalHoistingCountStr = data.intervalHoistingCountStr;
-          } else {
+          }/* else {
             this.$message.error("4接口出错，请联系维护人员");
-          }
+          }*/
         })
         .catch((err) => {
           this.$message.error("5接口出错，请联系维护人员");
@@ -928,6 +881,10 @@ export default {
      * 导出
      * */
     downloadData() {
+      if(!this.chooseTime){
+        this.$message.warning("请选择时间范围")
+        return
+      }
       let params={
         vehicleCodes: this.conditionDealInfo(),
         startTime: dateFormat(this.chooseTime[0], "yyyy-MM-dd"),

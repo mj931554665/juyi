@@ -108,6 +108,7 @@ export function historyTrackDetail(params) {
     })
 }
 
+
 /**
  * 2.21 设备风险列表
  * */
@@ -273,6 +274,5 @@ export function newAlarm(id,time){
     return request({
         url: '/equipment/getEquipmentRiskAmountByRiskLevel/'+id+'?t='+time,
         method: 'get',
-
     })
 }

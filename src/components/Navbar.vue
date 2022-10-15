@@ -43,13 +43,25 @@
       <el-menu-item @click="screenRule">钜亿安全监控大屏</el-menu-item>
     </el-menu>
     <!-- 用户操作按钮 -->
-    <div class="user">
-      <i class="el-icon-s-custom"></i>
-      <div class="username">
-        {{
-          name ? name : "noUserName"
-        }}
-      </div>
+    <div class="right-menu">
+      <el-dropdown class="avatar-container" trigger="click">
+        <div class="avatar-wrapper">
+          <i class="el-icon-s-custom"></i>
+          <div class="username" style="margin-left: 5px">
+            {{name ? name : "noUserName" }}
+          </div>
+        </div>
+        <el-dropdown-menu slot="dropdown" class="user-dropdown">
+          <router-link to="/">
+            <el-dropdown-item>
+              首页
+            </el-dropdown-item>
+          </router-link>
+          <el-dropdown-item divided @click.native="logout">
+            <span style="display:block;">退出</span>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
     </div>
   </div>
 </template>
@@ -75,24 +87,25 @@ export default {
       // alert(newVal)
       // 为了防止和原有的高亮更新操作冲突，这里只更新自己需要的路由
       if (
-        newVal == "deviceList" ||
-        newVal == "deviceDetails" ||
-        newVal == "realTimeMonitoring" ||
-        newVal == "deviceManage"
+        newVal === "deviceList" ||
+        newVal === "deviceDetails" ||
+        newVal === "realTimeMonitoring" ||
+        newVal === "deviceManage"
       ) {
-        console.log("2-1");
         // 为 :default-active 绑定的值 activepath 重新赋值，从而实现菜单栏的高亮更新
         this.activeIndex = "2-1";
-      } else if (newVal == "historicalTrack") {
-        console.log("2-4");
+      } else if (newVal === "historicalTrack") {
         this.activeIndex = "2-4";
-      } else if (newVal == "deviceAlarm") {
-        console.log("2-5");
+      } else if (newVal === "deviceAlarm") {
         this.activeIndex = "2-5";
       }
     },
   },
   methods: {
+    async logout() {
+      await this.$store.dispatch('user/logout')
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
     deviceAdmin(info) {
       this.$router.push({
         path: "/deviceManage",
@@ -169,14 +182,40 @@ export default {
     background-color: #2c2b30 !important;
     color: #f2ce91 !important;
   }
-  .user {
+  .right-menu {
     position: absolute;
     display: flex;
     right: 100px;
     top: 50%;
     transform: translateY(-50%);
-    color: rgb(245, 245, 247);
     font-size: 14px;
+
+    .avatar-wrapper{
+      display: flex;
+      cursor: pointer;
+      color: rgb(245, 245, 247);
+    }
+    &:focus {
+      outline: none;
+    }
+
+    .right-menu-item {
+      display: inline-block;
+      padding: 0 5px;
+      height: 100%;
+      font-size: 18px;
+      color: #5a5e66;
+      vertical-align: text-bottom;
+
+      &.hover-effect {
+        cursor: pointer;
+        transition: background .3s;
+
+        &:hover {
+          background: rgba(0, 0, 0, .025)
+        }
+      }
+    }
   }
 }
 /* 因为导航一般来说只存在一个，所以没用id限制 */

@@ -9,7 +9,6 @@
           filterable
           size="small"
           clearable
-          @change="selectChange(deviceActive)"
         >
           <el-option
             v-for="item in deviceList"
@@ -139,7 +138,8 @@
 <script>
 // 引入时间格式化
 import { dateFormat } from "@/utils/validate";
-import {selectList,historyTrackDetail} from "@/api/zqData";
+import {historyTrackDetail} from "@/api/zqData";
+import {customerScreen} from '@/api/jyData';
 
 export default {
   created() {
@@ -148,7 +148,7 @@ export default {
   props: {
     equipmentNo: {
       type: String,
-      default: "CC0260CC0802",
+      default: "",
     },
   },
   data() {
@@ -169,18 +169,10 @@ export default {
   },
   methods: {
     initDeviceInfo() {
-      let params={
-        equipmentNo: '',
-        name: '',
-        plateNo: '',
-        types: [],
-        pageNum: 1,
-        pageSize: 9999
-      }
       // 获取设备列表
-      selectList(params).then((res) => {
+      customerScreen().then((res) => {
         // console.log("设备列表", res.data);
-        this.deviceList = res.data.rows;
+        this.deviceList = res.data
       });
       let startDate = dateFormat(this.start, "yyyy-MM-dd HH:mm:ss");
       let endDate = dateFormat(this.end, "yyyy-MM-dd HH:mm:ss");

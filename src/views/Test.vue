@@ -764,7 +764,7 @@ export default {
       if (this.checkDevice.videoStatus) {
         // 获取实时监控视频通道数据
         vehicleCode({vehicleCodes:this.checkDevice.equipmentNo}).then((val) => {
-          console.log(val.data.length === 0, val.data);
+          // console.log(val.data.length === 0, val.data);
 
           let data = val.data[0];
           videoChannelState({terminalId:data.terminalId}).then((val) => {

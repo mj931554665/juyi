@@ -176,7 +176,7 @@
 import Popups from "@/components/Popups.vue";
 // 引入聚合点组件（vue-baidu-map自带）
 import { BmlMarkerClusterer } from "vue-baidu-map";
-import {queryEquipmentsByPage} from "@/api/zqData";
+import {queryEquipmentsByPage} from "@/api/jyData";
 
 export default {
   name: "HomeView",
@@ -441,7 +441,7 @@ export default {
         pageSize:9999
       }
       queryEquipmentsByPage(params).then((val) => {
-        this.deviceList = val.data.rows;
+        this.deviceList = val.data.list;
         // 校准定位偏差位置
         this.deviceList.forEach(item=>{
           item.lat=0.0056 + Number(item.lat);

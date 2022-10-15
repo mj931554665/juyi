@@ -42,6 +42,7 @@
                   placeholder="请选择"
                   size="medium"
                   multiple
+                  filterable
                   collapse-tags
                 >
                   <el-option
@@ -62,6 +63,7 @@
                   size="medium"
                   multiple
                   collapse-tags
+                  filterable
                   style="width: 205px;"
                 >
                   <el-option
@@ -156,7 +158,6 @@
                   v-model="chooseTime"
                   type="datetimerange"
                   :editable="false"
-                  clearable
                   size="medium"
                   range-separator="-"
                   start-placeholder="开始日期"
@@ -270,7 +271,8 @@
 <script>
 import { dateFormat } from "@/utils/validate";
 import AlarmDetail from "./alarm/AlarmDetail";
-import {selectList,equipmentAlarmList,alarmType,alarmEventListInfo,downAlarmListInfo} from "@/api/zqData";
+import {alarmType,alarmEventListInfo} from "@/api/zqData";
+import {customerScreen,equipmentAlarmList,downAlarmListInfo} from '@/api/jyData';
 
 import Vue from "vue";
 export default {
@@ -562,7 +564,7 @@ export default {
                   this.category = 0;
                   this.currentPage = 1;
                   this.equipmentId = params.row.baseInfo.id;
-                  this.eventName = params.row.warnType;
+                  this.eventName = params.row.warnType.toString();
                   this.columns.splice(this.columns.length - 1, 1);
                   this.$refs.alarmTable.doLayout();
                   this.initAlarmData();
@@ -630,14 +632,13 @@ export default {
       this.$route.query.deviceInfo ||
       this.$route.params.deviceInfo
     ) {
-      console.log("in");
       let data;
       if (this.$route.params.deviceDetails) {
         data = this.$route.params.deviceDetails.baseInfo;
         this.activeName = this.$route.params.riskLevel;
       } else if (this.$route.params.deviceInfo) {
         data = this.$route.params.deviceInfo;
-        console.log("data", data);
+        // console.log("data", data);
         this.activeName = "all";
       } else if (this.$route.query.deviceInfo) {
         data = this.$route.query.deviceInfo;
@@ -703,17 +704,10 @@ export default {
       this.plateNoOptions = {};
       this.alarmTypeOptions = {};
       this.eventNameOptions = {};
-      let params={
-        equipmentNo: '',
-        name: '',
-        plateNo: '',
-        types: [],
-        pageNum: 1,
-        pageSize: 9999
-      }
-      selectList(params).then((res) => {
-        if (res.code === 200) {
-          let data = res.data.rows;
+
+      customerScreen().then((res) => {
+        if (res.code === 200|| res.code===0) {
+          let data = res.data;
           for (let info of data) {
             let name = info.name; //设备名称
             let terminalId = info.terminalId; //设备终端
@@ -769,6 +763,10 @@ export default {
     },
 
     initAlarmData() {
+      if(!this.chooseTime){
+        this.$message.warning("请选择时间范围")
+        return
+      }
       this.loading = true;
       let startDate = dateFormat(this.chooseTime[0], "yyyy-MM-dd");
       let endDate = dateFormat(this.chooseTime[1], "yyyy-MM-dd HH:mm:ss");
@@ -790,10 +788,9 @@ export default {
         pageNum: this.currentPage,
         pageSize: this.pageSize,
       };
-
       equipmentAlarmList(params).then((res) => {
-        if (res.code === 200) {
-          this.tableData = res.data.rows;
+        if (res.code === 200||res.code === 0) {
+          this.tableData = res.data.list||res.data.rows;
           this.total = res.data.total;
         } else {
           this.$message.error("接口出错，请联系维护人员");
@@ -824,6 +821,10 @@ export default {
      * 导出
      * */
     downloadData() {
+      if(!this.chooseTime){
+        this.$message.warning("请选择时间范围")
+        return
+      }
       let startDate = dateFormat(this.chooseTime[0], "yyyy-MM-dd");
       let endDate = dateFormat(this.chooseTime[1], "yyyy-MM-dd HH:mm:ss");
       let terminalIds = this.deviceName

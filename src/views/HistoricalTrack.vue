@@ -72,10 +72,10 @@
                     @change="selectChange(deviceActive)"
                   >
                     <el-option
-                      v-for="item in deviceList"
-                      :key="item.id"
-                      :label="item.equipmentNo"
-                      :value="item.equipmentNo"
+                      v-for="(item,index) in deviceList"
+                      :key="index"
+                      :label="item"
+                      :value="item"
                     >
                     </el-option> </el-select
                 ></el-col>
@@ -216,7 +216,8 @@ let map = null; // 地图实例
 
 import TrackTable from "@/components/TrackTable.vue";
 import { dateFormat } from "@/utils/validate";
-import {selectList,historyTrackDetail} from "@/api/zqData";
+import {historyTrackDetail} from "@/api/zqData";
+import {craneCloudEquipmentNo} from '@/api/jyData'
 
 export default {
   components: {
@@ -225,7 +226,7 @@ export default {
   props: {
     equipmentNo: {
       type: String,
-      default: "CC0260CC0885",
+      default: "",
     },
   },
   computed: {},
@@ -253,7 +254,7 @@ export default {
       events: {
         init(e) {
           map = e; // 地图实例
-          console.log("map", map);
+          // console.log("map", map);
         },
       },
       mapCenter: [114.085947, 22.547], // 地图中心
@@ -293,23 +294,16 @@ export default {
     };
   },
   created() {
-      let params={
-        equipmentNo: '',
-        name: '',
-        plateNo: '',
-        types: [],
-        pageNum: 1,
-        pageSize: 9999
-      }
+
     // 获取设备列表
-    selectList(params).then((res) => {
-      this.deviceList = res.data.rows;
+    craneCloudEquipmentNo().then((res) => {
+      this.deviceList = res.data;
       if (this.$route.query.deviceInfo) {
         this.deviceActive = this.$route.query.deviceInfo.equipmentNo;
       } else if (this.$route.params.equipmentNo) {
         this.deviceActive = this.$route.params.equipmentNo;
       }else{
-        this.deviceActive = this.deviceList[0].equipmentNo;
+        this.deviceActive = this.deviceList[0];
       }
       this.initDeviceInfo();
     });
@@ -326,7 +320,15 @@ export default {
       }
       historyTrackDetail(params2).then((res) => {
           let data = res.data;
-          if (data.listPoint.length==0) return;
+          if (data.listPoint.length===0){
+            this.mileageStr =0;
+            this.mapCenter=[114.085947, 22.547]
+            this.TrackList=[]
+            this.listPoint=[]
+            map.clearMap();
+            return;
+          }
+
           this.mileageStr = data.mileageStr; // 轨迹里程
           // 获取轨迹列表并渲染表格
           this.TrackList = data.listPoint; // 轨迹点列表
@@ -482,7 +484,7 @@ export default {
       this.markerMap.resumeMove();
     },
     selectChange() {
-      console.log("this.deviceActive", this.deviceActive);
+      // console.log("this.deviceActive", this.deviceActive);
     },
     handleClick(tab, event) {
       // console.log(tab, event);

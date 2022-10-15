@@ -154,13 +154,13 @@
 <script>
 let map = null; // 地图实例
 import Vue from 'vue'
-import {selectList} from "@/api/zqData";
+import {customerScreen} from "@/api/jyData";
 import {fenceInfoSave,fencePageInfo,fenceInfoUpdate,fenceInfoDelete} from "@/api/user";
 
 export default {
   mounted() {
     this.$nextTick(() => {
-      console.log("this.$refs", this.$refs);
+      // console.log("this.$refs", this.$refs);
       // 根据浏览器高度设置初始高度  - this.$refs.refsTable.$el.offsetTop
       this.heights = window.innerHeight - 360;
       // 监听浏览器高度变化，修改表格高度
@@ -322,8 +322,8 @@ export default {
     initData(){
       let params={
         fenceName: this.fenceSearch,
-        page:this.currentPage,
-        limit: this.pageSize
+        pageNum:this.currentPage,
+        pageSize: this.pageSize
       }
       fencePageInfo(params).then(res=>{
         this.total=res.data.total
@@ -563,16 +563,8 @@ export default {
     },
     // 获取设备列表
     getDeviceList() {
-      let params={
-        equipmentNo: '',
-        name: '',
-        plateNo: '',
-        types: [],
-        pageNum: 1,
-        pageSize: 9999
-      }
-      selectList(params).then((res) => {
-        this.deviceList = res.data.rows;
+      customerScreen().then((res) => {
+        this.deviceList = res.data;
       });
     },
     /**
